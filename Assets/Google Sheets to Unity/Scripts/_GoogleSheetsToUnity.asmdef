@@ -1,9 +1,7 @@
 {
-    "name": "_LightCard",
+    "name": "_GoogleSheetsToUnity",
     "rootNamespace": "",
-    "references": [
-        "GUID:679cbef885dc7b0438b2da71f3751e5d"
-    ],
+    "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
