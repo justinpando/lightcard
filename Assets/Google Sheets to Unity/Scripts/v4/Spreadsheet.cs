@@ -392,8 +392,12 @@ namespace GoogleSheetsToUnity
             //build the column and row string Id's from titles
             foreach(GSTU_Cell cell in Cells.Values)
             {
-                cell.columnId = Cells[cell.Column() + titleRow].value;
-                cell.rowId = Cells[titleColumn + cell.Row()].value;
+                string column = cell.Column();
+                int row = cell.Row();
+                Debug.Log($"Cell Column {cell.Column()} - Row {row}, Title Row: {titleRow}.");
+                
+                if(Cells.ContainsKey(column + titleRow)) cell.columnId = Cells[column + titleRow].value;
+                if(Cells.ContainsKey(titleColumn + row)) cell.rowId = Cells[titleColumn + row].value;
             }
 
             //build all links to row and columns for cells that are handled by merged title fields.
