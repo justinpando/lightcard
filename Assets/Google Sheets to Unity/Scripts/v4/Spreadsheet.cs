@@ -432,6 +432,11 @@ namespace GoogleSheetsToUnity
 
                     Debug.Log($"Accessing columnIndex: {columnIndex} - rowIndex: {rowIndex}");
                     
+                    if (!Cells.ContainsKey(columnIndex + rowIndex))
+                    {
+                        Cells.Add(columnIndex + rowIndex, new GSTU_Cell(""));
+                    }
+
                     return Cells[columnIndex + rowIndex];
             }
         }
