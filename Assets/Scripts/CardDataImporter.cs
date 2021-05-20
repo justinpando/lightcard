@@ -15,8 +15,6 @@ public class CardDataImporter : OdinEditorWindow
         GetWindow<CardDataImporter>().Show();
     }
 
-    public List<CardData> importedCards;
-    
     [Button]
     public void UpdateFromSheet()
     {
@@ -28,11 +26,15 @@ public class CardDataImporter : OdinEditorWindow
 
     private void Callback(GstuSpreadSheet ss)
     {
+        importedCards.Clear();
+        
         List<GSTU_Cell> cells = ss.columns["Name"];
 
+        Debug.Log($"Cell count: {cells.Count}");
+        
         for (int n = 0; n < cells.Count; n++)
         {
-            if(cells[n].value == "") continue;
+            if(cells[n].value == "" || cells[n].value == "Name") continue;
             
             CardData cardData = CreateInstance<CardData>();
             cardData.name = cells[n].value;
@@ -61,15 +63,24 @@ public class CardDataImporter : OdinEditorWindow
             {
                 cardData.defense = def;
             }
-            
-            cardData.description = ss[cardData.name, "Description"].value;
-            
-            AssetDatabase.CreateAsset(cardData, "Assets/Data/Cards/" + cardData.name + ".asset");
-            
+
+            try
+            {
+                cardData.description = ss[cardData.name, "Description"].value;
+            }
+            catch
+            {
+                cardData.description = "";
+            }
+
+            Debug.Log($"Created card {n}: {cardData.name}");
             importedCards.Add(cardData);
             
+            AssetDatabase.CreateAsset(cardData, "Assets/Data/Cards/" + cardData.name + ".asset");
         }
         
         Debug.Log($"Imported {importedCards.Count} cards.");
     }
+    
+    public List<CardData> importedCards;
 }

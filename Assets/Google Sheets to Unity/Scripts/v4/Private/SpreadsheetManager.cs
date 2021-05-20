@@ -92,13 +92,12 @@ namespace GoogleSheetsToUnity
 
                 if(string.IsNullOrEmpty(request.downloadHandler.text) || request.downloadHandler.text == "{}")
                 {
-                    Debug.LogWarning("Unable to Retreive data from google sheets");
+                    Debug.LogWarning("Unable to Retrieve data from google sheets");
                     yield break;
                 }
 
-
                 ValueRange rawData = JSON.Load(request.downloadHandler.text).Make<ValueRange>();
-                GSTU_SpreadsheetResponce responce = new GSTU_SpreadsheetResponce(rawData);
+                GSTU_SpreadsheetResponse response = new GSTU_SpreadsheetResponse(rawData);
 
                 //if it contains merged cells then process a second set of json data to know what these cells are
                 if (containsMergedCells)
@@ -113,12 +112,12 @@ namespace GoogleSheetsToUnity
                     yield return request2.SendWebRequest();
 
                     SheetsRootObject root = JSON.Load(request2.downloadHandler.text).Make<SheetsRootObject>();
-                    responce.sheetInfo = root.sheets.FirstOrDefault(x => x.properties.title == search.worksheetName);
+                    response.sheetInfo = root.sheets.FirstOrDefault(x => x.properties.title == search.worksheetName);
                 }
 
                 if (callback != null)
                 {
-                    callback(new GstuSpreadSheet(responce, search.titleColumn,search.titleRow));
+                    callback(new GstuSpreadSheet(response, search.titleColumn,search.titleRow));
                 }
             }
         }

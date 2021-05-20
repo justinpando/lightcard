@@ -113,7 +113,7 @@ namespace GoogleSheetsToUnity
     }
 
     [Serializable]
-    public class GSTU_SpreadsheetResponce
+    public class GSTU_SpreadsheetResponse
     {
         public ValueRange valueRange;
         internal Sheet sheetInfo = null;
@@ -135,9 +135,9 @@ namespace GoogleSheetsToUnity
             return valueRange.range.Substring(valueRange.range.IndexOf(":") + 1);
         }
 
-        public GSTU_SpreadsheetResponce() { }
+        public GSTU_SpreadsheetResponse() { }
 
-        public GSTU_SpreadsheetResponce(ValueRange data)
+        public GSTU_SpreadsheetResponse(ValueRange data)
         {
             valueRange = data;
         }
@@ -153,7 +153,7 @@ namespace GoogleSheetsToUnity
         public ValueRange() { }
 
         /// <summary>
-        /// Used to create a spreadshhet that can be returned to google sheets
+        /// Used to create a spreadsheet that can be returned to google sheets
         /// </summary>
         /// <param name="data"></param>
         public ValueRange(List<List<string>> data)
@@ -162,7 +162,7 @@ namespace GoogleSheetsToUnity
         }
 
         /// <summary>
-        /// Used to create a spreadshhet that can be returned to google sheets
+        /// Used to create a spreadsheet that can be returned to google sheets
         /// </summary>
         /// <param name="data"></param>
         public ValueRange(List<string> data)
@@ -263,7 +263,7 @@ namespace GoogleSheetsToUnity
         public SecondaryKeyDictionary<int, string, List<GSTU_Cell>> rows =
             new SecondaryKeyDictionary<int, string, List<GSTU_Cell>>();
 
-   /*     public GstuSpreadSheet(GSTU_SpreadsheetResponce data)
+   /*     public GstuSpreadSheet(GSTU_SpreadsheetResponse data)
         {
             string startColumn = Regex.Replace(data.StartCell(), "[^a-zA-Z]", "");
             int startRow = int.Parse(Regex.Replace(data.StartCell(), "[^0-9]", ""));
@@ -311,7 +311,7 @@ namespace GoogleSheetsToUnity
             }
         }*/
 
-        public GstuSpreadSheet(GSTU_SpreadsheetResponce data, string titleColumn, int titleRow)
+        public GstuSpreadSheet(GSTU_SpreadsheetResponse data, string titleColumn, int titleRow)
         {
             string startColumn = Regex.Replace(data.StartCell(), "[^a-zA-Z]", "");
             int startRow = int.Parse(Regex.Replace(data.StartCell(), "[^0-9]", ""));
@@ -336,7 +336,6 @@ namespace GoogleSheetsToUnity
                     }
                 }
             }
-
 
             foreach (List<string> dataValue in data.valueRange.values)
             {
@@ -368,9 +367,8 @@ namespace GoogleSheetsToUnity
 
                         rows[currentRow].Add(cell);
                         columns[realColumn].Add(cell);
-
-
-                        //build a series of seconard keys for the rows and columns
+                        
+                        //build a series of secondary keys for the rows and columns
                         if (realColumn == titleColumn)
                         {
                             rows.LinkSecondaryKey(currentRow, cell.value);
@@ -381,6 +379,7 @@ namespace GoogleSheetsToUnity
                         }
                     }
 
+                    Debug.Log($"Adding cellID: {cellID}, cell value: {cell.value}");
                     Cells.Add(cellID, cell);
 
                     currentColumn++;
@@ -431,6 +430,8 @@ namespace GoogleSheetsToUnity
                     string columnIndex = columns.secondaryKeyLink[columnId];
                     int rowIndex = rows.secondaryKeyLink[rowId];
 
+                    Debug.Log($"Accessing columnIndex: {columnIndex} - rowIndex: {rowIndex}");
+                    
                     return Cells[columnIndex + rowIndex];
             }
         }

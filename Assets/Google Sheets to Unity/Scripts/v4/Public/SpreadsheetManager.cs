@@ -76,9 +76,9 @@ namespace GoogleSheetsToUnity
             yield return www;
 
             ValueRange rawData = JSON.Load(www.text).Make<ValueRange>();
-            GSTU_SpreadsheetResponce responce = new GSTU_SpreadsheetResponce(rawData);
+            GSTU_SpreadsheetResponse response = new GSTU_SpreadsheetResponse(rawData);
 
-            GstuSpreadSheet spreadSheet = new GstuSpreadSheet(responce, titleColumn, titleRow);
+            GstuSpreadSheet spreadSheet = new GstuSpreadSheet(response, titleColumn, titleRow);
 
             if (callback != null)
             {
