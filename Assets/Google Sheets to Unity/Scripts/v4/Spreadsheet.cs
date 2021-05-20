@@ -434,7 +434,7 @@ namespace GoogleSheetsToUnity
                     
                     if (!Cells.ContainsKey(columnIndex + rowIndex))
                     {
-                        Cells.Add(columnIndex + rowIndex, new GSTU_Cell(""));
+                        Cells.Add(columnIndex + rowIndex, new GSTU_Cell("", columnIndex, rowIndex));
                     }
 
                     return Cells[columnIndex + rowIndex];
