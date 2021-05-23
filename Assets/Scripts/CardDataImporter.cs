@@ -42,6 +42,7 @@ public class CardDataImporter : OdinEditorWindow
             if(Enum.TryParse(ss[cardData.name, "Group"].value, out CardData.Group group))
             {
                 cardData.group = group;
+                Debug.Log($"Card {cardData.name}: Group found: {group}");
             }
 
             if(Enum.TryParse(ss[cardData.name, "Type"].value, out CardData.Type type))

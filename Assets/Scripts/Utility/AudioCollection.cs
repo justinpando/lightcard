@@ -4,7 +4,7 @@ using UnityEditor;
 
 namespace PVR.Utilities
 {
-    [CreateAssetMenu(menuName = "My Assets/AudioData")]
+    [CreateAssetMenu(menuName = "My Assets/AudioCollection")]
     public class AudioCollection : ScriptableObject
     {
         public float volume = 1f;

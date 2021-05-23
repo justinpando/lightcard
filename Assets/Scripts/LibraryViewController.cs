@@ -1,18 +1,21 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class LibraryViewController : MonoBehaviour
 {
     public Transform cardViewCollectionPanel;
-    private List<CardData> cardDataCollection;
+    private CardLibrary cardLibrary;
 
     public CardViewController cardViewPrefab;
     private List<CardViewController> cardViews = new List<CardViewController>();
+
+    public Scrollbar scrollBar;
     
-    public void Initialize(List<CardData> cardCollection, CardViewController cardViewPrefab)
+    public void Initialize(CardLibrary cardLibrary, CardViewController cardViewPrefab)
     {
-        cardDataCollection = cardCollection;
+        this.cardLibrary = cardLibrary;
         this.cardViewPrefab = cardViewPrefab;
 
         cardViews = GetComponentsInChildren<CardViewController>().ToList();
@@ -24,17 +27,19 @@ public class LibraryViewController : MonoBehaviour
         
         cardViews.Clear();
         
-        foreach (var card in cardCollection)
+        foreach (var card in cardLibrary.cards)
         {
             AddCardView(card);
         }
+
+        scrollBar.value = 1f;
     }
 
     private void AddCardView(CardData cardData)
     {
         CardViewController view = Instantiate(cardViewPrefab, cardViewCollectionPanel);
         
-        view.Initialize(cardData);
+        view.Initialize(cardData, cardLibrary.classes.Find(x => x.group == cardData.group));
         
         cardViews.Add(view);
     }

@@ -393,7 +393,7 @@ namespace GoogleSheetsToUnity
             {
                 string column = cell.Column();
                 int row = cell.Row();
-                Debug.Log($"Cell Column {cell.Column()} - Row {row}, Title Row: {titleRow}.");
+                //Debug.Log($"Cell Column {cell.Column()} - Row {row}, Title Row: {titleRow}.");
                 
                 if(Cells.ContainsKey(column + titleRow)) cell.columnId = Cells[column + titleRow].value;
                 if(Cells.ContainsKey(titleColumn + row)) cell.rowId = Cells[titleColumn + row].value;
@@ -430,7 +430,7 @@ namespace GoogleSheetsToUnity
                     string columnIndex = columns.secondaryKeyLink[columnId];
                     int rowIndex = rows.secondaryKeyLink[rowId];
 
-                    Debug.Log($"Accessing columnIndex: {columnIndex} - rowIndex: {rowIndex}");
+                    //Debug.Log($"Accessing columnIndex: {columnIndex} - rowIndex: {rowIndex}");
                     
                     if (!Cells.ContainsKey(columnIndex + rowIndex))
                     {

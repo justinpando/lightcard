@@ -13,23 +13,38 @@ public class CardViewController : MonoBehaviour
     public TMP_Text defenseText;
     public TMP_Text classText;
 
+    public Image bgImage;
+    public Image borderImage;
     public Image cardImage;
-    public Image classImage;
+    public Image[] classImages;
 
     public CardData cardData { get; private set; }
     
-    public void Initialize(CardData data)
+    public void Initialize(CardData cardData, CardClassData classData)
     {
-        cardData = data;
+        this.cardData = cardData;
         
-        nameText.text = data.name;
-        typeText.text = $"{data.group} {data.type}";
-        descriptionText.text = data.description;
-        attackText.text = $"{data.attack}";
-        defenseText.text = $"{data.defense}";
-        energyText.text = $"{data.cost}";
+        nameText.text = cardData.name;
+        typeText.text = $"{cardData.group} {cardData.type}";
+        descriptionText.text = cardData.description;
+        attackText.text = $"{cardData.attack}";
+        defenseText.text = $"{cardData.defense}";
+        energyText.text = $"{cardData.cost}";
         
-        classText.text = $"{data.group}";
+        classText.text = $"{cardData.group}";
+
+        attackText.transform.parent.gameObject.SetActive(cardData.type == CardData.Type.Unit);
+        defenseText.transform.parent.gameObject.SetActive(cardData.type != CardData.Type.Ability);
+
+        borderImage.color = classData.primaryColor;
+        bgImage.color = classData.secondaryColor;
+
+        classImages[1].color = classData.primaryColor;
+
+        foreach (var image in classImages)
+        {
+            image.sprite = classData.symbol;
+        }
     }
     
 }
