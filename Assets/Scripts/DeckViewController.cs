@@ -4,15 +4,10 @@ using UnityEngine;
 
 public class DeckViewController : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    public CardViewController cardViewPrefab;
+    
+    public void Initialize(CardViewController cardViewPrefab)
     {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        this.cardViewPrefab = cardViewPrefab;
     }
 }

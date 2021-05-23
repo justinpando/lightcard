@@ -1191,8 +1191,9 @@ MonoBehaviour:
   energyText: {fileID: 121131915708484552}
   attackText: {fileID: 373116390012087517}
   defenseText: {fileID: 816904626659100082}
-  classImage: {fileID: 7907052769874311539}
   classText: {fileID: 6766373030719293950}
+  cardImage: {fileID: 2763357434414995343}
+  classImage: {fileID: 7907052769874311539}
 --- !u!1 &5623435169064536951
 GameObject:
   m_ObjectHideFlags: 0

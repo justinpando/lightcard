@@ -15,9 +15,13 @@ public class CardViewController : MonoBehaviour
 
     public Image cardImage;
     public Image classImage;
+
+    public CardData cardData { get; private set; }
     
     public void Initialize(CardData data)
     {
+        cardData = data;
+        
         nameText.text = data.name;
         typeText.text = $"{data.group} {data.type}";
         descriptionText.text = data.description;
