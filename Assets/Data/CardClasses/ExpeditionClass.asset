@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: ExpeditionClass
   m_EditorClassIdentifier: 
   group: 5
-  primaryColor: {r: 1, g: 0.9872061, b: 0.581, a: 1}
-  secondaryColor: {r: 0.45400003, g: 0.44865885, b: 0.26349807, a: 0.9019608}
+  primaryColor: {r: 1, g: 0.7066557, b: 0.1740042, a: 1}
+  secondaryColor: {r: 0.525, g: 0.525, b: 0.4271739, a: 1}
   symbol: {fileID: 21300000, guid: ec15e3dd855fcec4b8d4c1be38a6c040, type: 3}

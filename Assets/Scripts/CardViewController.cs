@@ -19,6 +19,13 @@ public class CardViewController : MonoBehaviour
     public Image[] classImages;
 
     public CardData cardData { get; private set; }
+
+    public Transform unitBG;
+    public Transform abilityBG;
+    public Transform charmBG;
+
+    public Image[] primaryColorImages;
+    public Image[] secondaryColorImages;
     
     public void Initialize(CardData cardData, CardClassData classData)
     {
@@ -36,11 +43,28 @@ public class CardViewController : MonoBehaviour
         attackText.transform.parent.gameObject.SetActive(cardData.type == CardData.Type.Unit);
         defenseText.transform.parent.gameObject.SetActive(cardData.type != CardData.Type.Ability);
 
-        borderImage.color = classData.primaryColor;
-        bgImage.color = classData.secondaryColor;
+        unitBG.gameObject.SetActive(cardData.type == CardData.Type.Unit);
+        abilityBG.gameObject.SetActive(cardData.type == CardData.Type.Ability);
+        charmBG.gameObject.SetActive(cardData.type == CardData.Type.Charm);
+        
+        borderImage.color = classData.secondaryColor;
+        //bgImage.color = classData.primaryColor;
 
         classImages[1].color = classData.primaryColor;
 
+        foreach (var image in primaryColorImages)
+        {
+            //image.color = classData.primaryColor;
+            image.color = classData.secondaryColor;
+
+        }
+        
+        foreach (var image in secondaryColorImages)
+        {
+            image.color = classData.primaryColor;
+            //image.color = classData.secondaryColor;
+        }
+        
         foreach (var image in classImages)
         {
             image.sprite = classData.symbol;
