@@ -1,7 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 public class MainContext : MonoBehaviour
 {
@@ -11,6 +8,8 @@ public class MainContext : MonoBehaviour
     public OptionsViewController optionsView;
     
     public CardViewController cardViewPrefab;
+    public FilterViewController filterViewPrefab;
+    
     public CardLibrary library;
     
     // Start is called before the first frame update
@@ -22,7 +21,7 @@ public class MainContext : MonoBehaviour
     void Initialize()
     {
         deckView.Initialize(cardViewPrefab);
-        libraryView.Initialize(library, cardViewPrefab);
+        libraryView.Initialize(library, cardViewPrefab, filterViewPrefab);
         
         mainView.gameObject.SetActive(true);
         deckView.gameObject.SetActive(false);
