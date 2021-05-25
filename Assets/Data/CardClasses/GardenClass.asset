@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: GardenClass
   m_EditorClassIdentifier: 
   group: 0
-  primaryColor: {r: 0.9245283, g: 0.5378481, b: 0.45741862, a: 1}
+  primaryColor: {r: 0.827313, g: 1, b: 0.7683438, a: 1}
   secondaryColor: {r: 0.41460866, g: 0.59599996, b: 0.38869563, a: 1}
   symbol: {fileID: 21300000, guid: 912a2eb50cc36684286d0fd118e0cebb, type: 3}
