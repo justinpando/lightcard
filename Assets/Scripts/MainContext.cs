@@ -20,6 +20,8 @@ public class MainContext : MonoBehaviour
 
     void Initialize()
     {
+        library.Initialize();
+        
         deckView.Initialize(cardViewPrefab);
         libraryView.Initialize(library, cardViewPrefab, filterViewPrefab);
         

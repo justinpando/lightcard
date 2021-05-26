@@ -21,6 +21,11 @@ public class CanvasGroupFader : MonoBehaviour {
 
     private float alpha = 0f;
 
+    [Range(0f, 1f)]
+    public float minAlpha = 0f;
+    [Range(0f, 1f)]
+    public float maxAlpha = 1f;
+    
     public System.Action onFadeInComplete;
     public System.Action onFadeOutComplete;
     public List<Renderer> includedRenderers;
@@ -65,7 +70,7 @@ public class CanvasGroupFader : MonoBehaviour {
     }
 
     public void SetVisibility(bool value) {
-        float a = value ? 1f : 0f;
+        float a = value ? maxAlpha : minAlpha;
         canvasGroup.alpha = a;
         setIncludedRenderers(a);
         
@@ -78,6 +83,18 @@ public class CanvasGroupFader : MonoBehaviour {
         isVisible = value;
     }
 
+    public void FadeToVisibility(bool value)
+    {
+        if (isVisible)
+        {
+            FadeOut();
+        }
+        else
+        {
+            FadeIn();
+        }
+    }
+    
     IEnumerator FadeInSequence()
     {
         if(debugging) Debug.Log($"Fade in sequence starting: {gameObject.name}", this.gameObject);
@@ -91,24 +108,25 @@ public class CanvasGroupFader : MonoBehaviour {
 
         float timeElapsed = 0f;
 
-        alpha = canvasGroup.alpha;
-        float duration = fadeDuration * (1 - alpha);
+        float startAlpha = canvasGroup.alpha;
+        float distance = maxAlpha - startAlpha;
+        
+        float duration = fadeDuration * (distance);
 
-        float originalAlpha = canvasGroup.alpha;
+        alpha = startAlpha;
 
         while (timeElapsed < duration)
         {
             timeElapsed += Time.unscaledDeltaTime;
-            alpha = originalAlpha + (timeElapsed / duration * (1 - originalAlpha));
-
-            canvasGroup.alpha = alpha;
-
-            setIncludedRenderers(alpha);
+            
+            float i = Interpolate.Linear(startAlpha, distance, timeElapsed, duration);
+            canvasGroup.alpha = i;
+            setIncludedRenderers(i);
+            
             yield return null;
         }
 
         onFadeInComplete?.Invoke();
-
     }
 
     IEnumerator FadeOutSequence()
@@ -119,21 +137,20 @@ public class CanvasGroupFader : MonoBehaviour {
             canvasGroup.blocksRaycasts = false;
         }
 
+        float startAlpha = canvasGroup.alpha;
+
         float timeElapsed = 0f;
 
-        alpha = canvasGroup.alpha;
-        float duration = fadeDuration * alpha;
-
-        float originalAlpha = canvasGroup.alpha;
-
+        float distance = minAlpha - startAlpha;
+        float duration = fadeDuration * Mathf.Abs(distance);
+        
         while (timeElapsed < duration)
         {
             timeElapsed += Time.unscaledDeltaTime;
 
-            alpha = originalAlpha - (timeElapsed / duration) ;
-
-            canvasGroup.alpha = alpha;
-            setIncludedRenderers(alpha);
+            float i = Interpolate.Linear(startAlpha, distance, timeElapsed, duration);
+            canvasGroup.alpha = i;
+            setIncludedRenderers(i);
 
             yield return null;
         }

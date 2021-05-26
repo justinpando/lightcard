@@ -9,16 +9,19 @@ public class LibraryViewController : MonoBehaviour
     private CardLibrary cardLibrary;
 
     //Cards
-    public Transform cardViewCollectionPanel;
+    public GridLayoutGroup cardViewCollectionPanel;
     public CardViewController cardViewPrefab;
     private List<CardViewController> cardViews = new List<CardViewController>();
     public Scrollbar scrollBar;
     
     //Filters
-    public Transform filterPanel;
+    public Transform classFilterPanel;
+    public Transform typeFilterPanel;
     public FilterViewController filterViewPrefab;
     private List<FilterViewController> filterViews = new List<FilterViewController>();
-    
+
+    private List<CardFilter> activeFilters = new List<CardFilter>();
+
     public void Initialize(CardLibrary cardLibrary, CardViewController cardViewPrefab,
         FilterViewController filterViewPrefab)
     {
@@ -60,17 +63,99 @@ public class LibraryViewController : MonoBehaviour
             Destroy(filterViews[n].gameObject);
         }
 
+        //Set up class filters
         foreach (var classData in cardLibrary.classes)
         {
-            FilterViewController filter = Instantiate(filterViewPrefab, filterPanel);
+            //Create the filter view
+            FilterViewController filterView = Instantiate(filterViewPrefab, classFilterPanel);
             
-            filter.Initialize(classData.@group.ToString(), classData.primaryColor, classData.secondaryColor, classData.symbol, card => card.@group == classData.@group);
+            //Initialize with group data
+            filterView.Initialize(classData.@group.ToString(), classData.primaryColor, classData.secondaryColor, classData.symbol, new CardFilter("class", card => card.@group == classData.@group));
+
+            //Subscribe to toggle event 
+            filterView.toggle.onValueChanged.AddListener(isOn => FilterCards(filterView.filter, isOn));
         }
+        
+        //Set up type filters
+        foreach (var typeData in cardLibrary.types)
+        {
+            //Create the filter view
+            FilterViewController filterView = Instantiate(filterViewPrefab, typeFilterPanel);
+            
+            //Initialize with group data
+            filterView.Initialize(typeData.type.ToString(), typeData.baseColor, typeData.highlightColor, typeData.symbol, new CardFilter("type", card => card.@type == typeData.type));
+
+            //Subscribe to toggle event 
+            filterView.toggle.onValueChanged.AddListener(isOn => FilterCards(filterView.filter, isOn));
+        }
+    }
+
+    private void FilterCards(CardFilter interactedFilter, bool filterEnabled)
+    {
+        if(filterEnabled) activeFilters.Add(interactedFilter);
+        else activeFilters.Remove(interactedFilter);
+        
+        //build lists of filters, by category
+        Dictionary<string, List<CardFilter>> categoryFilters = new Dictionary<string, List<CardFilter>>();
+
+        foreach (var activeFilter in activeFilters)
+        {
+            if (!categoryFilters.ContainsKey(activeFilter.category))
+            {
+                categoryFilters.Add(activeFilter.category, new List<CardFilter>());
+            }
+            
+            categoryFilters[activeFilter.category].Add(activeFilter);
+        }
+        
+        //Make all cards visible if there are no active filters
+        if (activeFilters.Count == 0)
+        {
+            cardViews.ForEach(x => x.gameObject.SetActive(true));
+        }
+        else
+        {
+            //Otherwise, build a list of filtered cards.
+            List<CardViewController> filteredCards = new List<CardViewController>();
+
+            //For each card,
+            foreach (var cardView in cardViews)
+            {
+                //For each filter category, the card must be valid in at least one filter
+                foreach (var category in categoryFilters)
+                {
+                    foreach (var activeFilter in category.Value)
+                    {
+                        if (!activeFilter.isValid(cardView.cardData))
+                        {
+                            //Add it to the list of valid cards
+                            filteredCards.Add(cardView);
+                            break;
+                        }
+                    }
+                }
+            }
+            
+            //Hide all cards in the filtered card list
+            cardViews.ForEach(x => x.gameObject.SetActive(!filteredCards.Contains(x)));
+        }
+        
+        UpdateLayout();
+    }
+
+    private void UpdateLayout()
+    {
+        LayoutRebuilder.ForceRebuildLayoutImmediate(cardViewCollectionPanel.transform as RectTransform);
+        // cardViewCollectionPanel.enabled = false;
+        // cardViewCollectionPanel.enabled = true;
+        // cardViewCollectionPanel.CalculateLayoutInputVertical();
+        // cardViewCollectionPanel.SetLayoutVertical();
+        //Canvas.ForceUpdateCanvases();
     }
     
     private void AddCardView(CardData cardData)
     {
-        CardViewController view = Instantiate(cardViewPrefab, cardViewCollectionPanel);
+        CardViewController view = Instantiate(cardViewPrefab, cardViewCollectionPanel.transform);
         
         view.Initialize(cardData, cardLibrary.classes.Find(x => x.group == cardData.group));
         

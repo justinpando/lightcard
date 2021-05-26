@@ -11,10 +11,11 @@ public class FilterViewController : MonoBehaviour
 
     public TMP_Text label;
     
-    public delegate bool CardFilter(CardData card);
     public CardFilter filter;
+
+    public CanvasGroupFader fader;
     
-    public void Initialize(string label, Color primary, Color highlight, Sprite sprite, CardFilter filterAction)
+    public void Initialize(string label, Color primary, Color highlight, Sprite sprite, CardFilter filter)
     {
         categoryImage.sprite = sprite;
         categoryImage.color = primary;
@@ -24,8 +25,9 @@ public class FilterViewController : MonoBehaviour
 
         this.label.text = label;
         
-        filter = filterAction;
+        this.filter = filter;
+        
+        fader.SetVisibility(toggle.isOn);
     }
-    
     
 }
