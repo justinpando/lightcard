@@ -121,18 +121,26 @@ public class LibraryViewController : MonoBehaviour
             //For each card,
             foreach (var cardView in cardViews)
             {
-                //For each filter category, the card must be valid in at least one filter
+                //For each category,
                 foreach (var category in categoryFilters)
                 {
+                    if (filteredCards.Contains(cardView)) continue;
+                    
+                    //Check whether the card is valid
+                    bool isValid = false;
+                    
                     foreach (var activeFilter in category.Value)
                     {
-                        if (!activeFilter.isValid(cardView.cardData))
+                        //If the card is valid,
+                        if (activeFilter.isValid(cardView.cardData))
                         {
-                            //Add it to the list of valid cards
-                            filteredCards.Add(cardView);
+                            isValid = true;
                             break;
                         }
                     }
+                    
+                    //If the card is filtered, add it to the list of filtered cards
+                    if(!isValid) filteredCards.Add(cardView);
                 }
             }
             
