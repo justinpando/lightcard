@@ -71,8 +71,9 @@ public class LibraryViewController : MonoBehaviour
             
             //Initialize with group data
             filterView.Initialize(classData.@group.ToString(), classData.primaryColor, classData.secondaryColor, classData.symbol, new CardFilter("class", card => card.@group == classData.@group));
-
+            
             //Subscribe to toggle event 
+            filterView.toggle.isOn = false;
             filterView.toggle.onValueChanged.AddListener(isOn => FilterCards(filterView.filter, isOn));
         }
         
@@ -84,8 +85,9 @@ public class LibraryViewController : MonoBehaviour
             
             //Initialize with group data
             filterView.Initialize(typeData.type.ToString(), typeData.baseColor, typeData.highlightColor, typeData.symbol, new CardFilter("type", card => card.@type == typeData.type));
-
-            //Subscribe to toggle event 
+            
+            //Subscribe to toggle event
+            filterView.toggle.isOn = false;
             filterView.toggle.onValueChanged.AddListener(isOn => FilterCards(filterView.filter, isOn));
         }
     }
