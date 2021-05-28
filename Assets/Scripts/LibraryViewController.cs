@@ -59,12 +59,7 @@ public class LibraryViewController : MonoBehaviour
 
     private void HandleFiltersUpdated()
     {
-        var validCards = filters.GetValidCards(cardViews);
-        
-        //Only show cards in the valid card list
-        cardViews.ForEach(x => x.gameObject.SetActive(validCards.Contains(x)));
-        
-        LayoutRebuilder.ForceRebuildLayoutImmediate(cardViewCollectionPanel.transform as RectTransform);
+        filters.FilterCardViews(cardViews);
     }
     
 }

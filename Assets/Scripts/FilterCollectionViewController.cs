@@ -71,12 +71,14 @@ public class FilterCollectionViewController : MonoBehaviour
         OnFiltersUpdated?.Invoke();
     }
 
-    public void FilterCards(List<CardViewController> cardViews)
+    public void FilterCardViews(List<CardViewController> cardViews)
     {
         List<CardViewController> validCards = GetValidCards(cardViews);
         
         //Hide all cards in the filtered card list
         cardViews.ForEach(x => x.gameObject.SetActive(validCards.Contains(x)));
+        
+        LayoutRebuilder.ForceRebuildLayoutImmediate(cardViews[0].transform.parent as RectTransform);
     }
 
     public List<CardViewController> GetValidCards(List<CardViewController> cardViews)
