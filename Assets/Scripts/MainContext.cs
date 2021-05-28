@@ -9,6 +9,7 @@ public class MainContext : MonoBehaviour
     
     public CardViewController cardViewPrefab;
     public FilterViewController filterViewPrefab;
+    public FilterCollectionViewController filterCollectionPrefab;
     
     public CardLibrary library;
     
@@ -23,7 +24,11 @@ public class MainContext : MonoBehaviour
         library.Initialize();
         
         deckView.Initialize(cardViewPrefab);
-        libraryView.Initialize(library, cardViewPrefab, filterViewPrefab);
+
+        FilterCollectionViewController filters = Instantiate(filterCollectionPrefab, libraryView.transform);
+        filters.Initialize(library, filterViewPrefab);
+        
+        libraryView.Initialize(library, cardViewPrefab, filters);
         
         mainView.gameObject.SetActive(true);
         deckView.gameObject.SetActive(false);

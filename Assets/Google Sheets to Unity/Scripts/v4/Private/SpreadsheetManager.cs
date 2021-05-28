@@ -121,8 +121,7 @@ namespace GoogleSheetsToUnity
                 }
             }
         }
-
-
+        
         /// <summary>
         /// Updates just the cell pased in as the startCell value of the search parameters
         /// </summary>
