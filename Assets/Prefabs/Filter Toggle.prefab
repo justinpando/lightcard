@@ -318,7 +318,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   canvasGroup: {fileID: 3470139438172463857}
   fadeDuration: 0.5
-  visibleOnAwake: 1
+  visibleOnAwake: 0
   setsInteractability: 0
   minAlpha: 0.259
   maxAlpha: 1

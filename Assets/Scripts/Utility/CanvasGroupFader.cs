@@ -85,13 +85,13 @@ public class CanvasGroupFader : MonoBehaviour {
 
     public void FadeToVisibility(bool value)
     {
-        if (isVisible)
+        if (value)
         {
-            FadeOut();
+            FadeIn();
         }
         else
         {
-            FadeIn();
+            FadeOut();
         }
     }
     
