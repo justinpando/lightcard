@@ -80,13 +80,12 @@ public class FilterCollectionViewController : MonoBehaviour
         
         LayoutRebuilder.ForceRebuildLayoutImmediate(cardViews[0].transform.parent as RectTransform);
     }
-
-    public List<CardViewController> GetValidCards(List<CardViewController> cardViews)
+    
+    private List<CardViewController> GetValidCards(List<CardViewController> cardViews)
     {
         //build lists of filters, by category
         Dictionary<string, List<CardFilter>> categoryFilters = new Dictionary<string, List<CardFilter>>();
 
-        List<CardViewController> validCards = new List<CardViewController>(cardViews);
 
         foreach (var activeFilter in activeFilters)
         {
@@ -97,6 +96,7 @@ public class FilterCollectionViewController : MonoBehaviour
             
             categoryFilters[activeFilter.category].Add(activeFilter);
         }
+        List<CardViewController> validCards = new List<CardViewController>(cardViews);
         
         //Make all cards visible if there are no active filters
         if (activeFilters.Count == 0)
@@ -111,6 +111,7 @@ public class FilterCollectionViewController : MonoBehaviour
                 //For each category,
                 foreach (var category in categoryFilters)
                 {
+                    //If the card is already filtered, skip it
                     if (!validCards.Contains(cardView)) continue;
 
                     //Check whether the card is valid
