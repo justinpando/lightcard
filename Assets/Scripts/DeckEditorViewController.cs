@@ -39,11 +39,6 @@ public class DeckEditorViewController : MonoBehaviour
         deckEditorFader.FadeIn();
     }
 
-    private void CloseDeckEditor()
-    {
-        throw new System.NotImplementedException();
-    }
-
     private void InitializeDeckCollection()
     {
         deckViews = GetComponentsInChildren<DeckItemView>().ToList();
@@ -78,14 +73,8 @@ public class DeckEditorViewController : MonoBehaviour
         
         deckViews.Add(deckView);
 
-        deckView.OnSelectButtonPressed += () => { OpenDeckEditorView(deckView); };
+        deckView.OnSelectButtonPressed += () => { OpenDeckEditor(deckView); };
         deckView.OnDeleteButtonPressed += () => { RemoveDeckView(deckView); };
-    }
-
-    private void OpenDeckEditorView(DeckItemView deckView)
-    {
-        deckCollectionFader.FadeOut();
-        deckEditorFader.FadeIn();
     }
 
     private void RemoveDeckView(DeckItemView deckView)
@@ -95,5 +84,19 @@ public class DeckEditorViewController : MonoBehaviour
         
         LayoutRebuilder.ForceRebuildLayoutImmediate(deckCollectionPanel as RectTransform);
     }
-
+    
+    private void OpenDeckEditor(DeckItemView deckView)
+    {
+        selectedDeckView = deckView;
+        
+        deckCollectionFader.FadeOut();
+        deckEditorFader.FadeIn();
+    }
+    
+    private void CloseDeckEditor()
+    {
+        deckCollectionFader.FadeIn();
+        deckEditorFader.FadeOut();
+    }
+    
 }
