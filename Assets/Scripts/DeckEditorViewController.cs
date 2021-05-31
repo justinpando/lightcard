@@ -46,6 +46,9 @@ public class DeckEditorViewController : MonoBehaviour
 
     public void Enter(DeckData selectedDeck)
     {
+        gameObject.SetActive(true);
+        viewFader.FadeIn();
+        
         this.selectedDeck = selectedDeck;
         workingDeck = selectedDeck;
         
@@ -53,6 +56,7 @@ public class DeckEditorViewController : MonoBehaviour
         
         InitializeCollectionCards();
         InitializeDeckCards();
+        
     }
 
     private void InitializeCollectionCards()

@@ -1309,6 +1309,8 @@ MonoBehaviour:
   fadeDuration: 0.5
   visibleOnAwake: 0
   setsInteractability: 0
+  minAlpha: 0
+  maxAlpha: 1
   includedRenderers: []
   isVisible: 1
 --- !u!114 &4316913688665961118
@@ -1641,6 +1643,7 @@ MonoBehaviour:
   - {fileID: 1333889424308096752}
   - {fileID: 8260992726865327646}
   - {fileID: 2474842392797965458}
+  selectButton: {fileID: 6409159318242349191}
 --- !u!114 &6409159318242349191
 MonoBehaviour:
   m_ObjectHideFlags: 0
