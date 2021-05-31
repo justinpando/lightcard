@@ -21,9 +21,7 @@ public class LibraryViewController : MonoBehaviour
         this.cardLibrary = cardLibrary;
         this.cardViewPrefab = cardViewPrefab;
         this.filters = filters;
-        
-        cardViews = GetComponentsInChildren<CardViewController>().ToList();
-        
+
         InitializeCards();
         
         filters.OnFiltersUpdated += HandleFiltersUpdated;
@@ -31,6 +29,8 @@ public class LibraryViewController : MonoBehaviour
 
     private void InitializeCards()
     {
+        cardViews = GetComponentsInChildren<CardViewController>().ToList();
+        
         for (int n = 0; n < cardViews.Count; n++)
         {
             Destroy(cardViews[n].gameObject);

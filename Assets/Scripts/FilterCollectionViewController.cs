@@ -81,11 +81,11 @@ public class FilterCollectionViewController : MonoBehaviour
         LayoutRebuilder.ForceRebuildLayoutImmediate(cardViews[0].transform.parent as RectTransform);
     }
     
+    //TODO: optimize
     private List<CardViewController> GetValidCards(List<CardViewController> cardViews)
     {
         //build lists of filters, by category
         Dictionary<string, List<CardFilter>> categoryFilters = new Dictionary<string, List<CardFilter>>();
-
 
         foreach (var activeFilter in activeFilters)
         {

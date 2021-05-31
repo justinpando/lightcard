@@ -2,16 +2,18 @@ using UnityEngine;
 
 public class MainContext : MonoBehaviour
 {
+    public CardLibrary library;
+    
     public MainViewController mainView;
-    public DeckViewController deckView;
+    public DeckEditorViewController deckView;
     public LibraryViewController libraryView;
     public OptionsViewController optionsView;
     
     public CardViewController cardViewPrefab;
     public FilterViewController filterViewPrefab;
     public FilterCollectionViewController filterCollectionPrefab;
-    
-    public CardLibrary library;
+
+    public DeckItemView deckItemViewPrefab;
     
     // Start is called before the first frame update
     void Start()
@@ -23,11 +25,10 @@ public class MainContext : MonoBehaviour
     {
         library.Initialize();
         
-        deckView.Initialize(cardViewPrefab);
-
         FilterCollectionViewController filters = Instantiate(filterCollectionPrefab, libraryView.transform);
         filters.Initialize(library, filterViewPrefab);
         
+        deckView.Initialize(library, cardViewPrefab, deckItemViewPrefab, filters);
         libraryView.Initialize(library, cardViewPrefab, filters);
         
         mainView.gameObject.SetActive(true);

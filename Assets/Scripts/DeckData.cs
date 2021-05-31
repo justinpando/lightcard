@@ -12,31 +12,33 @@ public class DeckData : ScriptableObject
     private int cardLimit = 40;
     private int individualCardLimit = 3;
 
-    public System.Action<string> OnActionComplete;
+    public System.Action<string> OnMessage;
+    public System.Action OnCardsUpdated;
     
     public void AddCard(CardData card)
     {
         if (cards.Count == cardLimit)
         {
-            OnActionComplete?.Invoke($"Already have {cardLimit} cards in deck.");
+            OnMessage?.Invoke($"Already have {cardLimit} cards in deck.");
             return;
         }
 
         if (GetCardCount(card) > individualCardLimit)
         {
-            OnActionComplete?.Invoke($"Already have {individualCardLimit} copies of {card.name}.");
+            OnMessage?.Invoke($"Already have {individualCardLimit} copies of {card.name}.");
             return;
         }
         
         cards.Add(card);
         
-        OnActionComplete?.Invoke($"Added {card.name}.");
+        OnMessage?.Invoke($"Added {card.name}.");
+        OnCardsUpdated?.Invoke();
     }
 
     public void RemoveCard(CardData card)
     {
         cards.Remove(card);
-        OnActionComplete?.Invoke($"Removed {card.name}.");
+        OnMessage?.Invoke($"Removed {card.name}.");
     }
 
     public int GetCardCount(CardData card)
