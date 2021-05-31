@@ -2682,7 +2682,7 @@ MonoBehaviour:
   cardViewPrefab: {fileID: 0}
   deckCollectionPanel: {fileID: 962599675}
   deckViews: []
-  AddNewDeckButton: {fileID: 1440733952}
+  addNewDeckButton: {fileID: 0}
   deckCollectionFader: {fileID: 962599679}
 --- !u!1 &552162216
 GameObject:
@@ -8766,6 +8766,9 @@ MonoBehaviour:
   selectedDeck: {fileID: 0}
   deckHeaderView: {fileID: 2035112368}
   deckCardsPanel: {fileID: 521705506}
+  deckScrollBar: {fileID: 201278544}
+  libraryScrollBar: {fileID: 771951461}
+  cardViewCollectionPanel: {fileID: 111065660}
   filters: {fileID: 1767110977}
   saveButton: {fileID: 843912359}
   closeButton: {fileID: 655530621}
@@ -10676,35 +10679,35 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2055485883463682620, guid: 79ee0c332557550439ead10d52a06f10, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2055485883463682620, guid: 79ee0c332557550439ead10d52a06f10, type: 3}
       propertyPath: m_AnchorMin.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2055485883463682620, guid: 79ee0c332557550439ead10d52a06f10, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 20
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2055485883463682620, guid: 79ee0c332557550439ead10d52a06f10, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -20
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3581138426263041244, guid: 79ee0c332557550439ead10d52a06f10, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3581138426263041244, guid: 79ee0c332557550439ead10d52a06f10, type: 3}
       propertyPath: m_AnchorMin.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3581138426263041244, guid: 79ee0c332557550439ead10d52a06f10, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 200
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3581138426263041244, guid: 79ee0c332557550439ead10d52a06f10, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -20
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6457046776160510892, guid: 79ee0c332557550439ead10d52a06f10, type: 3}
       propertyPath: m_Pivot.x
@@ -10796,19 +10799,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8430429492665104270, guid: 79ee0c332557550439ead10d52a06f10, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8430429492665104270, guid: 79ee0c332557550439ead10d52a06f10, type: 3}
       propertyPath: m_AnchorMin.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8430429492665104270, guid: 79ee0c332557550439ead10d52a06f10, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 110
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8430429492665104270, guid: 79ee0c332557550439ead10d52a06f10, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -20
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 79ee0c332557550439ead10d52a06f10, type: 3}

@@ -14,14 +14,14 @@ public class DeckEditorViewController : MonoBehaviour
     public RectTransform deckCardsPanel;
     private CardViewController deckCardViewPrefab;
     private List<CardViewController> deckCardViews = new List<CardViewController>();
-    private Scrollbar deckScrollBar;
+    public Scrollbar deckScrollBar;
     
     //Collection View
     private CardLibrary library;
     private CardViewController cardViewPrefab;
-    private List<CardViewController> libraryCardViews = new List<CardViewController>();
-    private Scrollbar libraryScrollBar;
-    private RectTransform cardViewCollectionPanel;
+    private List<CardViewController> cardViews = new List<CardViewController>();
+    public Scrollbar libraryScrollBar;
+    public RectTransform cardViewCollectionPanel;
     
     public FilterCollectionViewController filters;
 
@@ -51,29 +51,46 @@ public class DeckEditorViewController : MonoBehaviour
         
         deckHeaderView.Initialize(library, selectedDeck);
         
-        InitializeCards();
+        InitializeCollectionCards();
+        InitializeDeckCards();
     }
 
-    private void InitializeCards()
+    private void InitializeCollectionCards()
     {
-        libraryCardViews = GetComponentsInChildren<CardViewController>().ToList();
+        cardViews = cardViewCollectionPanel.GetComponentsInChildren<CardViewController>().ToList();
         
-        for (int n = 0; n < libraryCardViews.Count; n++)
+        for (int n = 0; n < cardViews.Count; n++)
         {
-            Destroy(libraryCardViews[n].gameObject);
+            Destroy(cardViews[n].gameObject);
         }
         
-        libraryCardViews.Clear();
-        
-        library.cards = library.cards.OrderBy(x => x.@group).ToList();
-        
+        cardViews.Clear();
+
         foreach (var card in library.cards)
         {
             AddCardView(card);
         }
+        
+        libraryScrollBar.value = 1f;
+    }
+    
+    private void InitializeDeckCards()
+    {
+        deckCardViews = deckCardsPanel.GetComponentsInChildren<CardViewController>().ToList();
+        
+        for (int n = 0; n < deckCardViews.Count; n++)
+        {
+            Destroy(cardViews[n].gameObject);
+        }
+        
+        deckCardViews.Clear();
+
+        foreach (var card in workingDeck.cards)
+        {
+            AddDeckCardView(card);
+        }
 
         deckScrollBar.value = 1f;
-        libraryScrollBar.value = 1f;
     }
 
     private void AddCardView(CardData cardData)
@@ -84,18 +101,23 @@ public class DeckEditorViewController : MonoBehaviour
         
         view.selectButton.onClick.AddListener(() => AddCardToDeck(view.cardData));
         
-        libraryCardViews.Add(view);
+        cardViews.Add(view);
     }
 
     private void HandleFiltersUpdated()
     {
-        filters.FilterCardViews(libraryCardViews);
+        filters.FilterCardViews(cardViews);
     }
-    
-    public void AddCardToDeck(CardData cardData)
+
+    private void AddCardToDeck(CardData cardData)
     {
         workingDeck.AddCard(cardData);
         
+        AddDeckCardView(cardData);
+    }
+    
+    private void AddDeckCardView(CardData cardData)
+    {
         CardViewController view = Instantiate(deckCardViewPrefab, deckCardsPanel);
         
         view.Initialize(cardData, library.classes.Find(x => x.group == cardData.group));
@@ -105,7 +127,7 @@ public class DeckEditorViewController : MonoBehaviour
         deckCardViews.Add(view);
     }
 
-    public void RemoveCardFromDeck(CardViewController cardView)
+    private void RemoveCardFromDeck(CardViewController cardView)
     {
         workingDeck.RemoveCard(cardView.cardData);
         

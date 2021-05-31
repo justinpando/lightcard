@@ -12,7 +12,7 @@ public class DeckCollectionViewController : MonoBehaviour
     public Transform deckCollectionPanel;
     public List<DeckItemView> deckViews;
 
-    public Button AddNewDeckButton;
+    public Button addNewDeckButton;
     
     public CanvasGroupFader deckCollectionFader;
 
@@ -26,13 +26,12 @@ public class DeckCollectionViewController : MonoBehaviour
         this.cardViewPrefab = cardViewPrefab;
         this.deckEditor = deckEditor;
         
-        AddNewDeckButton.onClick.AddListener(CreateDeck);
+        addNewDeckButton.onClick.AddListener(CreateDeck);
         
         InitializeDeckCollection();
 
         deckEditor.OnClose += ShowView;
-
-        //deckCollectionFader.FadeIn();
+        
     }
 
     private void InitializeDeckCollection()
@@ -72,7 +71,7 @@ public class DeckCollectionViewController : MonoBehaviour
         deckView.OnSelectButtonPressed += () => { OpenDeckEditor(deckView); };
         deckView.OnDeleteButtonPressed += () => { RemoveDeckView(deckView); };
         
-        AddNewDeckButton.transform.SetAsLastSibling();
+        addNewDeckButton.transform.SetAsLastSibling();
         
         LayoutRebuilder.ForceRebuildLayoutImmediate(deckCollectionPanel as RectTransform);
     }

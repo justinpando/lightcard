@@ -14,5 +14,7 @@ public class CardLibrary : ScriptableObject
     {
         cards = cards.Where(x => x != null).ToList();
         decks = decks.Where(x => x != null).ToList();
+        
+        cards = cards.OrderBy(x => x.@group).ThenBy(x => x.cost).ToList();
     }
 }
