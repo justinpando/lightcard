@@ -1,106 +1,57 @@
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class DeckEditorViewController : MonoBehaviour
 {
-    public CardViewController cardViewPrefab;
+    public DeckItemView deckView;
+    public RectTransform deckCardsPanel;
+
+    public FilterCollectionViewController filters;
+
+    public CardViewController deckCardView;
     private CardLibrary library;
-    private DeckItemView deckItemViewPrefab;
-    private FilterCollectionViewController filterCollectionViewController;
 
-    public Transform deckCollectionPanel;
-    public List<DeckItemView> deckViews;
-
-    public Button AddNewDeckButton;
-    public Button CloseEditorButton;
+    public Button closeEditorButton;
     
-    public CanvasGroupFader deckCollectionFader;
-    public CanvasGroupFader deckEditorFader;
+    public CanvasGroupFader viewFader;
 
-    private DeckItemView selectedDeckView;
-    
-    public void Initialize(CardLibrary library, CardViewController cardViewPrefab, DeckItemView deckItemViewPrefab,
-        FilterCollectionViewController filterCollectionViewController)
+    public System.Action OnClose;
+    private CardViewController cardViewPrefab;
+    private CardViewController deckCardViewPrefab;
+
+    public void Initialize(CardLibrary library, FilterCollectionViewController filterCollectionViewController, 
+        CardViewController cardViewPrefab, CardViewController deckCardViewPrefab)
     {
-        this.filterCollectionViewController = filterCollectionViewController;
-        this.deckItemViewPrefab = deckItemViewPrefab;
-        this.library = library;
+        this.deckCardViewPrefab = deckCardViewPrefab;
         this.cardViewPrefab = cardViewPrefab;
+        this.library = library;
         
-        AddNewDeckButton.onClick.AddListener(CreateDeck);
-        CloseEditorButton.onClick.AddListener(CloseDeckEditor);
-        
-        InitializeDeckCollection();
-        
-        deckCollectionFader.FadeOut();
-        deckEditorFader.FadeIn();
-    }
-
-    private void InitializeDeckCollection()
-    {
-        deckViews = GetComponentsInChildren<DeckItemView>().ToList();
-        
-        for (int n = 0; n < deckViews.Count; n++)
-        {
-            Destroy(deckViews[n].gameObject);
-        }
-        
-        deckViews.Clear();
-        
-        foreach (var deck in library.decks)
-        {
-            AddDeckView(deck);
-        }
-    }
-    
-    private void CreateDeck()
-    {
-        var deck = ScriptableObject.CreateInstance<DeckData>();
-        
-        library.decks.Add(deck);
-        
-        AddDeckView(deck);
-    }
-
-    private void AddDeckView(DeckData deck)
-    {
-        var deckView = Instantiate(deckItemViewPrefab, deckCollectionPanel);
-        
-        deckView.Initialize(library, deck);
-        
-        deckViews.Add(deckView);
-
-        deckView.OnSelectButtonPressed += () => { OpenDeckEditor(deckView); };
-        deckView.OnDeleteButtonPressed += () => { RemoveDeckView(deckView); };
-        
-        AddNewDeckButton.transform.SetAsLastSibling();
-        
-        LayoutRebuilder.ForceRebuildLayoutImmediate(deckCollectionPanel as RectTransform);
-    }
-
-    private void RemoveDeckView(DeckItemView deckView)
-    {
-        deckViews.Remove(deckView);
-        Destroy(deckView.gameObject);
-        
-        LayoutRebuilder.ForceRebuildLayoutImmediate(deckCollectionPanel as RectTransform);
-    }
-    
-    private void OpenDeckEditor(DeckItemView deckView)
-    {
-        selectedDeckView = deckView;
-        
-        deckCollectionFader.FadeOut();
-        deckEditorFader.FadeIn();
+        closeEditorButton.onClick.AddListener(CloseDeckEditor);
+        filters = filterCollectionViewController;
     }
     
     private void CloseDeckEditor()
     {
-        deckCollectionFader.FadeIn();
-        deckEditorFader.FadeOut();
+        //viewFader.FadeOut();
+        gameObject.SetActive(false);
+        
+        OnClose?.Invoke();
+    }
+
+    public void Enter(DeckData selectedDeck)
+    {
+        deckView.Initialize(library, selectedDeck);
+    }
+
+    public void AddCard(CardViewController cardView)
+    {
+        
+    }
+
+    public void RemoveCard(CardViewController cardView)
+    {
+        
     }
     
 }
