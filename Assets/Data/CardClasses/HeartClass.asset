@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: HeartClass
   m_EditorClassIdentifier: 
   group: 2
-  primaryColor: {r: 0.9056604, g: 0.9056604, b: 0.9056604, a: 1}
-  secondaryColor: {r: 0.8018868, g: 0.3895959, b: 0.34378582, a: 1}
+  primaryColor: {r: 0.8000001, g: 0.38823533, b: 0.34509805, a: 1}
+  highlightColor: {r: 0.90588236, g: 0.90588236, b: 0.90588236, a: 1}
+  bgColor: {r: 0.8000001, g: 0.38823533, b: 0.34509805, a: 0.2}
   symbol: {fileID: 21300000, guid: 94a5e00d8cc59484eb7398a680580d77, type: 3}

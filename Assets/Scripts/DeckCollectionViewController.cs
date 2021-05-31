@@ -47,6 +47,7 @@ public class DeckCollectionViewController : MonoBehaviour
         
         foreach (var deck in library.decks)
         {
+            deck.cards.OrderBy(x => x.cost);
             AddDeckView(deck);
         }
     }

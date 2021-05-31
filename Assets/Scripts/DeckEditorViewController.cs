@@ -34,14 +34,13 @@ public class DeckEditorViewController : MonoBehaviour
     {
         this.library = library;
         this.filters.Initialize(library, filters.filterViewPrefab);
+        this.filters.OnFiltersUpdated += HandleFiltersUpdated;
         
         this.cardViewPrefab = cardViewPrefab;
         this.deckCardViewPrefab = deckCardViewPrefab;
         
         saveButton.onClick.AddListener(SaveDeck);
         closeButton.onClick.AddListener(CloseDeckEditor);
-        
-        filters.OnFiltersUpdated += HandleFiltersUpdated;
     }
 
     public void Enter(DeckData selectedDeck)
@@ -51,12 +50,12 @@ public class DeckEditorViewController : MonoBehaviour
         
         this.selectedDeck = selectedDeck;
         workingDeck = selectedDeck;
+        workingDeck.cards.OrderBy(x => x.cost);
         
         deckHeaderView.Initialize(library, selectedDeck);
         
         InitializeCollectionCards();
         InitializeDeckCards();
-        
     }
 
     private void InitializeCollectionCards()
@@ -84,7 +83,7 @@ public class DeckEditorViewController : MonoBehaviour
         
         for (int n = 0; n < deckCardViews.Count; n++)
         {
-            Destroy(cardViews[n].gameObject);
+            Destroy(deckCardViews[n].gameObject);
         }
         
         deckCardViews.Clear();
@@ -104,7 +103,7 @@ public class DeckEditorViewController : MonoBehaviour
         view.Initialize(cardData, library.classes.Find(x => x.group == cardData.group));
         
         view.selectButton.onClick.AddListener(() => AddCardToDeck(view.cardData));
-        
+
         cardViews.Add(view);
     }
 
@@ -116,6 +115,8 @@ public class DeckEditorViewController : MonoBehaviour
     private void AddCardToDeck(CardData cardData)
     {
         workingDeck.AddCard(cardData);
+        
+        workingDeck.cards.OrderBy(x => x.cost);
         
         AddDeckCardView(cardData);
     }
@@ -129,6 +130,11 @@ public class DeckEditorViewController : MonoBehaviour
         view.selectButton.onClick.AddListener(() => RemoveCardFromDeck(view));
         
         deckCardViews.Add(view);
+
+        //foreach (var cardView in deckCardViews)
+        //{
+            view.transform.SetSiblingIndex(workingDeck.cards.IndexOf(cardData));
+        //}
     }
 
     private void RemoveCardFromDeck(CardViewController cardView)

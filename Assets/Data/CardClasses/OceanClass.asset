@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: OceanClass
   m_EditorClassIdentifier: 
   group: 3
-  primaryColor: {r: 0.78431374, g: 0.57966304, b: 0.44313726, a: 1}
-  secondaryColor: {r: 0.34117648, g: 0.19215687, b: 0.32124895, a: 1}
+  primaryColor: {r: 0.34117648, g: 0.19215688, b: 0.32156864, a: 1}
+  highlightColor: {r: 0.78431374, g: 0.5803922, b: 0.44313726, a: 1}
+  bgColor: {r: 0.34117648, g: 0.19215688, b: 0.32156864, a: 0.2}
   symbol: {fileID: 21300000, guid: c15494a639ed2fb4b86e47aca72eddc7, type: 3}

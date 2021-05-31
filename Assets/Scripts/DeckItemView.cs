@@ -8,7 +8,7 @@ using UnityEngine.UI;
 public class DeckItemView : MonoBehaviour
 {
     public Image[] classImage;
-
+    public Image highlightImage;
     public Image bgImage;
     
     public TMP_Text nameText;
@@ -66,9 +66,8 @@ public class DeckItemView : MonoBehaviour
         abilityText.text = abilityCount.ToString();
         charmText.text = charmCount.ToString();
 
-        var cardsOrderedByGroup = deck.cards.OrderByDescending(x => x.@group);
-        
-        CardData.Group deckGroup = cardsOrderedByGroup.First().@group;
+        var cardsOrderedByGroup = deck.cards.OrderBy(x => x.group);
+        CardData.Group deckGroup = cardsOrderedByGroup.First().group;
 
         var classData = library.classes.Find(x => x.group == deckGroup);
         
@@ -78,9 +77,11 @@ public class DeckItemView : MonoBehaviour
             image.sprite = classData.symbol;
         }
 
-        classImage[0].color = classData.secondaryColor;
+        classImage[0].color = classData.highlightColor;
         classImage[1].color = classData.primaryColor;
 
-        bgImage.color = classData.secondaryColor;
+        highlightImage.color = classData.highlightColor;
+
+        bgImage.color = classData.bgColor;
     }
 }

@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 [CreateAssetMenu(menuName = "My Assets/DeckData")]
@@ -13,8 +15,18 @@ public class DeckData : ScriptableObject
     private int cardLimit = 40;
     private int individualCardLimit = 3;
 
-    public System.Action<string> OnMessage;
-    public System.Action OnCardsUpdated;
+    public Action<string> OnMessage;
+    public Action OnCardsUpdated;
+
+    private Dictionary<CardData.Group, int> cardClassCount = new Dictionary<CardData.Group, int>();
+
+    public void Initialize()
+    {
+        foreach( CardData.Group group in Enum.GetValues(typeof(CardData.Group)) )
+        {
+            cardClassCount.Add(group, 0);
+        }
+    }
     
     public void AddCard(CardData card)
     {
@@ -32,6 +44,8 @@ public class DeckData : ScriptableObject
         
         cards.Add(card);
         
+        cards = new List<CardData>(cards.OrderBy(x => x.cost));
+        
         OnMessage?.Invoke($"Added {card.name}.");
         OnCardsUpdated?.Invoke();
     }
@@ -40,8 +54,14 @@ public class DeckData : ScriptableObject
     {
         cards.Remove(card);
         OnMessage?.Invoke($"Removed {card.name}.");
+        OnCardsUpdated?.Invoke();
     }
 
+    private void UpdateGroup()
+    {
+        
+    }
+    
     public int GetCardCount(CardData card)
     {
         int count = 0;

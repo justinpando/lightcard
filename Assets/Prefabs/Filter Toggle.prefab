@@ -54,8 +54,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 12079a492b1d038419fdb9b6519d7277, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  categoryImage: {fileID: 526044333454336203}
-  highlightImage: {fileID: 2849915313701451080}
+  categoryImage: {fileID: 2849915313701451080}
+  highlightImage: {fileID: 526044333454336203}
   toggle: {fileID: 1450756710698500566}
   label: {fileID: 7447761213751170867}
   fader: {fileID: 6215885099858970573}

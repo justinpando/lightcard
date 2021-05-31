@@ -49,15 +49,15 @@ public class CardViewController : MonoBehaviour
         abilityBG.gameObject.SetActive(cardData.type == CardData.Type.Ability);
         charmBG.gameObject.SetActive(cardData.type == CardData.Type.Charm);
         
-        borderImage.color = classData.secondaryColor;
-        //bgImage.color = classData.primaryColor;
+        borderImage.color = classData.highlightColor;
+        bgImage.color = classData.bgColor;
 
         classImages[1].color = classData.primaryColor;
 
         foreach (var image in primaryColorImages)
         {
             //image.color = classData.primaryColor;
-            image.color = classData.secondaryColor;
+            image.color = classData.highlightColor;
 
         }
         

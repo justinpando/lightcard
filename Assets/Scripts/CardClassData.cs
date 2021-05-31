@@ -6,6 +6,7 @@ public class CardClassData : ScriptableObject
 {
     public CardData.Group group;
     [FormerlySerializedAs("color")] public Color primaryColor;
-    public Color secondaryColor;
+    [FormerlySerializedAs("secondaryColor")] public Color highlightColor;
+    public Color bgColor;
     public Sprite symbol;
 }
