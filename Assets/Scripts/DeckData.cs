@@ -7,7 +7,8 @@ public class DeckData : ScriptableObject
     public string name = "New Deck";
     public CardData.Group group;
     public string description;
-    public List<CardData> cards { get; private set; }
+
+    public List<CardData> cards;
 
     private int cardLimit = 40;
     private int individualCardLimit = 3;

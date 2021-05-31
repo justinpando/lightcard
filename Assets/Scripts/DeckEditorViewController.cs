@@ -75,6 +75,10 @@ public class DeckEditorViewController : MonoBehaviour
 
         deckView.OnSelectButtonPressed += () => { OpenDeckEditor(deckView); };
         deckView.OnDeleteButtonPressed += () => { RemoveDeckView(deckView); };
+        
+        AddNewDeckButton.transform.SetAsLastSibling();
+        
+        LayoutRebuilder.ForceRebuildLayoutImmediate(deckCollectionPanel as RectTransform);
     }
 
     private void RemoveDeckView(DeckItemView deckView)

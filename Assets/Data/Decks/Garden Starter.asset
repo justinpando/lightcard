@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a97772792bd08b5448154c3ef2e1f50c, type: 3}
+  m_Name: Garden Starter
+  m_EditorClassIdentifier: 
+  name: Garden Starter
+  group: 0
+  description: An example Garden deck.
+  cards:
+  - {fileID: 11400000, guid: aaeb8c5340a963e458c2f879ad7aa93c, type: 2}
+  - {fileID: 11400000, guid: aaeb8c5340a963e458c2f879ad7aa93c, type: 2}
+  - {fileID: 11400000, guid: c896bdef663c0664dac4e49c2b88cd69, type: 2}
+  - {fileID: 11400000, guid: 98c98c3a6baeaf448a30408c01026192, type: 2}
+  - {fileID: 11400000, guid: 33fd890cef8318940a5826bf0f658157, type: 2}
+  - {fileID: 11400000, guid: a31062fd95edf134abbcee4e7412dcd7, type: 2}
+  - {fileID: 11400000, guid: 9e5b6147dab5aaf418f377518349f911, type: 2}
+  - {fileID: 11400000, guid: b582831bb8bda77448167a6fe6d479d7, type: 2}
+  - {fileID: 11400000, guid: a39758fab78951a49be5f4bd0c281345, type: 2}
+  - {fileID: 11400000, guid: 028dda0da5dfe474e92c4219979e2bbb, type: 2}
+  - {fileID: 11400000, guid: 028dda0da5dfe474e92c4219979e2bbb, type: 2}

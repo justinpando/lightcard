@@ -42,6 +42,22 @@ public class DeckItemView : MonoBehaviour
     {
         nameText.text = deck.name;
 
+        if (deck.cards.Count == 0)
+        {
+            foreach (Image image in classImage)
+            {
+                image.gameObject.SetActive(false);
+            }
+
+            unitText.text = "0";
+            abilityText.text = "0";
+            charmText.text = "0";
+            
+            bgImage.color = Color.grey;
+            
+            return;
+        }
+        
         int unitCount = deck.cards.Count(x => x.type == CardData.Type.Unit);
         int abilityCount = deck.cards.Count(x => x.type == CardData.Type.Ability);
         int charmCount = deck.cards.Count(x => x.type == CardData.Type.Charm);
@@ -58,6 +74,7 @@ public class DeckItemView : MonoBehaviour
         
         foreach (Image image in classImage)
         {
+            if(!image.gameObject.activeSelf) image.gameObject.SetActive(true);
             image.sprite = classData.symbol;
         }
 

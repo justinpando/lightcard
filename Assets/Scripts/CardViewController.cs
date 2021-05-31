@@ -69,6 +69,8 @@ public class CardViewController : MonoBehaviour
         {
             image.sprite = classData.symbol;
         }
+
+        cardImage.sprite = cardData.sprite;
     }
     
 }
