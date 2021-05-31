@@ -26,7 +26,9 @@ public class CardViewController : MonoBehaviour
 
     public Image[] primaryColorImages;
     public Image[] secondaryColorImages;
-    
+
+    public Button selectButton;
+
     public void Initialize(CardData cardData, CardClassData classData)
     {
         this.cardData = cardData;

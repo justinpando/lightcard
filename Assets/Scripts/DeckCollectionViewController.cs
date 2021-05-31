@@ -18,17 +18,20 @@ public class DeckCollectionViewController : MonoBehaviour
 
     private DeckEditorViewController deckEditor;
     
-    public void Initialize(CardLibrary library, CardViewController cardViewPrefab, DeckItemView deckItemViewPrefab)
+    public void Initialize(CardLibrary library, CardViewController cardViewPrefab, DeckItemView deckItemViewPrefab, DeckEditorViewController deckEditor)
     {
         
         this.deckItemViewPrefab = deckItemViewPrefab;
         this.library = library;
         this.cardViewPrefab = cardViewPrefab;
+        this.deckEditor = deckEditor;
         
         AddNewDeckButton.onClick.AddListener(CreateDeck);
         
         InitializeDeckCollection();
-        
+
+        deckEditor.OnClose += ShowView;
+
         //deckCollectionFader.FadeIn();
     }
 
@@ -80,6 +83,11 @@ public class DeckCollectionViewController : MonoBehaviour
         Destroy(deckView.gameObject);
         
         LayoutRebuilder.ForceRebuildLayoutImmediate(deckCollectionPanel as RectTransform);
+    }
+    
+    private void ShowView()
+    {
+        deckCollectionFader.FadeIn();
     }
     
     private void OpenDeckEditor(DeckItemView deckView)
