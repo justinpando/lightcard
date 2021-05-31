@@ -57,17 +57,16 @@ public class DeckItemView : MonoBehaviour
             
             return;
         }
-        
-        int unitCount = deck.cards.Count(x => x.type == CardData.Type.Unit);
-        int abilityCount = deck.cards.Count(x => x.type == CardData.Type.Ability);
-        int charmCount = deck.cards.Count(x => x.type == CardData.Type.Charm);
+
+        int unitCount = deck.cardTypeCount[CardData.Type.Unit];
+        int abilityCount = deck.cardTypeCount[CardData.Type.Ability];
+        int charmCount = deck.cardTypeCount[CardData.Type.Charm];
 
         unitText.text = unitCount.ToString();
         abilityText.text = abilityCount.ToString();
         charmText.text = charmCount.ToString();
 
-        var cardsOrderedByGroup = deck.cards.OrderBy(x => x.group);
-        CardData.Group deckGroup = cardsOrderedByGroup.First().group;
+        CardData.Group deckGroup = deck.cardClassCount.OrderByDescending(pair => pair.Value).First().Key;
 
         var classData = library.classes.Find(x => x.group == deckGroup);
         

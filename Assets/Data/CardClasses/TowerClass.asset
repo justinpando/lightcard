@@ -14,6 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   group: 4
   primaryColor: {r: 0.24705882, g: 0.24705882, b: 0.24705882, a: 1}
-  highlightColor: {r: 0.9450981, g: 0.9450981, b: 0.9450981, a: 1}
+  highlightColor: {r: 0.802, g: 0.802, b: 0.802, a: 1}
   bgColor: {r: 0.24705884, g: 0.24705884, b: 0.24705884, a: 0.2}
   symbol: {fileID: 21300000, guid: 1be67a5962a501142a1865d751f008d5, type: 3}

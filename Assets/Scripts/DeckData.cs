@@ -18,7 +18,8 @@ public class DeckData : ScriptableObject
     public Action<string> OnMessage;
     public Action OnCardsUpdated;
 
-    private Dictionary<CardData.Group, int> cardClassCount = new Dictionary<CardData.Group, int>();
+    public Dictionary<CardData.Group, int> cardClassCount = new Dictionary<CardData.Group, int>();
+    public Dictionary<CardData.Type, int> cardTypeCount = new Dictionary<CardData.Type, int>();
 
     public void Initialize()
     {
@@ -26,35 +27,59 @@ public class DeckData : ScriptableObject
         {
             cardClassCount.Add(group, 0);
         }
+        foreach( CardData.Type type in Enum.GetValues(typeof(CardData.Type)) )
+        {
+            cardTypeCount.Add(type, 0);
+        }
+
+        foreach (var card in cards)
+        {
+            cardClassCount[card.@group]++;
+            cardTypeCount[card.type]++;
+        }
     }
     
-    public void AddCard(CardData card)
+    public bool AddCard(CardData card)
     {
         if (cards.Count == cardLimit)
         {
             OnMessage?.Invoke($"Already have {cardLimit} cards in deck.");
-            return;
+            return false;
         }
 
         if (GetCardCount(card) > individualCardLimit)
         {
             OnMessage?.Invoke($"Already have {individualCardLimit} copies of {card.name}.");
-            return;
+            return false;
         }
         
         cards.Add(card);
-        
         cards = new List<CardData>(cards.OrderBy(x => x.cost));
+        
+        cardClassCount[card.group]++;
+        cardTypeCount[card.type]++;
         
         OnMessage?.Invoke($"Added {card.name}.");
         OnCardsUpdated?.Invoke();
+        
+        Debug.Log($"Added card: {card.name}");
+
+        return true;
     }
 
     public void RemoveCard(CardData card)
     {
+        if (!cards.Contains(card)) return;
+        
         cards.Remove(card);
+        
+        cardClassCount[card.@group]--;
+        cardTypeCount[card.type]--;
+        
         OnMessage?.Invoke($"Removed {card.name}.");
         OnCardsUpdated?.Invoke();
+        
+        Debug.Log($"Removed card: {card.name}");
     }
 
     private void UpdateGroup()

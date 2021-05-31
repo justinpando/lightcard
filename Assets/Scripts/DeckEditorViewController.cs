@@ -50,7 +50,7 @@ public class DeckEditorViewController : MonoBehaviour
         
         this.selectedDeck = selectedDeck;
         workingDeck = selectedDeck;
-        workingDeck.cards.OrderBy(x => x.cost);
+        workingDeck.Initialize();
         
         deckHeaderView.Initialize(library, selectedDeck);
         
@@ -114,11 +114,7 @@ public class DeckEditorViewController : MonoBehaviour
 
     private void AddCardToDeck(CardData cardData)
     {
-        workingDeck.AddCard(cardData);
-        
-        workingDeck.cards.OrderBy(x => x.cost);
-        
-        AddDeckCardView(cardData);
+        if(workingDeck.AddCard(cardData)) AddDeckCardView(cardData);
     }
     
     private void AddDeckCardView(CardData cardData)
@@ -130,11 +126,9 @@ public class DeckEditorViewController : MonoBehaviour
         view.selectButton.onClick.AddListener(() => RemoveCardFromDeck(view));
         
         deckCardViews.Add(view);
-
-        //foreach (var cardView in deckCardViews)
-        //{
-            view.transform.SetSiblingIndex(workingDeck.cards.IndexOf(cardData));
-        //}
+        
+        view.transform.SetSiblingIndex(workingDeck.cards.IndexOf(cardData));
+        
     }
 
     private void RemoveCardFromDeck(CardViewController cardView)
