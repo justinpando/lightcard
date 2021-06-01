@@ -648,7 +648,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.2}
+  m_Color: {r: 1, g: 1, b: 1, a: 0.4}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -1703,6 +1703,10 @@ MonoBehaviour:
   - {fileID: 8235698764895448874}
   - {fileID: 6215461966045425828}
   - {fileID: 7561709027810689489}
+  infoIcons:
+  - {fileID: 6287762898320370808}
+  - {fileID: 5945203498203100710}
+  - {fileID: 8785393411425470042}
   highlightImage: {fileID: 8527904103643120897}
   bgImage: {fileID: 5370581765508600912}
   bgGradient: {fileID: 2304931151309205647}

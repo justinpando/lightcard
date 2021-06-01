@@ -1,10 +1,7 @@
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using Sirenix.Utilities;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 using UnityEngine.UI.Extensions;
 
@@ -12,6 +9,8 @@ public class DeckItemView : MonoBehaviour
 {
     public Image[] singleClassIcon;
     public Image[] dualClassIcons;
+    public Image[] infoIcons;
+    
     public Image highlightImage;
     public Image bgImage;
     public Gradient2 bgGradient;
@@ -86,6 +85,9 @@ public class DeckItemView : MonoBehaviour
         var archetypeData1 = library.classes.Find(x => x.archetype == archetype1.Key);
         
         bgGradient.enabled = false;
+        highlightImage.color = archetypeData1.highlightColor;
+        
+        infoIcons.ForEach(x => x.color = archetypeData1.highlightColor);
         
         //If there's only one archetype, 
         if (archetype2.Value == 0)
@@ -101,9 +103,7 @@ public class DeckItemView : MonoBehaviour
 
             singleClassIcon[0].color = archetypeData1.highlightColor;
             singleClassIcon[1].color = archetypeData1.primaryColor;
-            
-            highlightImage.color = archetypeData1.highlightColor;
-            
+
             bgGradient.EffectGradient.SetKeys(
                 new GradientColorKey[]
                 {
