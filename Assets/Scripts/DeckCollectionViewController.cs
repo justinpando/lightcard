@@ -54,14 +54,15 @@ public class DeckCollectionViewController : MonoBehaviour
     
     private void CreateDeck()
     {
-        var deck = ScriptableObject.CreateInstance<DeckData>();
+        var deck = ScriptableObject.CreateInstance<Deck>();
+        deck.Initialize();
         
         library.decks.Add(deck);
         
         AddDeckView(deck);
     }
 
-    private void AddDeckView(DeckData deck)
+    private void AddDeckView(Deck deck)
     {
         var deckView = Instantiate(deckItemViewPrefab, deckCollectionPanel);
         

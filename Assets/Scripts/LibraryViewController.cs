@@ -38,7 +38,7 @@ public class LibraryViewController : MonoBehaviour
         
         cardViews.Clear();
         
-        cardLibrary.cards = cardLibrary.cards.OrderBy(x => x.@group).ToList();
+        cardLibrary.cards = cardLibrary.cards.OrderBy(x => x.archetype).ToList();
         
         foreach (var card in cardLibrary.cards)
         {
@@ -48,11 +48,11 @@ public class LibraryViewController : MonoBehaviour
         scrollBar.value = 1f;
     }
 
-    private void AddCardView(CardData cardData)
+    private void AddCardView(Card card)
     {
         CardViewController view = Instantiate(cardViewPrefab, cardViewCollectionPanel.transform);
         
-        view.Initialize(cardData, cardLibrary.classes.Find(x => x.group == cardData.group));
+        view.Initialize(card, cardLibrary.classes.Find(x => x.archetype == card.archetype));
         
         cardViews.Add(view);
     }

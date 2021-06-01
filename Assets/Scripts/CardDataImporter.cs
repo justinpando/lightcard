@@ -36,52 +36,52 @@ public class CardDataImporter : OdinEditorWindow
         {
             if(cells[n].value == "" || cells[n].value == "Name") continue;
             
-            CardData cardData = CreateInstance<CardData>();
-            cardData.name = cells[n].value;
+            Card card = CreateInstance<Card>();
+            card.name = cells[n].value;
 
-            if(Enum.TryParse(ss[cardData.name, "Group"].value, out CardData.Group group))
+            if(Enum.TryParse(ss[card.name, "Group"].value, out Card.Archetype group))
             {
-                cardData.group = group;
-                Debug.Log($"Card {cardData.name}: Group found: {group}");
+                card.archetype = group;
+                Debug.Log($"Card {card.name}: Group found: {group}");
             }
 
-            if(Enum.TryParse(ss[cardData.name, "Type"].value, out CardData.Type type))
+            if(Enum.TryParse(ss[card.name, "Type"].value, out Card.Type type))
             {
-                cardData.type = type;
+                card.type = type;
             }
 
-            if(int.TryParse(ss[cardData.name, "Cost"].value, out int cost))
+            if(int.TryParse(ss[card.name, "Cost"].value, out int cost))
             {
-                cardData.cost = cost;
+                card.cost = cost;
             }
 
-            if(int.TryParse(ss[cardData.name, "Atk"].value, out int atk))
+            if(int.TryParse(ss[card.name, "Atk"].value, out int atk))
             {
-                cardData.attack = atk;
+                card.power = atk;
             }
             
-            if(int.TryParse(ss[cardData.name, "Def"].value, out int def))
+            if(int.TryParse(ss[card.name, "Def"].value, out int def))
             {
-                cardData.defense = def;
+                card.life = def;
             }
 
             try
             {
-                cardData.description = ss[cardData.name, "Description"].value;
+                card.description = ss[card.name, "Description"].value;
             }
             catch
             {
-                cardData.description = "";
+                card.description = "";
             }
 
-            Debug.Log($"Created card {n}: {cardData.name}");
-            importedCards.Add(cardData);
+            Debug.Log($"Created card {n}: {card.name}");
+            importedCards.Add(card);
             
-            AssetDatabase.CreateAsset(cardData, "Assets/Data/Cards/" + cardData.name + ".asset");
+            AssetDatabase.CreateAsset(card, "Assets/Data/Cards/" + card.name + ".asset");
         }
         
         Debug.Log($"Imported {importedCards.Count} cards.");
     }
     
-    public List<CardData> importedCards;
+    public List<Card> importedCards;
 }

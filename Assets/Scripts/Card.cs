@@ -1,9 +1,9 @@
 using UnityEngine;
 
-public class CardData : ScriptableObject
+public class Card : ScriptableObject
 {
-    public enum Group {Garden, Atelier, Heart, Ocean, Tower, Expedition}
-    public Group group;
+    public enum Archetype {Garden, Atelier, Heart, Ocean, Tower, Expedition}
+    public Archetype archetype;
 
     public enum Type { Unit, Charm, Ability }
     public Type type;
@@ -14,8 +14,8 @@ public class CardData : ScriptableObject
     
     public int cost;
     
-    public int attack;
-    public int defense;
+    public int power;
+    public int life;
     
     public string description;
 }

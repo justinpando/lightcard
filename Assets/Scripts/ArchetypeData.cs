@@ -1,10 +1,10 @@
 using UnityEngine;
 using UnityEngine.Serialization;
 
-[CreateAssetMenu(menuName = "My Assets/CardClassData")]
-public class CardClassData : ScriptableObject
+[CreateAssetMenu(menuName = "My Assets/ArchetypeData")]
+public class ArchetypeData : ScriptableObject
 {
-    public CardData.Group group;
+    [FormerlySerializedAs("group")] public Card.Archetype archetype;
     [FormerlySerializedAs("color")] public Color primaryColor;
     [FormerlySerializedAs("secondaryColor")] public Color highlightColor;
     public Color bgColor;

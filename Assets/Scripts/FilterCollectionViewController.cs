@@ -41,7 +41,7 @@ public class FilterCollectionViewController : MonoBehaviour
             FilterViewController filterView = Instantiate(filterViewPrefab, classFilterPanel);
             
             //Initialize with group data
-            filterView.Initialize(classData.@group.ToString(), classData.primaryColor, classData.highlightColor, classData.symbol, new CardFilter("class", card => card.@group == classData.@group));
+            filterView.Initialize(classData.archetype.ToString(), classData.primaryColor, classData.highlightColor, classData.symbol, new CardFilter("class", card => card.archetype == classData.archetype));
             
             //Subscribe to toggle event 
             filterView.toggle.isOn = false;
@@ -120,7 +120,7 @@ public class FilterCollectionViewController : MonoBehaviour
                     foreach (var activeFilter in category.Value)
                     {
                         //If the card is valid,
-                        if (activeFilter.isValid(cardView.cardData))
+                        if (activeFilter.isValid(cardView.Card))
                         {
                             isValid = true;
                             break;

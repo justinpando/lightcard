@@ -6,8 +6,8 @@ using UnityEngine.UI;
 public class DeckEditorViewController : MonoBehaviour
 {
     public CanvasGroupFader viewFader;
-    public DeckData selectedDeck;
-    private DeckData workingDeck;
+    public Deck selectedDeck;
+    private Deck workingDeck;
     
     //Deck View
     public DeckItemView deckHeaderView;
@@ -39,20 +39,21 @@ public class DeckEditorViewController : MonoBehaviour
         this.cardViewPrefab = cardViewPrefab;
         this.deckCardViewPrefab = deckCardViewPrefab;
         
-        saveButton.onClick.AddListener(SaveDeck);
+        saveButton.onClick.AddListener(SaveChanges);
         closeButton.onClick.AddListener(CloseDeckEditor);
     }
 
-    public void Enter(DeckData selectedDeck)
+    public void Enter(Deck selectedDeck)
     {
         gameObject.SetActive(true);
         viewFader.FadeIn();
         
         this.selectedDeck = selectedDeck;
-        workingDeck = selectedDeck;
+        
+        workingDeck = Instantiate(selectedDeck);
         workingDeck.Initialize();
         
-        deckHeaderView.Initialize(library, selectedDeck);
+        deckHeaderView.Initialize(library, workingDeck);
         
         InitializeCollectionCards();
         InitializeDeckCards();
@@ -96,13 +97,13 @@ public class DeckEditorViewController : MonoBehaviour
         deckScrollBar.value = 1f;
     }
 
-    private void AddCardView(CardData cardData)
+    private void AddCardView(Card card)
     {
         CardViewController view = Instantiate(cardViewPrefab, cardViewCollectionPanel);
         
-        view.Initialize(cardData, library.classes.Find(x => x.group == cardData.group));
+        view.Initialize(card, library.classes.Find(x => x.archetype == card.archetype));
         
-        view.selectButton.onClick.AddListener(() => AddCardToDeck(view.cardData));
+        view.selectButton.onClick.AddListener(() => AddCardToDeck(view.Card));
 
         cardViews.Add(view);
     }
@@ -112,37 +113,37 @@ public class DeckEditorViewController : MonoBehaviour
         filters.FilterCardViews(cardViews);
     }
 
-    private void AddCardToDeck(CardData cardData)
+    private void AddCardToDeck(Card card)
     {
-        if(workingDeck.AddCard(cardData)) AddDeckCardView(cardData);
+        if(workingDeck.AddCard(card)) AddDeckCardView(card);
     }
     
-    private void AddDeckCardView(CardData cardData)
+    private void AddDeckCardView(Card card)
     {
         CardViewController view = Instantiate(deckCardViewPrefab, deckCardsPanel);
         
-        view.Initialize(cardData, library.classes.Find(x => x.group == cardData.group));
+        view.Initialize(card, library.classes.Find(x => x.archetype == card.archetype));
         
         view.selectButton.onClick.AddListener(() => RemoveCardFromDeck(view));
         
         deckCardViews.Add(view);
         
-        view.transform.SetSiblingIndex(workingDeck.cards.IndexOf(cardData));
+        view.transform.SetSiblingIndex(workingDeck.cards.IndexOf(card));
         
     }
 
     private void RemoveCardFromDeck(CardViewController cardView)
     {
-        workingDeck.RemoveCard(cardView.cardData);
+        workingDeck.RemoveCard(cardView.Card);
         
         Destroy(cardView.gameObject);
         
         deckCardViews.Remove(cardView);
     }
     
-    private void SaveDeck()
+    private void SaveChanges()
     {
-        selectedDeck = workingDeck;
+        selectedDeck.SetCardList(workingDeck.cards);
     }
     
     private void CloseDeckEditor()

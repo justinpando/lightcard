@@ -18,7 +18,7 @@ public class CardViewController : MonoBehaviour
     public Image cardImage;
     public Image[] classImages;
 
-    public CardData cardData { get; private set; }
+    public Card Card { get; private set; }
 
     public Transform unitBG;
     public Transform abilityBG;
@@ -29,25 +29,25 @@ public class CardViewController : MonoBehaviour
 
     public Button selectButton;
 
-    public void Initialize(CardData cardData, CardClassData classData)
+    public void Initialize(Card card, ArchetypeData classData)
     {
-        this.cardData = cardData;
+        this.Card = card;
         
-        nameText.text = cardData.name;
-        typeText.text = $"{cardData.group} {cardData.type}";
-        descriptionText.text = cardData.description;
-        attackText.text = $"{cardData.attack}";
-        defenseText.text = $"{cardData.defense}";
-        energyText.text = $"{cardData.cost}";
+        nameText.text = card.name;
+        typeText.text = $"{card.archetype} {card.type}";
+        descriptionText.text = card.description;
+        attackText.text = $"{card.power}";
+        defenseText.text = $"{card.life}";
+        energyText.text = $"{card.cost}";
         
-        classText.text = $"{cardData.group}";
+        classText.text = $"{card.archetype}";
 
-        attackText.transform.parent.gameObject.SetActive(cardData.type == CardData.Type.Unit);
-        defenseText.transform.parent.gameObject.SetActive(cardData.type != CardData.Type.Ability);
+        attackText.transform.parent.gameObject.SetActive(card.type == Card.Type.Unit);
+        defenseText.transform.parent.gameObject.SetActive(card.type != Card.Type.Ability);
 
-        unitBG.gameObject.SetActive(cardData.type == CardData.Type.Unit);
-        abilityBG.gameObject.SetActive(cardData.type == CardData.Type.Ability);
-        charmBG.gameObject.SetActive(cardData.type == CardData.Type.Charm);
+        unitBG.gameObject.SetActive(card.type == Card.Type.Unit);
+        abilityBG.gameObject.SetActive(card.type == Card.Type.Ability);
+        charmBG.gameObject.SetActive(card.type == Card.Type.Charm);
         
         borderImage.color = classData.highlightColor;
         bgImage.color = classData.bgColor;
@@ -72,7 +72,7 @@ public class CardViewController : MonoBehaviour
             image.sprite = classData.symbol;
         }
 
-        cardImage.sprite = cardData.sprite;
+        cardImage.sprite = card.sprite;
     }
     
 }
