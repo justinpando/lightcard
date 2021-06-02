@@ -39,10 +39,10 @@ public class CardDataImporter : OdinEditorWindow
             Card card = CreateInstance<Card>();
             card.name = cells[n].value;
 
-            if(Enum.TryParse(ss[card.name, "Group"].value, out Card.Archetype group))
+            if(Enum.TryParse(ss[card.name, "Group"].value, out Card.Archetype archetype))
             {
-                card.archetype = group;
-                Debug.Log($"Card {card.name}: Group found: {group}");
+                card.archetype = archetype;
+                Debug.Log($"Card {card.name}: Group found: {archetype}");
             }
 
             if(Enum.TryParse(ss[card.name, "Type"].value, out Card.Type type))

@@ -12,10 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 157475c9d69ad9844ac0355862f6cf76, type: 3}
   m_Name: Mourner's Altar
   m_EditorClassIdentifier: 
-  group: 4
+  archetype: 4
   type: 1
+  sprite: {fileID: 0}
   name: Mourner's Altar
   cost: 1
-  attack: 0
-  defense: 3
+  power: 0
+  life: 3
   description: Each time a friendly unit is defeated, gain 1 life.

@@ -12,10 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 157475c9d69ad9844ac0355862f6cf76, type: 3}
   m_Name: Quick Sketch
   m_EditorClassIdentifier: 
-  group: 1
+  archetype: 1
   type: 2
+  sprite: {fileID: 0}
   name: Quick Sketch
   cost: 1
-  attack: 0
-  defense: 0
+  power: 0
+  life: 0
   description: Draw a card. If it's a Unit that costs 2 or less, summon it.

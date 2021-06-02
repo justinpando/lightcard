@@ -12,11 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 157475c9d69ad9844ac0355862f6cf76, type: 3}
   m_Name: Font of Sorrows
   m_EditorClassIdentifier: 
-  group: 4
+  archetype: 4
   type: 1
-  sprite: {fileID: 21300070, guid: 7ab74e659e1f0a34d9cfec21c478fc12, type: 3}
+  sprite: {fileID: 0}
   name: Font of Sorrows
   cost: 2
-  attack: 0
-  defense: 0
+  power: 0
+  life: 0
   description: Gain 1 life when one of your nearby units is destroyed.

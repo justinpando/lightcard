@@ -12,10 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 157475c9d69ad9844ac0355862f6cf76, type: 3}
   m_Name: Font
   m_EditorClassIdentifier: 
-  group: 3
+  archetype: 3
   type: 0
+  sprite: {fileID: 0}
   name: Font
   cost: 3
-  attack: 0
-  defense: 6
+  power: 0
+  life: 6
   description: Create a Flicker on a random space when damaged.

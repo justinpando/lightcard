@@ -12,10 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 157475c9d69ad9844ac0355862f6cf76, type: 3}
   m_Name: Dancer
   m_EditorClassIdentifier: 
-  group: 0
+  archetype: 0
   type: 0
+  sprite: {fileID: 0}
   name: Dancer
   cost: 3
-  attack: 2
-  defense: 3
+  power: 2
+  life: 3
   description: 'Agile. Shift: Gain Evade 1 until start of next turn.'

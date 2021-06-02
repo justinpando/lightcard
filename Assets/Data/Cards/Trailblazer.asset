@@ -12,10 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 157475c9d69ad9844ac0355862f6cf76, type: 3}
   m_Name: Trailblazer
   m_EditorClassIdentifier: 
-  group: 5
+  archetype: 5
   type: 0
+  sprite: {fileID: 0}
   name: Trailblazer
   cost: 2
-  attack: 2
-  defense: 1
-  description: Summon cost behind this unit is reduced by 1.
+  power: 2
+  life: 1
+  description: Auto-Advance. Summon cost behind this unit is reduced by 1.

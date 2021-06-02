@@ -12,11 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 157475c9d69ad9844ac0355862f6cf76, type: 3}
   m_Name: Living Torrent
   m_EditorClassIdentifier: 
-  group: 4
+  archetype: 3
   type: 0
+  sprite: {fileID: 0}
   name: Living Torrent
   cost: 4
-  attack: 0
-  defense: 9
+  power: 0
+  life: 9
   description: Flood a space in front of this each turn. For each flooded space,
     deal 1 damage to a random enemy on a Flooded space each turn.

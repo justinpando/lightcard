@@ -12,11 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 157475c9d69ad9844ac0355862f6cf76, type: 3}
   m_Name: Message in a Bottle
   m_EditorClassIdentifier: 
-  group: 3
+  archetype: 3
   type: 1
+  sprite: {fileID: 0}
   name: Message in a Bottle
   cost: 1
-  attack: 0
-  defense: 2
+  power: 0
+  life: 2
   description: Whenever one of your units is destroyed, gain a charge. Every 3 charges,
     draw a card.

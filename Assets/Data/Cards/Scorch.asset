@@ -12,11 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 157475c9d69ad9844ac0355862f6cf76, type: 3}
   m_Name: Scorch
   m_EditorClassIdentifier: 
-  group: 2
+  archetype: 2
   type: 2
+  sprite: {fileID: 0}
   name: Scorch
   cost: 2
-  attack: 0
-  defense: 0
+  power: 0
+  life: 0
   description: Deal 2 damage to target space. If it had a Space Effect, space becomes
     Scorched.

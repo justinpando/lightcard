@@ -12,11 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 157475c9d69ad9844ac0355862f6cf76, type: 3}
   m_Name: Constant Gardener
   m_EditorClassIdentifier: 
-  group: 0
+  archetype: 0
   type: 0
+  sprite: {fileID: 0}
   name: Constant Gardener
   cost: 2
-  attack: 2
-  defense: 3
+  power: 2
+  life: 3
   description: Has +1/0 if on a Brambled space. Has Pierce if target is on a Brambled
     space.

@@ -12,10 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 157475c9d69ad9844ac0355862f6cf76, type: 3}
   m_Name: Scholar
   m_EditorClassIdentifier: 
-  group: 1
+  archetype: 1
   type: 0
+  sprite: {fileID: 0}
   name: Scholar
   cost: 1
-  attack: 1
-  defense: 2
+  power: 1
+  life: 2
   description: The first time you use an Ability each turn, it costs 1 less.

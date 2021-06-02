@@ -10,13 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 157475c9d69ad9844ac0355862f6cf76, type: 3}
-  m_Name: Splash of Primer
+  m_Name: Amalgam
   m_EditorClassIdentifier: 
-  archetype: 1
-  type: 2
+  archetype: 3
+  type: 0
   sprite: {fileID: 0}
-  name: Splash of Primer
-  cost: 1
-  power: 0
-  life: 0
-  description: Target lane becomes Primed.
+  name: Amalgam
+  cost: 5
+  power: 3
+  life: 3
+  description: 'Call: Destroy all adjacent units. Gain +1/+1 and a random Keyword
+    ability for each unit destroyed.'

@@ -12,11 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 157475c9d69ad9844ac0355862f6cf76, type: 3}
   m_Name: Lightning Rod
   m_EditorClassIdentifier: 
-  group: 1
+  archetype: 1
   type: 1
+  sprite: {fileID: 0}
   name: Lightning Rod
   cost: 1
-  attack: 0
-  defense: 3
+  power: 0
+  life: 3
   description: Whenever your opponent plays an Ability, deal 1 damage to the enemy
     lane.

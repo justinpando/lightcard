@@ -49,9 +49,11 @@ public class DeckEditorViewController : MonoBehaviour
         viewFader.FadeIn();
         
         this.selectedDeck = selectedDeck;
+
+        workingDeck = selectedDeck.Clone();
         
-        workingDeck = Instantiate(selectedDeck);
-        workingDeck.Initialize();
+        // workingDeck = Instantiate(selectedDeck);
+        // workingDeck.Initialize();
         
         deckHeaderView.Initialize(library, workingDeck);
         

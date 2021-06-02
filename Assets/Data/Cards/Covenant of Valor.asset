@@ -12,11 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 157475c9d69ad9844ac0355862f6cf76, type: 3}
   m_Name: Covenant of Valor
   m_EditorClassIdentifier: 
-  group: 5
+  archetype: 5
   type: 1
+  sprite: {fileID: 0}
   name: Covenant of Valor
   cost: 1
-  attack: 0
-  defense: 3
+  power: 0
+  life: 3
   description: When one of your units destroys an enemy unit, restore its Defense
     and give it +1/0.

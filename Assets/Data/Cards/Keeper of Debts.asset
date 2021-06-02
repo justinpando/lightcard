@@ -12,10 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 157475c9d69ad9844ac0355862f6cf76, type: 3}
   m_Name: Keeper of Debts
   m_EditorClassIdentifier: 
-  group: 4
+  archetype: 4
   type: 0
+  sprite: {fileID: 0}
   name: Keeper of Debts
   cost: 2
-  attack: 1
-  defense: 3
+  power: 1
+  life: 3
   description: Gains +1/+1 when you discard a card.

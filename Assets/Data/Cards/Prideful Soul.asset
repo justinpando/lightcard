@@ -12,11 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 157475c9d69ad9844ac0355862f6cf76, type: 3}
   m_Name: Prideful Soul
   m_EditorClassIdentifier: 
-  group: 4
+  archetype: 4
   type: 0
+  sprite: {fileID: 0}
   name: Prideful Soul
   cost: 3
-  attack: 4
-  defense: 1
+  power: 4
+  life: 1
   description: Rush. Transforms into a Guilt-Wracked Soul when it defeats another
     Unit.
