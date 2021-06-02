@@ -1,14 +1,15 @@
 using System.Collections.Generic;
-using UnityEngine;
+using System.Linq;
 
 [System.Serializable]
 public class SaveData
 {
-    [SerializeField]
-    public List<Deck> decks;
+    public List<DeckSaveData> decks;
 
     public SaveData(CardLibrary library)
     {
-        decks = library.decks;
+        var deckList = library.Decks.ConvertAll(x => x.SaveData).ToList();
+        
+        decks = deckList;
     }
 }

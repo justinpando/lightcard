@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using GoogleSheetsToUnity;
 using Sirenix.OdinInspector;
 using Sirenix.OdinInspector.Editor;
@@ -31,6 +32,8 @@ public class CardDataImporter : OdinEditorWindow
         List<GSTU_Cell> cells = ss.columns["Name"];
 
         Debug.Log($"Cell count: {cells.Count}");
+
+        var newCollection = CreateInstance<CardCollection>();
         
         for (int n = 0; n < cells.Count; n++)
         {
@@ -42,7 +45,7 @@ public class CardDataImporter : OdinEditorWindow
             if(Enum.TryParse(ss[card.name, "Group"].value, out Card.Archetype archetype))
             {
                 card.archetype = archetype;
-                Debug.Log($"Card {card.name}: Group found: {archetype}");
+                //Debug.Log($"Card {card.name}: Group found: {archetype}");
             }
 
             if(Enum.TryParse(ss[card.name, "Type"].value, out Card.Type type))
@@ -78,7 +81,14 @@ public class CardDataImporter : OdinEditorWindow
             importedCards.Add(card);
             
             AssetDatabase.CreateAsset(card, "Assets/Data/Cards/" + card.name + ".asset");
+            
+            newCollection.cards.Add(card);
         }
+
+        string date = DateTime.Today.ToString("yyyy-MM-dd_HH-mm-ss");
+        string collectionName = $"CardCollection_{date}";
+        
+        AssetDatabase.CreateAsset(newCollection, "Assets/Data/CardCollections/" + collectionName + ".asset");
         
         Debug.Log($"Imported {importedCards.Count} cards.");
     }

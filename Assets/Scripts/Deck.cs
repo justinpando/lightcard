@@ -7,9 +7,21 @@ using UnityEngine;
 public class Deck 
 {
     public string name = "New Deck";
-    public Card.Archetype archetype;
     public string description;
 
+    public DeckSaveData SaveData
+    {
+        get
+        {
+            var cardNames = new List<string>();
+
+            cards.ForEach(x => cardNames.Add(x.name));
+
+            return new DeckSaveData(name, description, cardNames);
+        }
+    }
+
+    [SerializeField]
     public List<Card> cards = new List<Card>();
 
     private int cardLimit = 40;
@@ -21,10 +33,26 @@ public class Deck
     public readonly Dictionary<Card.Archetype, int> cardArchetypeCount = new Dictionary<Card.Archetype, int>();
     public readonly Dictionary<Card.Type, int> cardTypeCount = new Dictionary<Card.Type, int>();
 
-    public List<KeyValuePair<Card.Archetype, int>> archetypesByCount;
+    public List<KeyValuePair<Card.Archetype, int>> archetypeValues;
 
     [NonSerialized]
     private bool initialized;
+
+    public Deck()
+    {
+        
+    }
+    
+    public Deck(CardLibrary library, DeckSaveData deckSaveData)
+    {
+        if (deckSaveData != null)
+        {
+            foreach (var cardName in deckSaveData.cards)
+            {
+                AddCard(library.cardCollection.cards.First(x => x.name == cardName));
+            }
+        }
+    }
     
     public void Initialize()
     {
@@ -49,7 +77,7 @@ public class Deck
             cardTypeCount[card.type]++;
         }
         
-        archetypesByCount = cardArchetypeCount.OrderByDescending(pair => pair.Value).ToList();
+        archetypeValues = cardArchetypeCount.OrderByDescending(pair => pair.Value).ToList();
 
         initialized = true;
     }
@@ -74,7 +102,7 @@ public class Deck
         cardArchetypeCount[card.archetype]++;
         cardTypeCount[card.type]++;
 
-        archetypesByCount = cardArchetypeCount.OrderByDescending(pair => pair.Value).ToList();
+        archetypeValues = cardArchetypeCount.OrderByDescending(pair => pair.Value).ToList();
         
         OnMessage?.Invoke($"Added {card.name}.");
         OnCardsUpdated?.Invoke();
@@ -93,7 +121,7 @@ public class Deck
         cardArchetypeCount[card.archetype]--;
         cardTypeCount[card.type]--;
         
-        archetypesByCount = cardArchetypeCount.OrderByDescending(pair => pair.Value).ToList();
+        archetypeValues = cardArchetypeCount.OrderByDescending(pair => pair.Value).ToList();
         
         OnMessage?.Invoke($"Removed {card.name}.");
         OnCardsUpdated?.Invoke();
@@ -117,7 +145,7 @@ public class Deck
             cardTypeCount[card.type]++;
         }
         
-        archetypesByCount = cardArchetypeCount.OrderByDescending(pair => pair.Value).ToList();
+        archetypeValues = cardArchetypeCount.OrderByDescending(pair => pair.Value).ToList();
         
         OnCardsUpdated?.Invoke();
     }

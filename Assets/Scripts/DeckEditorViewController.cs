@@ -75,7 +75,7 @@ public class DeckEditorViewController : MonoBehaviour
         
         cardViews.Clear();
 
-        foreach (var card in library.cards)
+        foreach (var card in library.cardCollection.cards)
         {
             AddCardView(card);
         }
@@ -156,8 +156,6 @@ public class DeckEditorViewController : MonoBehaviour
     private void CloseDeckEditor()
     {
         viewFader.FadeOut();
-        //gameObject.SetActive(false);
-        
         OnClose?.Invoke();
     }
 }

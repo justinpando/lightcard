@@ -38,9 +38,9 @@ public class LibraryViewController : MonoBehaviour
         
         cardViews.Clear();
         
-        cardLibrary.cards = cardLibrary.cards.OrderBy(x => x.archetype).ToList();
+        cardLibrary.cardCollection.cards = cardLibrary.cardCollection.cards.OrderBy(x => x.archetype).ToList();
         
-        foreach (var card in cardLibrary.cards)
+        foreach (var card in cardLibrary.cardCollection.cards)
         {
             AddCardView(card);
         }

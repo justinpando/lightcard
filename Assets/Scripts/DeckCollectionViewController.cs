@@ -51,7 +51,7 @@ public class DeckCollectionViewController : MonoBehaviour
             AddDeckView(deckData.deck);
         }
         
-        foreach (var deck in library.decks)
+        foreach (var deck in library.Decks)
         {
             AddDeckView(deck);
         }
@@ -62,7 +62,7 @@ public class DeckCollectionViewController : MonoBehaviour
         var deck = new Deck();
         deck.Initialize();
         
-        library.decks.Add(deck);
+        library.Decks.Add(deck);
 
         AddDeckView(deck);
     }

@@ -7,20 +7,20 @@ public class CardLibrary : ScriptableObject
 {
     public List<ArchetypeData> classes;
     public List<CardTypeData> types;
-    public List<Card> cards;
-    public List<Deck> decks;
+    public CardCollection cardCollection;
     public List<DeckData> starterDecks;
+    public List<Deck> Decks { get; private set; }
     
     public void Initialize(SaveData save = null)
     {
-        cards = cards.Where(x => x != null).ToList();
-        cards = cards.OrderBy(x => x.archetype).ThenBy(x => x.cost).ToList();
-
-        if(save != null) decks = save.decks;
+        cardCollection.Initialize();
 
         starterDecks.ForEach(x => x.deck.Initialize());
         
-        decks = decks.Where(x => x != null).ToList();
-        decks.ForEach(x => x.Initialize());
+        if(save != null) Decks = save.decks.ConvertAll(x => new Deck(this, x));
+        
+        Decks = Decks.Where(x => x != null).ToList();
+        Decks.ForEach(x => x.Initialize());
     }
+    
 }

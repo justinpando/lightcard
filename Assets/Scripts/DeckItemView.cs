@@ -75,7 +75,7 @@ public class DeckItemView : MonoBehaviour
         abilityText.text = abilityCount.ToString();
         charmText.text = charmCount.ToString();
         
-        UpdateArchetypeIcons(deck.archetypesByCount[0], deck.archetypesByCount[1]);
+        UpdateArchetypeIcons(deck.archetypeValues[0], deck.archetypeValues[1]);
     }
 
     void UpdateArchetypeIcons(KeyValuePair<Card.Archetype, int> archetype1, KeyValuePair<Card.Archetype, int> archetype2)
