@@ -17,10 +17,12 @@ public class DeckCollectionViewController : MonoBehaviour
     public CanvasGroupFader deckCollectionFader;
 
     private DeckEditorViewController deckEditor;
-    
-    public void Initialize(CardLibrary library, CardViewController cardViewPrefab, DeckItemView deckItemViewPrefab, DeckEditorViewController deckEditor)
+    private SaveDataManager saveManager;
+
+    public void Initialize(CardLibrary library, CardViewController cardViewPrefab, DeckItemView deckItemViewPrefab, DeckEditorViewController deckEditor, SaveDataManager saveManager)
     {
-        
+        this.saveManager = saveManager;
+
         this.deckItemViewPrefab = deckItemViewPrefab;
         this.library = library;
         this.cardViewPrefab = cardViewPrefab;
@@ -31,7 +33,6 @@ public class DeckCollectionViewController : MonoBehaviour
         InitializeDeckCollection();
 
         deckEditor.OnClose += ShowView;
-        
     }
 
     private void InitializeDeckCollection()
@@ -45,20 +46,24 @@ public class DeckCollectionViewController : MonoBehaviour
         
         deckViews.Clear();
         
+        foreach (var deckData in library.starterDecks)
+        {
+            AddDeckView(deckData.deck);
+        }
+        
         foreach (var deck in library.decks)
         {
-            deck.cards.OrderBy(x => x.cost);
             AddDeckView(deck);
         }
     }
     
     private void CreateDeck()
     {
-        var deck = ScriptableObject.CreateInstance<Deck>();
+        var deck = new Deck();
         deck.Initialize();
         
         library.decks.Add(deck);
-        
+
         AddDeckView(deck);
     }
 

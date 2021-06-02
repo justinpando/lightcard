@@ -48,8 +48,6 @@ public class DeckItemView : MonoBehaviour
     private void UpdateView()
     {
         nameText.text = deck.name;
-
-        Debug.Log($"Updating view");
         
         if (deck.cards.Count == 0)
         {

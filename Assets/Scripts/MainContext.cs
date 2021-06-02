@@ -6,8 +6,11 @@ public class MainContext : MonoBehaviour
     public CardLibrary library;
     
     public MainViewController mainView;
-    [FormerlySerializedAs("deckView")] public DeckCollectionViewController deckCollectionView;
+    
+    public DeckCollectionViewController deckCollectionView;
     public DeckEditorViewController deckEditorView;
+    public DeckItemView deckItemViewPrefab;
+    
     public LibraryViewController libraryView;
     public OptionsViewController optionsView;
     
@@ -16,7 +19,7 @@ public class MainContext : MonoBehaviour
     public FilterViewController filterViewPrefab;
     public FilterCollectionViewController filterCollectionPrefab;
 
-    public DeckItemView deckItemViewPrefab;
+    public SaveDataManager saveManager;
     
     // Start is called before the first frame update
     void Start()
@@ -26,13 +29,15 @@ public class MainContext : MonoBehaviour
 
     void Initialize()
     {
+        saveManager = new SaveDataManager(library);
+        
         library.Initialize();
         
         FilterCollectionViewController filters = Instantiate(filterCollectionPrefab, libraryView.transform);
         filters.Initialize(library, filterViewPrefab);
         
-        deckCollectionView.Initialize(library, cardViewPrefab, deckItemViewPrefab, deckEditorView);
-        deckEditorView.Initialize(library, filters, cardViewPrefab, deckCardViewPrefab);
+        deckCollectionView.Initialize(library, cardViewPrefab, deckItemViewPrefab, deckEditorView, saveManager);
+        deckEditorView.Initialize(library, filters, cardViewPrefab, deckCardViewPrefab, saveManager);
         
         libraryView.Initialize(library, cardViewPrefab, filters);
         

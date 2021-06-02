@@ -28,9 +28,11 @@ public class DeckEditorViewController : MonoBehaviour
     public Button saveButton;
     public Button closeButton;
     public System.Action OnClose;
+
+    private SaveDataManager saveManager;
     
     public void Initialize(CardLibrary library, FilterCollectionViewController filters, 
-        CardViewController cardViewPrefab, CardViewController deckCardViewPrefab)
+        CardViewController cardViewPrefab, CardViewController deckCardViewPrefab, SaveDataManager saveManager)
     {
         this.library = library;
         this.filters.Initialize(library, filters.filterViewPrefab);
@@ -38,6 +40,8 @@ public class DeckEditorViewController : MonoBehaviour
         
         this.cardViewPrefab = cardViewPrefab;
         this.deckCardViewPrefab = deckCardViewPrefab;
+
+        this.saveManager = saveManager;
         
         saveButton.onClick.AddListener(SaveChanges);
         closeButton.onClick.AddListener(CloseDeckEditor);
@@ -50,11 +54,10 @@ public class DeckEditorViewController : MonoBehaviour
         
         this.selectedDeck = selectedDeck;
 
-        workingDeck = selectedDeck.Clone();
-        
-        // workingDeck = Instantiate(selectedDeck);
-        // workingDeck.Initialize();
-        
+        workingDeck = new Deck();
+        workingDeck.SetCardList(selectedDeck.cards);
+        workingDeck.Initialize();
+
         deckHeaderView.Initialize(library, workingDeck);
         
         InitializeCollectionCards();
@@ -146,6 +149,8 @@ public class DeckEditorViewController : MonoBehaviour
     private void SaveChanges()
     {
         selectedDeck.SetCardList(workingDeck.cards);
+
+        saveManager.Save();
     }
     
     private void CloseDeckEditor()

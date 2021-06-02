@@ -2,10 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.Serialization;
 
-[CreateAssetMenu(menuName = "My Assets/Deck")]
-public class Deck : ScriptableObject
+[Serializable]
+public class Deck 
 {
     public string name = "New Deck";
     public Card.Archetype archetype;
@@ -32,6 +31,8 @@ public class Deck : ScriptableObject
         if (initialized) return;
         
         Debug.Log($"Initializing deck: {name}");
+        
+        cards = new List<Card>(cards.OrderBy(x => x.cost));
         
         foreach( Card.Archetype group in Enum.GetValues(typeof(Card.Archetype)) )
         {
