@@ -45,6 +45,15 @@ public class DeckEditorViewController : MonoBehaviour
         
         saveButton.onClick.AddListener(SaveChanges);
         closeButton.onClick.AddListener(CloseDeckEditor);
+        
+        workingDeck = new Deck ();
+        
+        deckHeaderView.Initialize(library, workingDeck);
+        deckHeaderView.nameInputCanvasGroup.interactable = true;
+        deckHeaderView.nameInputCanvasGroup.blocksRaycasts = true;
+        deckHeaderView.nameInputField.readOnly = false;
+        
+        InitializeCollectionCards();
     }
 
     public void Enter(Deck selectedDeck)
@@ -54,14 +63,10 @@ public class DeckEditorViewController : MonoBehaviour
         
         this.selectedDeck = selectedDeck;
 
-        workingDeck = new Deck {name = selectedDeck.name};
+        workingDeck.name = selectedDeck.name;
         workingDeck.SetCardList(selectedDeck.cards);
-
-        deckHeaderView.Initialize(library, workingDeck);
-
-        deckHeaderView.nameInputField.onSubmit.AddListener(value => workingDeck.name = value);
         
-        InitializeCollectionCards();
+        libraryScrollBar.value = 1f;
         InitializeDeckCards();
     }
 
@@ -135,7 +140,6 @@ public class DeckEditorViewController : MonoBehaviour
         deckCardViews.Add(view);
         
         view.transform.SetSiblingIndex(workingDeck.cards.IndexOf(card));
-        
     }
 
     private void RemoveCardFromDeck(CardViewController cardView)

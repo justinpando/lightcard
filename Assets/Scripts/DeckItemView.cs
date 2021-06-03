@@ -15,6 +15,7 @@ public class DeckItemView : MonoBehaviour
     public Image bgImage;
     public Gradient2 bgGradient;
 
+    public CanvasGroup nameInputCanvasGroup;
     public TMP_InputField nameInputField;
     public TMP_Text nameText;
     public TMP_Text unitText;
@@ -45,10 +46,11 @@ public class DeckItemView : MonoBehaviour
         selectButton.onClick.AddListener(() => OnSelectButtonPressed?.Invoke());
         deleteButton.onClick.AddListener(() => OnDeleteButtonPressed?.Invoke());
         
-        nameInputField.onSubmit.AddListener(value =>
+        nameInputField.onDeselect.AddListener(value =>
         {
             deck.name = value;
             UpdateView();
+            Debug.Log($"Deck name updated: {deck.name}");
         });
     }
 

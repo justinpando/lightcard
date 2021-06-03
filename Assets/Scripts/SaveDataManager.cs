@@ -6,7 +6,7 @@ using UnityEngine;
 public class SaveDataManager
 {
     private readonly CardLibrary library;
-    private const string fileName = "savedata.save";
+    private const string fileName = "savedata.json";
     private readonly string filePath;
     
     public SaveDataManager(CardLibrary library)

@@ -43,13 +43,16 @@ public class Deck
         Initialize();
     }
     
-    public Deck(CardLibrary library, DeckSaveData deckSaveData)
+    public Deck(CardLibrary library, DeckSaveData saveData)
     {
         Initialize();
         
-        if (deckSaveData != null)
+        if (saveData != null)
         {
-            foreach (var cardName in deckSaveData.cards)
+            name = saveData.name;
+            description = saveData.description;
+            
+            foreach (var cardName in saveData.cards)
             {
                 AddCard(library.cardCollection.cards.First(x => x.name == cardName));
             }
