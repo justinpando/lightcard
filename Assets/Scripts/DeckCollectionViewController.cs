@@ -76,17 +76,19 @@ public class DeckCollectionViewController : MonoBehaviour
         deckViews.Add(deckView);
 
         deckView.OnSelectButtonPressed += () => { OpenDeckEditor(deckView); };
-        deckView.OnDeleteButtonPressed += () => { RemoveDeckView(deckView); };
+        deckView.OnDeleteButtonPressed += () => { DeleteDeck(deckView); };
         
         addNewDeckButton.transform.SetAsLastSibling();
         
         LayoutRebuilder.ForceRebuildLayoutImmediate(deckCollectionPanel as RectTransform);
     }
 
-    private void RemoveDeckView(DeckItemView deckView)
+    private void DeleteDeck(DeckItemView deckView)
     {
         deckViews.Remove(deckView);
         Destroy(deckView.gameObject);
+
+        library.Decks.Remove(deckView.deck);
         
         LayoutRebuilder.ForceRebuildLayoutImmediate(deckCollectionPanel as RectTransform);
     }

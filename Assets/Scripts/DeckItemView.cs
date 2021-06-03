@@ -47,6 +47,8 @@ public class DeckItemView : MonoBehaviour
 
     private void UpdateView()
     {
+        Debug.Log($"Updating deck item view for: {deck.name}", gameObject);
+        
         nameText.text = deck.name;
         
         if (deck.cards.Count == 0)
@@ -59,9 +61,7 @@ public class DeckItemView : MonoBehaviour
             unitText.text = "0";
             abilityText.text = "0";
             charmText.text = "0";
-
-            //bgImage.color = new Color(1f, 1f, 1f, 0.5f);
-
+            
             bgGradient.enabled = false;
             
             return;

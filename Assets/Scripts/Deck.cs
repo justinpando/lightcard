@@ -131,6 +131,8 @@ public class Deck
 
     public void SetCardList(List<Card> newCards)
     {
+        Debug.Log($"Setting cardList for deck: {name}");
+        
         foreach (var card in cards)
         {
             cardArchetypeCount[card.archetype]--;

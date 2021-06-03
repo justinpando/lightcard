@@ -85,7 +85,7 @@ public class CardDataImporter : OdinEditorWindow
             newCollection.cards.Add(card);
         }
 
-        string date = DateTime.Today.ToString("yyyy-MM-dd_HH-mm-ss");
+        string date = DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss");
         string collectionName = $"CardCollection_{date}";
         
         AssetDatabase.CreateAsset(newCollection, "Assets/Data/CardCollections/" + collectionName + ".asset");

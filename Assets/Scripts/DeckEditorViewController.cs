@@ -55,8 +55,9 @@ public class DeckEditorViewController : MonoBehaviour
         this.selectedDeck = selectedDeck;
 
         workingDeck = new Deck();
-        workingDeck.SetCardList(selectedDeck.cards);
+        workingDeck.name = "Working Deck";
         workingDeck.Initialize();
+        workingDeck.SetCardList(selectedDeck.cards);
 
         deckHeaderView.Initialize(library, workingDeck);
         
