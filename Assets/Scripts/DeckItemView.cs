@@ -71,6 +71,8 @@ public class DeckItemView : MonoBehaviour
         int abilityCount = deck.cardTypeCount[Card.Type.Ability];
         int charmCount = deck.cardTypeCount[Card.Type.Charm];
 
+        Debug.Log(deck.SaveData);
+        
         unitText.text = unitCount.ToString();
         abilityText.text = abilityCount.ToString();
         charmText.text = charmCount.ToString();

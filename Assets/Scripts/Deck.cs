@@ -139,7 +139,7 @@ public class Deck
             cardTypeCount[card.type]--;
         }
         
-        cards = newCards;
+        cards = new List<Card>(newCards);
         
         foreach (var card in cards)
         {
