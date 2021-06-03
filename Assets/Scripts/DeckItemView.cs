@@ -14,7 +14,8 @@ public class DeckItemView : MonoBehaviour
     public Image highlightImage;
     public Image bgImage;
     public Gradient2 bgGradient;
-    
+
+    public TMP_InputField nameInputField;
     public TMP_Text nameText;
     public TMP_Text unitText;
     public TMP_Text abilityText;
@@ -43,13 +44,20 @@ public class DeckItemView : MonoBehaviour
         
         selectButton.onClick.AddListener(() => OnSelectButtonPressed?.Invoke());
         deleteButton.onClick.AddListener(() => OnDeleteButtonPressed?.Invoke());
+        
+        nameInputField.onSubmit.AddListener(value =>
+        {
+            deck.name = value;
+            UpdateView();
+        });
     }
 
     private void UpdateView()
     {
         Debug.Log($"Updating deck item view for: {deck.name}", gameObject);
         
-        nameText.text = deck.name;
+        nameInputField.SetTextWithoutNotify(deck.name);
+        //nameText.text = deck.name;
         
         if (deck.cards.Count == 0)
         {
@@ -70,8 +78,6 @@ public class DeckItemView : MonoBehaviour
         int unitCount = deck.cardTypeCount[Card.Type.Unit];
         int abilityCount = deck.cardTypeCount[Card.Type.Ability];
         int charmCount = deck.cardTypeCount[Card.Type.Charm];
-
-        Debug.Log(deck.SaveData);
         
         unitText.text = unitCount.ToString();
         abilityText.text = abilityCount.ToString();

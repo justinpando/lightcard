@@ -60,8 +60,7 @@ public class DeckCollectionViewController : MonoBehaviour
     private void CreateDeck()
     {
         var deck = new Deck();
-        deck.Initialize();
-        
+
         library.Decks.Add(deck);
 
         AddDeckView(deck);

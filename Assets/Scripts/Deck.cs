@@ -40,11 +40,13 @@ public class Deck
 
     public Deck()
     {
-        
+        Initialize();
     }
     
     public Deck(CardLibrary library, DeckSaveData deckSaveData)
     {
+        Initialize();
+        
         if (deckSaveData != null)
         {
             foreach (var cardName in deckSaveData.cards)
@@ -54,7 +56,7 @@ public class Deck
         }
     }
     
-    public void Initialize()
+    private void Initialize()
     {
         if (initialized) return;
         

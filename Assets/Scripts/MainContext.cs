@@ -30,8 +30,9 @@ public class MainContext : MonoBehaviour
     void Initialize()
     {
         saveManager = new SaveDataManager(library);
+        SaveData saveData = saveManager.Load();
         
-        library.Initialize();
+        library.Initialize(saveData);
         
         FilterCollectionViewController filters = Instantiate(filterCollectionPrefab, libraryView.transform);
         filters.Initialize(library, filterViewPrefab);
