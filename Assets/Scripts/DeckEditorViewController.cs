@@ -54,10 +54,12 @@ public class DeckEditorViewController : MonoBehaviour
         
         this.selectedDeck = selectedDeck;
 
-        workingDeck = new Deck {name = "Working Deck"};
+        workingDeck = new Deck {name = selectedDeck.name};
         workingDeck.SetCardList(selectedDeck.cards);
 
         deckHeaderView.Initialize(library, workingDeck);
+
+        deckHeaderView.nameInputField.onSubmit.AddListener(value => workingDeck.name = value);
         
         InitializeCollectionCards();
         InitializeDeckCards();
@@ -147,6 +149,7 @@ public class DeckEditorViewController : MonoBehaviour
     
     private void SaveChanges()
     {
+        selectedDeck.name = workingDeck.name;
         selectedDeck.SetCardList(workingDeck.cards);
 
         saveManager.Save();
