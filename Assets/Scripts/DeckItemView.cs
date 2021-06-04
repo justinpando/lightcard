@@ -22,13 +22,16 @@ public class DeckItemView : MonoBehaviour
     public TMP_Text abilityText;
     public TMP_Text charmText;
 
+    
     public Button selectButton;
     public Button deleteButton;
+    public Button copyButton;
 
     public Deck deck;
 
     public System.Action OnSelectButtonPressed;
     public System.Action OnDeleteButtonPressed;
+    public System.Action OnCopyButtonPressed;
     private CardLibrary library;
 
     public void Initialize(CardLibrary library, Deck deck)
@@ -45,6 +48,7 @@ public class DeckItemView : MonoBehaviour
         
         selectButton.onClick.AddListener(() => OnSelectButtonPressed?.Invoke());
         deleteButton.onClick.AddListener(() => OnDeleteButtonPressed?.Invoke());
+        copyButton.onClick.AddListener(() => OnCopyButtonPressed?.Invoke());
         
         nameInputField.onDeselect.AddListener(value =>
         {

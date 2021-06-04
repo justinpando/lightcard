@@ -65,6 +65,16 @@ public class DeckCollectionViewController : MonoBehaviour
 
         AddDeckView(deck);
     }
+    
+    private void CopyDeck(DeckItemView deckView)
+    {
+        var deck = new Deck {name = deckView.deck.name};
+        deck.SetCardList(deckView.deck.cards);
+
+        library.Decks.Add(deck);
+
+        AddDeckView(deck);
+    }
 
     private void AddDeckView(Deck deck)
     {
@@ -76,6 +86,7 @@ public class DeckCollectionViewController : MonoBehaviour
 
         deckView.OnSelectButtonPressed += () => { OpenDeckEditor(deckView); };
         deckView.OnDeleteButtonPressed += () => { DeleteDeck(deckView); };
+        deckView.OnCopyButtonPressed += () => { CopyDeck(deckView); };
         
         addNewDeckButton.transform.SetAsLastSibling();
         
