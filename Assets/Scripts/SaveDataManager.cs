@@ -44,6 +44,7 @@ public class SaveDataManager
     
     private void SaveAsJSON(SaveData data, string path)
     {
+        //Note: JsonUtility might cause hangs if save data is massive
         string json = JsonUtility.ToJson(data);
         Debug.Log($"Saving as JSON: " + json);
         

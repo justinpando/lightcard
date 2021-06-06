@@ -14,13 +14,10 @@ public class CardLibrary : ScriptableObject
     public void Initialize(SaveData save = null)
     {
         cardCollection.Initialize();
-
-        //starterDecks.ForEach(x => x.deck.Initialize());
         
         if(save != null) Decks = save.decks.ConvertAll(x => new Deck(this, x));
         
         Decks = Decks.Where(x => x != null).ToList();
-        //Decks.ForEach(x => x.Initialize());
     }
     
 }

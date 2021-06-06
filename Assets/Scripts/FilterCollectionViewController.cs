@@ -96,6 +96,7 @@ public class FilterCollectionViewController : MonoBehaviour
             
             categoryFilters[activeFilter.category].Add(activeFilter);
         }
+        
         List<CardViewController> validCards = new List<CardViewController>(cardViews);
         
         //Make all cards visible if there are no active filters
@@ -127,11 +128,10 @@ public class FilterCollectionViewController : MonoBehaviour
                         }
                     }
 
-                    //If the card is filtered, add it to the list of filtered cards
+                    //If the card is filtered, remote it from the list of valid cards
                     if (!isValid) validCards.Remove(cardView);
                 }
             }
-            
         }
         
         return validCards;

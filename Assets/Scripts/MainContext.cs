@@ -46,5 +46,12 @@ public class MainContext : MonoBehaviour
         deckCollectionView.gameObject.SetActive(false);
         libraryView.gameObject.SetActive(false);
         optionsView.gameObject.SetActive(false);
+        
+        
+        //Verb classes
+        //Triggers, conditionals
+        //pass the verb class to the card, the card passes the verb class to each of the affixes
+        //I'm receiving stab damage, pass it to effects like poisoned, armor, keyword etc, the keyword acts on the received action
+        //If this happens, do this unless. 2 step process. Should I .. deal damage etc
     }
 }

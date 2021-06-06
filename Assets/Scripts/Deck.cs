@@ -54,7 +54,14 @@ public class Deck
             
             foreach (var cardName in saveData.cards)
             {
-                AddCard(library.cardCollection.cards.First(x => x.name == cardName));
+                try
+                {
+                    AddCard(library.cardCollection.cards.First(x => x.name == cardName));
+                } 
+                catch(Exception e)
+                {
+                    Debug.LogAssertion($"Library does not contain card: {cardName}, couldn't add to deck {name}");
+                }
             }
         }
     }
