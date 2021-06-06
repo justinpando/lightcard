@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   archetype: 5
   type: 1
-  sprite: {fileID: 0}
+  sprite: {fileID: 21300000, guid: 4bff423e55cb90d448d2e1a27d500e61, type: 3}
   name: Stone-Hewn Blade
   cost: 2
   power: 0

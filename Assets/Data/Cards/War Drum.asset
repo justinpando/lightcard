@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   archetype: 5
   type: 1
-  sprite: {fileID: 0}
+  sprite: {fileID: 21300000, guid: dfac99468cdcc3244a9423f252380074, type: 3}
   name: War Drum
   cost: 2
   power: 0

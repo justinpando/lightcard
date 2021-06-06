@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   archetype: 5
   type: 1
-  sprite: {fileID: 0}
+  sprite: {fileID: 21300000, guid: ea46b56f8e0834c4f8566633ae88f634, type: 3}
   name: Blood-Tinged Lance
   cost: 2
   power: 0

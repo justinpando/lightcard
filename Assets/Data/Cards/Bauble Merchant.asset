@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   archetype: 4
   type: 0
-  sprite: {fileID: 0}
+  sprite: {fileID: 21300000, guid: 4bcc34dde2d478340ba1b7652f00b95f, type: 3}
   name: Bauble Merchant
   cost: 2
   power: 1

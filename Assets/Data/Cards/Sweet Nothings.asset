@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   archetype: 0
   type: 2
-  sprite: {fileID: 0}
+  sprite: {fileID: 21300000, guid: ed89bfd75a5a2cf4a8ea7e6ecca13b12, type: 3}
   name: Sweet Nothings
   cost: 1
   power: 0

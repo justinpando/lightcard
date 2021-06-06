@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   archetype: 5
   type: 0
-  sprite: {fileID: 0}
+  sprite: {fileID: 21300000, guid: b686dd8fe3d2ea94e8301f8eb3df0bba, type: 3}
   name: Honor Guard
   cost: 4
   power: 2

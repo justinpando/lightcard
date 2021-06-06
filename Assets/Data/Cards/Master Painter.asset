@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   archetype: 1
   type: 0
-  sprite: {fileID: 0}
+  sprite: {fileID: 21300000, guid: 25d415a351a5c8e49baf0b869b4ca282, type: 3}
   name: Master Painter
   cost: 3
   power: 2

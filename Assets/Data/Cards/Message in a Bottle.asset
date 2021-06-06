@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   archetype: 3
   type: 1
-  sprite: {fileID: 0}
+  sprite: {fileID: 21300000, guid: c0c11de66ce038f4ab43f8e0e4f8dbbd, type: 3}
   name: Message in a Bottle
   cost: 1
   power: 0

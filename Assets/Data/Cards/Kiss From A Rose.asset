@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   archetype: 0
   type: 2
-  sprite: {fileID: 0}
+  sprite: {fileID: 21300000, guid: 220c4d24da5a79a4f86853c299b3f8eb, type: 3}
   name: Kiss From A Rose
   cost: 1
   power: 0

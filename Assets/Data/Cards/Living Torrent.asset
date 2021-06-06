@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   archetype: 3
   type: 0
-  sprite: {fileID: 0}
+  sprite: {fileID: 21300000, guid: afa7fccd8a571d741b9b4e4a101b152c, type: 3}
   name: Living Torrent
   cost: 4
   power: 0

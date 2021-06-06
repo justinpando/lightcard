@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   archetype: 3
   type: 0
-  sprite: {fileID: 0}
+  sprite: {fileID: 21300000, guid: 5bafcb10948e44a458cb0eb5ccd39434, type: 3}
   name: Floppy Fish
   cost: 2
   power: 0

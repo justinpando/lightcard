@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   archetype: 0
   type: 1
-  sprite: {fileID: 0}
+  sprite: {fileID: 21300000, guid: 2fa8720c816c3f94a832a06ba5db795c, type: 3}
   name: Fountain of Life
   cost: 2
   power: 0

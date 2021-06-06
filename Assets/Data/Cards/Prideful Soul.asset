@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   archetype: 4
   type: 0
-  sprite: {fileID: 0}
+  sprite: {fileID: 21300000, guid: 40e8ef63c2225dc48b8a63dab3d875c1, type: 3}
   name: Prideful Soul
   cost: 3
   power: 4

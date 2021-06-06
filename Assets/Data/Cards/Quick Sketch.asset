@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   archetype: 1
   type: 2
-  sprite: {fileID: 0}
+  sprite: {fileID: 21300000, guid: 5c29735172829374eaaa2831f308ece5, type: 3}
   name: Quick Sketch
   cost: 1
   power: 0

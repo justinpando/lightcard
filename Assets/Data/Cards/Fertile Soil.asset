@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   archetype: 0
   type: 2
-  sprite: {fileID: 0}
+  sprite: {fileID: 21300000, guid: 0f0a9166a8096ce46be9e9e0803a5a45, type: 3}
   name: Fertile Soil
   cost: 3
   power: 0

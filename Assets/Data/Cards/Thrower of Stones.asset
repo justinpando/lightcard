@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   archetype: 4
   type: 0
-  sprite: {fileID: 0}
+  sprite: {fileID: 21300000, guid: 2da861f478c2f934894ca685fe7f9c26, type: 3}
   name: Thrower of Stones
   cost: 2
   power: 2

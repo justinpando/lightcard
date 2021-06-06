@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   archetype: 2
   type: 2
-  sprite: {fileID: 0}
+  sprite: {fileID: 21300000, guid: 31de6c3cb14c0364ba62f757d2a1bcac, type: 3}
   name: Burn
   cost: 1
   power: 0

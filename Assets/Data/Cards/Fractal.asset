@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   archetype: 3
   type: 0
-  sprite: {fileID: 0}
+  sprite: {fileID: 21300000, guid: 6bf5b606fdba8f94b9a40f3629e20c60, type: 3}
   name: Fractal
   cost: 2
   power: 2

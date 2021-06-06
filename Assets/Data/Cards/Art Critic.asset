@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   archetype: 1
   type: 0
-  sprite: {fileID: 0}
+  sprite: {fileID: 21300000, guid: 69cf52b4a4adf684e955b8960a0e356c, type: 3}
   name: Art Critic
   cost: 2
   power: 1

@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   archetype: 0
   type: 0
-  sprite: {fileID: 0}
+  sprite: {fileID: 21300000, guid: e7d3b05fdff7500489a8f38813d383ab, type: 3}
   name: Sower of Seeds
   cost: 3
   power: 1

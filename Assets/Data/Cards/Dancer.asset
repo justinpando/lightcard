@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   archetype: 0
   type: 0
-  sprite: {fileID: 0}
+  sprite: {fileID: 21300000, guid: 5bc46d4dc5463fc4088fa4a6607b0f20, type: 3}
   name: Dancer
   cost: 3
   power: 2

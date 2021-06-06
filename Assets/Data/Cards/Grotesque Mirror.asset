@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   archetype: 4
   type: 1
-  sprite: {fileID: 0}
+  sprite: {fileID: 21300000, guid: 34a17fdbcbf8b494eb245b08e6b94be9, type: 3}
   name: Grotesque Mirror
   cost: 2
   power: 0

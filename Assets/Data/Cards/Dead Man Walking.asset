@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   archetype: 2
   type: 0
-  sprite: {fileID: 0}
+  sprite: {fileID: 21300000, guid: 205405ed87345d64d8d9bbbe17135904, type: 3}
   name: Dead Man Walking
   cost: 1
   power: 1

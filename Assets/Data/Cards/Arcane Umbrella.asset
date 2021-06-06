@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   archetype: 1
   type: 1
-  sprite: {fileID: 0}
+  sprite: {fileID: 21300000, guid: 4aef40f0da40b8b4b9d91c06e6f8ebcf, type: 3}
   name: Arcane Umbrella
   cost: 1
   power: 0

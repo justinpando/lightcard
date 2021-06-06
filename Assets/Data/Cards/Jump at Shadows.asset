@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   archetype: 4
   type: 2
-  sprite: {fileID: 0}
+  sprite: {fileID: 21300000, guid: d5b6d7cf892cdd94ea49218ecde4edbb, type: 3}
   name: Jump at Shadows
   cost: 0
   power: 0

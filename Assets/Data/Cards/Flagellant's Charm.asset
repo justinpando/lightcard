@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   archetype: 4
   type: 1
-  sprite: {fileID: 0}
+  sprite: {fileID: 21300000, guid: 48da58a4402c4d04e82341c7aa4d8ee8, type: 3}
   name: Flagellant's Charm
   cost: 0
   power: 0

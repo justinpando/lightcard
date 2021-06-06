@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   archetype: 0
   type: 0
-  sprite: {fileID: 0}
+  sprite: {fileID: 21300000, guid: 3c9ea84d7c1adbe4f85bee2ad73d81f7, type: 3}
   name: Constant Gardener
   cost: 2
   power: 2

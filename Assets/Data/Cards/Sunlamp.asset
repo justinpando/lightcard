@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   archetype: 0
   type: 1
-  sprite: {fileID: 0}
+  sprite: {fileID: 21300000, guid: a88f8035d3e557540b03fe2eb077ae20, type: 3}
   name: Sunlamp
   cost: 2
   power: 0

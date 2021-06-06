@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   archetype: 5
   type: 1
-  sprite: {fileID: 0}
+  sprite: {fileID: 21300000, guid: ac600fd90ff5e524b802d7ba1412c322, type: 3}
   name: Campfire
   cost: 1
   power: 0

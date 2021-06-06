@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   archetype: 1
   type: 2
-  sprite: {fileID: 0}
+  sprite: {fileID: 21300000, guid: 0ac1d6be4c64cba4b9742ff45d7a9bf7, type: 3}
   name: Sharpen Edge
   cost: 2
   power: 0

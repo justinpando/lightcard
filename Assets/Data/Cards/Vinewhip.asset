@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   archetype: 0
   type: 1
-  sprite: {fileID: 0}
+  sprite: {fileID: 21300000, guid: 6ffe0b49d7359454597a845473bdda75, type: 3}
   name: Vinewhip
   cost: 2
   power: 0

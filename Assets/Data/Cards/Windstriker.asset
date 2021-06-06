@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   archetype: 0
   type: 0
-  sprite: {fileID: 0}
+  sprite: {fileID: 21300000, guid: e7039164204aa794f89d42c3c5cd16b6, type: 3}
   name: Windstriker
   cost: 3
   power: 1

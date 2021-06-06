@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   archetype: 1
   type: 2
-  sprite: {fileID: 0}
+  sprite: {fileID: 21300000, guid: d1fbecc3d85212e42b9febc0c5d1d519, type: 3}
   name: Diminishing Lance
   cost: 2
   power: 0

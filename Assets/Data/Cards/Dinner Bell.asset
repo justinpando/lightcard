@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   archetype: 4
   type: 1
-  sprite: {fileID: 0}
+  sprite: {fileID: 21300000, guid: 78535d1448edcd64caa831c90342951b, type: 3}
   name: Dinner Bell
   cost: 3
   power: 0

@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   archetype: 0
   type: 1
-  sprite: {fileID: 0}
+  sprite: {fileID: 21300000, guid: b62706f8d19ffe94aa964fb56b8b0dc4, type: 3}
   name: Cosmic Flower
   cost: 1
   power: 0

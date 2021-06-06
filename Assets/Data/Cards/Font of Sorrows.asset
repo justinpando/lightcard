@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   archetype: 4
   type: 1
-  sprite: {fileID: 0}
+  sprite: {fileID: 21300000, guid: 641c27e7320562648b7297c6047c52a2, type: 3}
   name: Font of Sorrows
   cost: 2
   power: 0

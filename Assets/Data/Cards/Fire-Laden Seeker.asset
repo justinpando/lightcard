@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   archetype: 2
   type: 0
-  sprite: {fileID: 0}
+  sprite: {fileID: 21300000, guid: 761fb656482021d42a2aff84b61c2f48, type: 3}
   name: Fire-Laden Seeker
   cost: 3
   power: 2

@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   archetype: 1
   type: 0
-  sprite: {fileID: 0}
+  sprite: {fileID: 21300000, guid: 67f592eed3339ff45b1701176459ea00, type: 3}
   name: Diligent Student
   cost: 1
   power: 1

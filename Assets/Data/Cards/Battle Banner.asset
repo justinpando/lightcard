@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   archetype: 5
   type: 1
-  sprite: {fileID: 0}
+  sprite: {fileID: 21300000, guid: 389637e7a0798c2419a36b6efda4f5c8, type: 3}
   name: Battle Banner
   cost: 1
   power: 0

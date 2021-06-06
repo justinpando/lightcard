@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   archetype: 4
   type: 1
-  sprite: {fileID: 0}
+  sprite: {fileID: 21300000, guid: 86be788a8d1edb64db39bbad29d51ecf, type: 3}
   name: Seer's Guillotine
   cost: 2
   power: 0

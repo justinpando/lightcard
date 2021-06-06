@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   archetype: 4
   type: 1
-  sprite: {fileID: 0}
+  sprite: {fileID: 21300000, guid: 3ed7f92256bd79e44b4e4ab89b8319ac, type: 3}
   name: Mourner's Altar
   cost: 1
   power: 0

@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   archetype: 4
   type: 0
-  sprite: {fileID: 0}
+  sprite: {fileID: 21300000, guid: 08de5a4663b7c4d4a88f87af12f62291, type: 3}
   name: Keeper of Debts
   cost: 2
   power: 1

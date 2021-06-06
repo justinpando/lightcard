@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   archetype: 5
   type: 1
-  sprite: {fileID: 0}
+  sprite: {fileID: 21300000, guid: 58d41d322c9f3e746bcabe01ab20b015, type: 3}
   name: Covenant of Valor
   cost: 1
   power: 0

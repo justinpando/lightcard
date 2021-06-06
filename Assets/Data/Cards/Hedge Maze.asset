@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   archetype: 0
   type: 2
-  sprite: {fileID: 0}
+  sprite: {fileID: 21300000, guid: ceeccf8286573fa44960dc8c2bdf4dd0, type: 3}
   name: Hedge Maze
   cost: 2
   power: 0

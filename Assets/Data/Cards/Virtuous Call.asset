@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   archetype: 5
   type: 2
-  sprite: {fileID: 0}
+  sprite: {fileID: 21300000, guid: c083fb643ce45e34680fe31d59437567, type: 3}
   name: Virtuous Call
   cost: 1
   power: 0

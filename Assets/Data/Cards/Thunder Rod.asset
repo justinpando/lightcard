@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   archetype: 1
   type: 1
-  sprite: {fileID: 0}
+  sprite: {fileID: 21300000, guid: 2b9452016b0b6b84e80c5a543b7bd112, type: 3}
   name: Thunder Rod
   cost: 6
   power: 0
