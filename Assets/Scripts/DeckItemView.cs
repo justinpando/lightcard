@@ -33,6 +33,8 @@ public class DeckItemView : MonoBehaviour
     public System.Action OnDeleteButtonPressed;
     public System.Action OnCopyButtonPressed;
     private CardLibrary library;
+    private static readonly int ColorA = Shader.PropertyToID("_ColorA");
+    private static readonly int ColorB = Shader.PropertyToID("_ColorB");
 
     public void Initialize(CardLibrary library, Deck deck)
     {
@@ -56,6 +58,9 @@ public class DeckItemView : MonoBehaviour
             UpdateView();
             Debug.Log($"Deck name updated: {deck.name}");
         });
+        
+        Material cardMat = new Material(bgImage.material);
+        bgImage.material = cardMat;
     }
 
     private void UpdateView()
@@ -116,13 +121,16 @@ public class DeckItemView : MonoBehaviour
             singleClassIcon[0].color = archetypeData1.highlightColor;
             singleClassIcon[1].color = archetypeData1.baseColor;
 
-            bgGradient.EffectGradient.SetKeys(
-                new GradientColorKey[]
-                {
-                    new GradientColorKey( archetypeData1.highlightColor, 0f),
-                    new GradientColorKey( archetypeData1.baseColor, 1f)
-                }, 
-                new GradientAlphaKey[] { new GradientAlphaKey(1f, 0f) });
+            bgImage.material.SetColor(ColorA, archetypeData1.baseColor);
+            bgImage.material.SetColor(ColorB, archetypeData1.accentColor);
+            
+            // bgGradient.EffectGradient.SetKeys(
+            //     new GradientColorKey[]
+            //     {
+            //         new GradientColorKey( archetypeData1.highlightColor, 0f),
+            //         new GradientColorKey( archetypeData1.baseColor, 1f)
+            //     }, 
+            //     new GradientAlphaKey[] { new GradientAlphaKey(1f, 0f) });
         }
         else
         {
@@ -141,14 +149,18 @@ public class DeckItemView : MonoBehaviour
             dualClassIcons[3].sprite = archetypeData2.symbol;
             dualClassIcons[2].color = archetypeData2.highlightColor;
             dualClassIcons[3].color = archetypeData2.baseColor;
-
-            bgGradient.EffectGradient.SetKeys(
-                new GradientColorKey[]
-                {
-                    new GradientColorKey( archetypeData1.baseColor, 0f),
-                    new GradientColorKey( archetypeData2.baseColor, 1f)
-                }, 
-                new GradientAlphaKey[] { new GradientAlphaKey(1f, 0f) });
+            
+            //borderImage.material = cardMat;
+            bgImage.material.SetColor(ColorA, archetypeData1.baseColor);
+            bgImage.material.SetColor(ColorB, archetypeData2.baseColor);
+            
+            // bgGradient.EffectGradient.SetKeys(
+            //     new GradientColorKey[]
+            //     {
+            //         new GradientColorKey( archetypeData1.baseColor, 0f),
+            //         new GradientColorKey( archetypeData2.baseColor, 1f)
+            //     }, 
+            //     new GradientAlphaKey[] { new GradientAlphaKey(1f, 0f) });
 
         }
         

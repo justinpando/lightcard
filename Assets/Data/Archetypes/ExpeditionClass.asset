@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: ExpeditionClass
   m_EditorClassIdentifier: 
   archetype: 5
-  baseColor: {r: 1, g: 0.7058824, b: 0.17254902, a: 1}
+  baseColor: {r: 0.71599996, g: 0.50541174, b: 0.12311311, a: 1}
   highlightColor: {r: 1, g: 0.7058824, b: 0.17254902, a: 1}
   bgColor: {r: 1, g: 0.7058824, b: 0.17254902, a: 0.2}
   accentColor: {r: 0.447, g: 0.25498253, b: 0.130077, a: 1}

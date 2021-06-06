@@ -20,6 +20,7 @@ Shader "UI/GradientWithPattern"
         _ColorA("Color A",Color) = (1,0,0,1)
         _ColorB("Color B",Color) = (0,1,0,1)
         _Meta("Meta",Vector) = (0,0,0,0)
+        _TimeScalar("TimeScalar",Float) = 0
     }
 
         SubShader
@@ -89,6 +90,8 @@ Shader "UI/GradientWithPattern"
                 float4 _ColorA;
                 float4 _ColorB;
                 float4 _Meta;
+                float _TimeScalar;
+            
                 v2f vert(appdata_t v)
                 {
                     v2f OUT;
@@ -105,7 +108,7 @@ Shader "UI/GradientWithPattern"
 
                 fixed4 frag(v2f i) : SV_Target
                 {
-                    fixed pattern = tex2D(_MainTex, i.texcoord * float2(5,1) + _Time.y * 0.2).r * _Meta.x;
+                    fixed pattern = tex2D(_MainTex, i.texcoord * float2(4.5,1) + _Time.y * _TimeScalar).r * _Meta.x;
                     float t = smoothstep(_Meta.y, _Meta.z, i.texcoord.x + pattern);
                     float alpha = 1;
 
