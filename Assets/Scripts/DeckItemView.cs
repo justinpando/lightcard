@@ -114,13 +114,13 @@ public class DeckItemView : MonoBehaviour
             }
 
             singleClassIcon[0].color = archetypeData1.highlightColor;
-            singleClassIcon[1].color = archetypeData1.primaryColor;
+            singleClassIcon[1].color = archetypeData1.baseColor;
 
             bgGradient.EffectGradient.SetKeys(
                 new GradientColorKey[]
                 {
                     new GradientColorKey( archetypeData1.highlightColor, 0f),
-                    new GradientColorKey( archetypeData1.primaryColor, 1f)
+                    new GradientColorKey( archetypeData1.baseColor, 1f)
                 }, 
                 new GradientAlphaKey[] { new GradientAlphaKey(1f, 0f) });
         }
@@ -135,18 +135,18 @@ public class DeckItemView : MonoBehaviour
             dualClassIcons[0].sprite = archetypeData1.symbol;
             dualClassIcons[1].sprite = archetypeData1.symbol;
             dualClassIcons[0].color = archetypeData1.highlightColor;
-            dualClassIcons[1].color = archetypeData1.primaryColor;
+            dualClassIcons[1].color = archetypeData1.baseColor;
             
             dualClassIcons[2].sprite = archetypeData2.symbol;
             dualClassIcons[3].sprite = archetypeData2.symbol;
             dualClassIcons[2].color = archetypeData2.highlightColor;
-            dualClassIcons[3].color = archetypeData2.primaryColor;
+            dualClassIcons[3].color = archetypeData2.baseColor;
 
             bgGradient.EffectGradient.SetKeys(
                 new GradientColorKey[]
                 {
-                    new GradientColorKey( archetypeData1.primaryColor, 0f),
-                    new GradientColorKey( archetypeData2.primaryColor, 1f)
+                    new GradientColorKey( archetypeData1.baseColor, 0f),
+                    new GradientColorKey( archetypeData2.baseColor, 1f)
                 }, 
                 new GradientAlphaKey[] { new GradientAlphaKey(1f, 0f) });
 

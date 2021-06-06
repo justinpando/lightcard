@@ -4,9 +4,10 @@ using UnityEngine.Serialization;
 [CreateAssetMenu(menuName = "My Assets/ArchetypeData")]
 public class ArchetypeData : ScriptableObject
 {
-    [FormerlySerializedAs("group")] public Card.Archetype archetype;
-    [FormerlySerializedAs("color")] public Color primaryColor;
-    [FormerlySerializedAs("secondaryColor")] public Color highlightColor;
+    public Card.Archetype archetype;
+    [FormerlySerializedAs("primaryColor")] public Color baseColor;
+    public Color highlightColor;
     public Color bgColor;
+    public Color accentColor;
     public Sprite symbol;
 }

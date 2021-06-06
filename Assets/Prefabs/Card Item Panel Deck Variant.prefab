@@ -113,6 +113,38 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 4863374024979688981, guid: 833fd75ba2b4c9c438c1652451af5b07, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4863374024979688981, guid: 833fd75ba2b4c9c438c1652451af5b07, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4863374024979688981, guid: 833fd75ba2b4c9c438c1652451af5b07, type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4863374024979688981, guid: 833fd75ba2b4c9c438c1652451af5b07, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4863374024979688981, guid: 833fd75ba2b4c9c438c1652451af5b07, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 450
+      objectReference: {fileID: 0}
+    - target: {fileID: 4863374024979688981, guid: 833fd75ba2b4c9c438c1652451af5b07, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 4863374024979688981, guid: 833fd75ba2b4c9c438c1652451af5b07, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4863374024979688981, guid: 833fd75ba2b4c9c438c1652451af5b07, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 5383197341953326270, guid: 833fd75ba2b4c9c438c1652451af5b07, type: 3}
       propertyPath: m_VerticalAlignment
       value: 512
@@ -273,6 +305,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Card Item Panel Deck Variant
       objectReference: {fileID: 0}
+    - target: {fileID: 5623435169064536951, guid: 833fd75ba2b4c9c438c1652451af5b07, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6043399092728793422, guid: 833fd75ba2b4c9c438c1652451af5b07, type: 3}
       propertyPath: m_Pivot.y
       value: 0.5
@@ -363,11 +399,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9200292741853712900, guid: 833fd75ba2b4c9c438c1652451af5b07, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 80.7315
+      value: 151.77
       objectReference: {fileID: 0}
     - target: {fileID: 9200292741853712900, guid: 833fd75ba2b4c9c438c1652451af5b07, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 0
+      value: 80
       objectReference: {fileID: 0}
     - target: {fileID: 9200292741853712900, guid: 833fd75ba2b4c9c438c1652451af5b07, type: 3}
       propertyPath: m_AnchoredPosition.y

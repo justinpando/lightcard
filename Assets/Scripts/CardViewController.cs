@@ -28,6 +28,9 @@ public class CardViewController : MonoBehaviour
     public Image[] secondaryColorImages;
 
     public Button selectButton;
+    private static readonly int ColorA = Shader.PropertyToID("_ColorA");
+    private static readonly int ColorB = Shader.PropertyToID("_ColorB");
+
 
     public void Initialize(Card card, ArchetypeData classData)
     {
@@ -52,7 +55,7 @@ public class CardViewController : MonoBehaviour
         borderImage.color = classData.highlightColor;
         bgImage.color = classData.bgColor;
 
-        classImages[1].color = classData.primaryColor;
+        classImages[1].color = classData.baseColor;
 
         foreach (var image in primaryColorImages)
         {
@@ -63,8 +66,7 @@ public class CardViewController : MonoBehaviour
         
         foreach (var image in secondaryColorImages)
         {
-            image.color = classData.primaryColor;
-            //image.color = classData.secondaryColor;
+            image.color = classData.baseColor;
         }
         
         foreach (var image in classImages)
@@ -72,6 +74,14 @@ public class CardViewController : MonoBehaviour
             image.sprite = classData.symbol;
         }
 
+
+        Material cardMat = new Material(cardImage.material);
+
+        cardImage.material = cardMat;
+        borderImage.material = cardMat;
+        cardImage.material.SetColor(ColorA, classData.highlightColor);
+        cardImage.material.SetColor(ColorB, classData.accentColor);
+        
         cardImage.sprite = card.sprite;
     }
     

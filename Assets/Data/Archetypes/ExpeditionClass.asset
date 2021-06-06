@@ -12,8 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a9f0697918ff8854ead8fbd59d7b9bd5, type: 3}
   m_Name: ExpeditionClass
   m_EditorClassIdentifier: 
-  group: 5
-  primaryColor: {r: 1, g: 0.7066557, b: 0.1740042, a: 1}
-  highlightColor: {r: 0.745, g: 0.745, b: 0.60600746, a: 1}
+  archetype: 5
+  baseColor: {r: 1, g: 0.7058824, b: 0.17254902, a: 1}
+  highlightColor: {r: 1, g: 0.7058824, b: 0.17254902, a: 1}
   bgColor: {r: 1, g: 0.7058824, b: 0.17254902, a: 0.2}
+  accentColor: {r: 0.447, g: 0.25498253, b: 0.130077, a: 1}
   symbol: {fileID: 21300000, guid: ec15e3dd855fcec4b8d4c1be38a6c040, type: 3}

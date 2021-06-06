@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   archetype: 4
   type: 2
-  sprite: {fileID: 0}
+  sprite: {fileID: 21300000, guid: 57a314d4b804efd4d85aaf775d38c7ec, type: 3}
   name: Forlorn Whisper
   cost: 0
   power: 0

@@ -12,8 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a9f0697918ff8854ead8fbd59d7b9bd5, type: 3}
   m_Name: HeartClass
   m_EditorClassIdentifier: 
-  group: 2
-  primaryColor: {r: 0.8000001, g: 0.38823533, b: 0.34509805, a: 1}
-  highlightColor: {r: 1, g: 0.48529413, b: 0.43137258, a: 1}
+  archetype: 2
+  baseColor: {r: 0.8000001, g: 0.38823533, b: 0.34509805, a: 1}
+  highlightColor: {r: 1, g: 0.32579184, b: 0.255, a: 1}
   bgColor: {r: 0.8000001, g: 0.38823533, b: 0.34509805, a: 0.2}
+  accentColor: {r: 0.4117647, g: 0.17647061, b: 0.20951755, a: 1}
   symbol: {fileID: 21300000, guid: 94a5e00d8cc59484eb7398a680580d77, type: 3}

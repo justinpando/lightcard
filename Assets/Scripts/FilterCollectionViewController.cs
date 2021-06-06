@@ -41,7 +41,7 @@ public class FilterCollectionViewController : MonoBehaviour
             FilterViewController filterView = Instantiate(filterViewPrefab, classFilterPanel);
             
             //Initialize with group data
-            filterView.Initialize(classData.archetype.ToString(), classData.primaryColor, classData.highlightColor, classData.symbol, new CardFilter("class", card => card.archetype == classData.archetype));
+            filterView.Initialize(classData.archetype.ToString(), classData.baseColor, classData.highlightColor, classData.symbol, new CardFilter("class", card => card.archetype == classData.archetype));
             
             //Subscribe to toggle event 
             filterView.toggle.isOn = false;
@@ -55,7 +55,7 @@ public class FilterCollectionViewController : MonoBehaviour
             FilterViewController filterView = Instantiate(filterViewPrefab, typeFilterPanel);
             
             //Initialize with group data
-            filterView.Initialize(typeData.type.ToString(), typeData.baseColor, typeData.highlightColor, typeData.symbol, new CardFilter("type", card => card.@type == typeData.type));
+            filterView.Initialize(typeData.type.ToString(), typeData.highlightColor, typeData.baseColor, typeData.symbol, new CardFilter("type", card => card.@type == typeData.type));
             
             //Subscribe to toggle event
             filterView.toggle.isOn = false;

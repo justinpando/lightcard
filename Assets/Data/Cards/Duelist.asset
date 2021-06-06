@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   archetype: 0
   type: 0
-  sprite: {fileID: 0}
+  sprite: {fileID: 21300000, guid: a69d6ba653ad22044896fd41b053a7dd, type: 3}
   name: Duelist
   cost: 3
   power: 2
