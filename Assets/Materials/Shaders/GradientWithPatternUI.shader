@@ -109,7 +109,7 @@ Shader "UI/GradientWithPattern"
                 fixed4 frag(v2f i) : SV_Target
                 {
                     fixed pattern = tex2D(_MainTex, i.texcoord * float2(4.5,1) + _Time.y * _TimeScalar).r * _Meta.x;
-                    float t = smoothstep(_Meta.y, _Meta.z, i.texcoord.x + pattern);
+                    float t = smoothstep(_Meta.y-_Meta.z*0.5, _Meta.y + _Meta.z * 0.5, i.texcoord.x - pattern);
                     float alpha = 1;
 
                     #ifdef UNITY_UI_CLIP_RECT
