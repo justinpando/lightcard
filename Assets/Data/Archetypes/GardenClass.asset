@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   archetype: 0
   baseColor: {r: 0.41568628, g: 0.59607846, b: 0.3882353, a: 1}
-  highlightColor: {r: 0.82745105, g: 1, b: 0.7686275, a: 1}
+  highlightColor: {r: 0.5082681, g: 0.865, b: 0.38665503, a: 1}
   bgColor: {r: 0.4156863, g: 0.59607846, b: 0.38823533, a: 0.2}
   accentColor: {r: 0.4156863, g: 0.59607846, b: 0.38823533, a: 1}
-  deckColor: {r: 0.12941177, g: 0.31764707, b: 0.21352719, a: 1}
+  deckColor: {r: 0.2670921, g: 0.383, b: 0.24945393, a: 1}
   symbol: {fileID: 21300000, guid: 912a2eb50cc36684286d0fd118e0cebb, type: 3}

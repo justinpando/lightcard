@@ -5,7 +5,10 @@
         _MainTex ("Texture", 2D) = "white" {}
         _ColorA("Color A",Color) = (1,0,0,1)
         _ColorB("Color B",Color) = (0,1,0,1)
-        _Meta("Meta",Vector) = (0,0,0,0)
+        _PatternVisibility("PatternVisibility",Float) = 0
+        _GradientCenter("GradientCenter",Float) = 0
+        _GradientWidth("GradientWidth",Float) = 0
+        _TimeScalar("TimeScalar",Float) = 0
     }
     SubShader
     {
@@ -39,7 +42,11 @@
             float4 _MainTex_ST;
             float4 _ColorA;
             float4 _ColorB;
-            float4 _Meta;
+            float _PatternVisibility;
+            float _GradientCenter;
+            float _GradientWidth;
+            float _TimeScalar;
+            
             v2f vert (appdata v)
             {
                 v2f o;
@@ -52,8 +59,8 @@
             fixed4 frag (v2f i) : SV_Target
             {
 
-                fixed pattern = tex2D(_MainTex, i.uv*float2(5,1)+_Time.y*0.2).r*_Meta.x;
-                float t = smoothstep(_Meta.y, _Meta.z, i.uv.x + pattern);
+                fixed pattern = tex2D(_MainTex, i.uv*float2(4.5,1)+_Time.y*_TimeScalar).r*_PatternVisibility;
+                float t = smoothstep(_GradientCenter-_GradientWidth*0.5, _GradientCenter + _GradientWidth * 0.5, i.uv.x + pattern);
                 return lerp(_ColorA,_ColorB,t);
             }
             ENDCG
