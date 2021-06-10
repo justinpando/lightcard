@@ -121,7 +121,7 @@ public class DeckItemView : MonoBehaviour
             singleClassIcon[0].color = archetypeData1.highlightColor;
             singleClassIcon[1].color = archetypeData1.baseColor;
 
-            bgImage.material.SetColor(ColorA, archetypeData1.baseColor);
+            bgImage.material.SetColor(ColorA, archetypeData1.deckColor);
             bgImage.material.SetColor(ColorB, archetypeData1.accentColor);
             
             // bgGradient.EffectGradient.SetKeys(
@@ -151,8 +151,8 @@ public class DeckItemView : MonoBehaviour
             dualClassIcons[3].color = archetypeData2.baseColor;
             
             //borderImage.material = cardMat;
-            bgImage.material.SetColor(ColorA, archetypeData1.baseColor);
-            bgImage.material.SetColor(ColorB, archetypeData2.baseColor);
+            bgImage.material.SetColor(ColorA, archetypeData1.deckColor);
+            bgImage.material.SetColor(ColorB, archetypeData2.accentColor);
             
             // bgGradient.EffectGradient.SetKeys(
             //     new GradientColorKey[]

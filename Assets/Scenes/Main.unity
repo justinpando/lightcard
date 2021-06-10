@@ -11076,6 +11076,42 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 962599675}
     m_Modifications:
+    - target: {fileID: 2055485883463682620, guid: 79ee0c332557550439ead10d52a06f10, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2055485883463682620, guid: 79ee0c332557550439ead10d52a06f10, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2055485883463682620, guid: 79ee0c332557550439ead10d52a06f10, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2055485883463682620, guid: 79ee0c332557550439ead10d52a06f10, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2304931151309205647, guid: 79ee0c332557550439ead10d52a06f10, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3581138426263041244, guid: 79ee0c332557550439ead10d52a06f10, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3581138426263041244, guid: 79ee0c332557550439ead10d52a06f10, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3581138426263041244, guid: 79ee0c332557550439ead10d52a06f10, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3581138426263041244, guid: 79ee0c332557550439ead10d52a06f10, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6457046776160510892, guid: 79ee0c332557550439ead10d52a06f10, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -11163,6 +11199,22 @@ PrefabInstance:
     - target: {fileID: 6457046776160510895, guid: 79ee0c332557550439ead10d52a06f10, type: 3}
       propertyPath: m_Name
       value: Deck Item Panel (14)
+      objectReference: {fileID: 0}
+    - target: {fileID: 8430429492665104270, guid: 79ee0c332557550439ead10d52a06f10, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8430429492665104270, guid: 79ee0c332557550439ead10d52a06f10, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8430429492665104270, guid: 79ee0c332557550439ead10d52a06f10, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8430429492665104270, guid: 79ee0c332557550439ead10d52a06f10, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 79ee0c332557550439ead10d52a06f10, type: 3}

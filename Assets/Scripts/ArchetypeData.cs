@@ -5,9 +5,10 @@ using UnityEngine.Serialization;
 public class ArchetypeData : ScriptableObject
 {
     public Card.Archetype archetype;
-    [FormerlySerializedAs("primaryColor")] public Color baseColor;
+    public Color baseColor;
     public Color highlightColor;
     public Color bgColor;
     public Color accentColor;
+    public Color deckColor;
     public Sprite symbol;
 }

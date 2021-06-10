@@ -17,4 +17,5 @@ MonoBehaviour:
   highlightColor: {r: 0.83699995, g: 0.47141376, b: 0.7888965, a: 1}
   bgColor: {r: 0.34117648, g: 0.19215688, b: 0.32156864, a: 0.2}
   accentColor: {r: 0.589, g: 0.3306667, b: 0.5610077, a: 1}
+  deckColor: {r: 0.34117648, g: 0.19215688, b: 0.32156864, a: 1}
   symbol: {fileID: 21300000, guid: c15494a639ed2fb4b86e47aca72eddc7, type: 3}
