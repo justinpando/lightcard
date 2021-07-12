@@ -1305,7 +1305,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a2b4794c23d2cf5449f4f58404437e7b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  canvasGroup: {fileID: 0}
+  canvasGroup: {fileID: 760952692355516896}
   fadeDuration: 0.5
   visibleOnAwake: 0
   setsInteractability: 0
