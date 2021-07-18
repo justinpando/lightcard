@@ -70,7 +70,7 @@ public class Deck
     {
         if (initialized) return;
         
-        Debug.Log($"Initializing deck: {name}");
+        //Debug.Log($"Initializing deck: {name}");
         
         cards = new List<Card>(cards.OrderBy(x => x.cost));
         

@@ -19,5 +19,10 @@ public class CardLibrary : ScriptableObject
         
         Decks = Decks.Where(x => x != null).ToList();
     }
+
+    public void SortDecks(List<DeckItemView> deckViews)
+    {
+        Decks = new List<Deck>(Decks.OrderBy(deck => deckViews.FindIndex(deckView => deckView.deck == deck)));
+    }
     
 }

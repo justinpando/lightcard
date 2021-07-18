@@ -22,17 +22,17 @@ public class DeckItemView : MonoBehaviour
     public TMP_Text abilityText;
     public TMP_Text charmText;
 
-    
     public Button selectButton;
     public Button deleteButton;
     public Button copyButton;
 
+    private CardLibrary library;
     public Deck deck;
 
     public System.Action OnSelectButtonPressed;
     public System.Action OnDeleteButtonPressed;
     public System.Action OnCopyButtonPressed;
-    private CardLibrary library;
+    
     private static readonly int ColorA = Shader.PropertyToID("_ColorA");
     private static readonly int ColorB = Shader.PropertyToID("_ColorB");
 

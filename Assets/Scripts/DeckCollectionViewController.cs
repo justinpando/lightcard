@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.UI.Extensions;
 
 public class DeckCollectionViewController : MonoBehaviour
 {
@@ -19,6 +20,9 @@ public class DeckCollectionViewController : MonoBehaviour
     private DeckEditorViewController deckEditor;
     private SaveDataManager saveManager;
 
+    public ReorderableList mainReorderableList;
+    public ReorderableList deleteDropArea;
+    
     public void Initialize(CardLibrary library, CardViewController cardViewPrefab, DeckItemView deckItemViewPrefab, DeckEditorViewController deckEditor, SaveDataManager saveManager)
     {
         this.saveManager = saveManager;
@@ -33,8 +37,41 @@ public class DeckCollectionViewController : MonoBehaviour
         InitializeDeckCollection();
 
         deckEditor.OnClose += ShowView;
+
+        mainReorderableList.OnElementRemoved.AddListener(HandleElementDragged);
+        mainReorderableList.OnElementDropped.AddListener(HandleElementDropped);
+
+        deleteDropArea.OnElementAdded.AddListener(HandleElementDroppedToDelete);
     }
 
+    private void HandleElementDragged(ReorderableList.ReorderableListEventStruct item)
+    {
+        DeckItemView view = item.SourceObject.GetComponent<DeckItemView>();
+        
+        Debug.Log($"Dragged deck: {view.deck.name}");
+    }
+
+    private void HandleElementDropped(ReorderableList.ReorderableListEventStruct item)
+    {
+        DeckItemView view = item.DroppedObject.GetComponent<DeckItemView>();
+        Debug.Log($"Dropped deck: {view.deck.name} at index {item.ToIndex}");
+
+        deckViews.Remove(view);
+        deckViews.Insert(item.ToIndex, view);
+        
+        library.SortDecks(deckViews);
+        saveManager.Save();
+    }
+    
+    private void HandleElementDroppedToDelete(ReorderableList.ReorderableListEventStruct item)
+    {
+        DeckItemView view = item.SourceObject.GetComponent<DeckItemView>();
+        
+        Debug.Log($"Dropped deck in delete area: {view.deck.name}");
+        
+        DeleteDeck(view);
+    }
+    
     private void InitializeDeckCollection()
     {
         deckViews = GetComponentsInChildren<DeckItemView>().ToList();
@@ -68,6 +105,8 @@ public class DeckCollectionViewController : MonoBehaviour
     
     private void CopyDeck(DeckItemView deckView)
     {
+        Debug.Log($"Copying deck: {deckView.name}");
+        
         var deck = new Deck {name = deckView.deck.name};
         deck.SetCardList(deckView.deck.cards);
 
@@ -95,11 +134,13 @@ public class DeckCollectionViewController : MonoBehaviour
 
     private void DeleteDeck(DeckItemView deckView)
     {
+        Debug.Log($"Deleting deck: {deckView.name}");
+        
         deckViews.Remove(deckView);
         Destroy(deckView.gameObject);
 
         library.Decks.Remove(deckView.deck);
-        
+
         LayoutRebuilder.ForceRebuildLayoutImmediate(deckCollectionPanel as RectTransform);
     }
     
