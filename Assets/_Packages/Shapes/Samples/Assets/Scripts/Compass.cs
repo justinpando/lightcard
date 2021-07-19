@@ -47,7 +47,7 @@ namespace Shapes {
 			}
 
 			Draw.LineEndCaps = LineEndCap.Square;
-			Draw.LineThickness = lineThickness;
+			Draw.Thickness = lineThickness;
 
 
 			Vector2 trianglePos = compArcOrigin + Vector2.up * ( bendRadius + 0.01f );

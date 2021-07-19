@@ -7,7 +7,7 @@ namespace Shapes {
 	/// <summary>A Rectangle shape component</summary>
 	[ExecuteAlways]
 	[AddComponentMenu( "Shapes/Rectangle" )]
-	public class Rectangle : ShapeRendererFillable {
+	public partial class Rectangle : ShapeRenderer, IDashable, IFillable {
 
 		/// <summary>Types of rectangles</summary>
 		public enum RectangleType {
@@ -17,11 +17,11 @@ namespace Shapes {
 			/// <summary>Filled rectangle with rounded corners</summary>
 			RoundedSolid,
 
-			/// <summary>Hollow rectangle with hard corners</summary>
-			HardHollow,
+			/// <summary>Border rectangle with hard corners</summary>
+			HardBorder,
 
-			/// <summary>Hollow rectangle with rounded corners</summary>
-			RoundedHollow
+			/// <summary>Border rectangle with rounded corners</summary>
+			RoundedBorder
 		}
 
 		/// <summary>Types of corners on rectangles</summary>
@@ -33,11 +33,14 @@ namespace Shapes {
 			PerCorner
 		}
 
-		/// <summary>Whether or not this rectangle is hollow</summary>
-		public bool IsHollow => type == RectangleType.HardHollow || type == RectangleType.RoundedHollow;
+		/// <summary>Whether or not this is a border rectangle</summary>
+		public bool IsBorder => type == RectangleType.HardBorder || type == RectangleType.RoundedBorder;
+
+		[System.Obsolete( "Please use IsBorder instead", true )]
+		public bool IsHollow => type == RectangleType.HardBorder || type == RectangleType.RoundedBorder;
 
 		/// <summary>Whether or not this rectangle has rounded corners</summary>
-		public bool IsRounded => type == RectangleType.RoundedSolid || type == RectangleType.RoundedHollow;
+		public bool IsRounded => type == RectangleType.RoundedSolid || type == RectangleType.RoundedBorder;
 
 		[SerializeField] RectPivot pivot = RectPivot.Center;
 		/// <summary>Get or set where the pivot (0,0) should be located in this rectangle</summary>
@@ -70,7 +73,7 @@ namespace Shapes {
 		}
 
 		[SerializeField] RectangleType type = RectangleType.HardSolid;
-		/// <summary>Get or set what type of rectangle this is (hollow vs not, hard vs rounded corners)</summary>
+		/// <summary>Get or set what type of rectangle this is (border vs filled, hard vs rounded corners)</summary>
 		public RectangleType Type {
 			get => type;
 			set {
@@ -110,13 +113,18 @@ namespace Shapes {
 			set => SetVector4Now( ShapesMaterialUtils.propCornerRadii, cornerRadii = new Vector4( Mathf.Max( 0f, value.x ), Mathf.Max( 0f, value.y ), Mathf.Max( 0f, value.z ), Mathf.Max( 0f, value.w ) ) );
 		}
 
+		[Tooltip( "The thickness of the rectangle, in the given thickness space" )]
 		[SerializeField] float thickness = 0.1f;
-		/// <summary>The thickness of the rectangle (if hollow)</summary>
+
+		/// <summary>The thickness of the rectangle (if border rectangle)</summary>
 		public float Thickness {
 			get => thickness;
 			set => SetFloatNow( ShapesMaterialUtils.propThickness, thickness = Mathf.Max( 0f, value ) );
 		}
+
+		[Tooltip( "The space in which thickness is defined" )]
 		[SerializeField] ThicknessSpace thicknessSpace = Shapes.ThicknessSpace.Meters;
+
 		/// <summary>The space in which thickness is defined</summary>
 		public ThicknessSpace ThicknessSpace {
 			get => thicknessSpace;
@@ -142,7 +150,9 @@ namespace Shapes {
 			SetFloat( ShapesMaterialUtils.propThickness, thickness );
 			SetIntNow( ShapesMaterialUtils.propThicknessSpace, (int)thicknessSpace );
 			SetFillProperties();
+			SetAllDashValues( now: false );
 		}
+
 
 		#if UNITY_EDITOR
 		private protected override void ShapeClampRanges() {
@@ -160,6 +170,7 @@ namespace Shapes {
 			Vector2 center = pivot == RectPivot.Center ? default : size / 2f;
 			return new Bounds( center, size );
 		}
+
 	}
 
 }

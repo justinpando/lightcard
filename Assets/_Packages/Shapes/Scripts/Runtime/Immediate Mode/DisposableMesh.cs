@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 // Shapes © Freya Holmér - https://twitter.com/FreyaHolmer/
@@ -13,8 +14,9 @@ namespace Shapes {
 		protected Mesh mesh;
 		protected bool meshDirty = false;
 		bool hasMesh = false; // used to detect if mesh needs to update on the fly on draw
+		bool disposeWhenFullyReleased = false;
 
-		internal DrawCommand lastCommandUsedIn = null;
+		internal List<DrawCommand> usedByCommands = null;
 
 		protected void EnsureMeshExists() {
 			if( hasMesh == false || mesh == null ) {
@@ -24,15 +26,41 @@ namespace Shapes {
 			}
 		}
 
-		public void Dispose() {
-			if( hasMesh ) {
-				if( lastCommandUsedIn != null && lastCommandUsedIn.hasRendered == false )
-					lastCommandUsedIn.cachedAssets.Add( mesh ); // we need to keep the mesh around in the draw command, so, don't destroy it just yet
-				else
-					mesh.DestroyBranched();
+		// called when rendering a polyline
+		internal void RegisterToCommandBuffer( DrawCommand cmd ) {
+			if( usedByCommands == null ) {
+				usedByCommands = ListPool<DrawCommand>.Alloc();
+				Add();
+			} else if( usedByCommands.Contains( cmd ) == false )
+				Add();
 
-				activeMeshCount--;
-				hasMesh = false;
+			void Add() {
+				usedByCommands.Add( cmd );
+				cmd.cachedMeshes.Add( this );
+			}
+		}
+
+		// called when a command is done rendering (or cleared)
+		internal void ReleaseFromCommand( DrawCommand cmd ) {
+			usedByCommands.Remove( cmd );
+			if( usedByCommands.Count == 0 && disposeWhenFullyReleased )
+				Dispose(); // now we can dispose this mesh data, it's no longer used
+		}
+		
+		// • Draw.Polyline_Internal, Draw.Polygon_Internal calls RegisterToCommandBuffer if a buffer is being used
+		// • if a Disposable mesh is disposed while registered, it will be marked for deletion later
+		// • else if Dispose is called, it will delete/actually dispose the asset
+		// • when a command buffer is done rendering, it will call ReleaseFromCommand(),
+		// which will unregister and delete if no other buffers are using it
+		public void Dispose() {
+			disposeWhenFullyReleased = true; // when called inside a DrawCommand that still needs this mesh
+			if( hasMesh ) {
+				if( usedByCommands == null || usedByCommands.Count == 0 ) {
+					ListPool<DrawCommand>.Free( usedByCommands );
+					mesh.DestroyBranched();
+					activeMeshCount--;
+					hasMesh = false;
+				}
 			}
 		}
 
@@ -55,6 +83,7 @@ namespace Shapes {
 				updateMesh();
 				meshDirty = false;
 			}
+
 			outMesh = mesh;
 			return hasMesh;
 		}

@@ -92,7 +92,7 @@ namespace Shapes {
 				cmd.Clear();
 				drawCmds.Remove( cmd );
 			} else
-				Debug.LogError( $"Tried to remove unlisted draw command {cmd.name}" );
+				Debug.LogError( $"Tried to remove unlisted draw command {cmd.id}" );
 		}
 		#else
 		// this is all extremely cursed but there is literally no way to know when a command is done drawing in the built-in RP
@@ -112,10 +112,11 @@ namespace Shapes {
 
 		bool hasValidCamera;
 		internal bool hasRendered; // set by the static events above
-		internal string name;
+		internal int id;
 		bool pushPopState;
 		Camera cam;
 		internal readonly List<Object> cachedAssets = ListPool<Object>.Alloc();
+		internal readonly List<DisposableMesh> cachedMeshes = ListPool<DisposableMesh>.Alloc();
 		internal readonly List<ShapeDrawCall> drawCalls = ListPool<ShapeDrawCall>.Alloc();
 		#if SHAPES_URP
 		public RenderPassEvent camEvt;
@@ -134,11 +135,11 @@ namespace Shapes {
 		internal DrawCommand Initialize( Camera cam, CameraEvent cameraEvent = CameraEvent.BeforeImageEffects ) {
 		#endif
 			this.cam = cam;
+			this.id = bufferID++;
 			hasValidCamera = cam != null;
 			if( hasValidCamera == false )
 				Debug.LogWarning( $"null camera passed into {nameof(DrawCommand)}, nothing will be drawn" );
 			this.camEvt = cameraEvent;
-			this.name = "Shapes Draw Command"; // to avoid allocation at runtime
 			cBuffersWriting.Push( this );
 			drawCommandWriteNestLevel++;
 			pushPopState = ShapesConfig.Instance.pushPopStateInDrawCommands;
@@ -154,7 +155,7 @@ namespace Shapes {
 		}
 
 		void Clear() { // prepares for removing it from the list, if we want to delete it
-			CleanupCachedAssets();
+			CleanupCachedAssetsAndMeshes();
 			#if !SHAPES_URP && !SHAPES_HDRP
 			RemoveFromCamera();
 			#endif
@@ -163,12 +164,15 @@ namespace Shapes {
 				drawCalls[i].Cleanup();
 			ListPool<ShapeDrawCall>.Free( drawCalls );
 			ListPool<Object>.Free( cachedAssets );
+			ListPool<DisposableMesh>.Free( cachedMeshes );
 			ObjectPool<DrawCommand>.Free( this );
 		}
 
-		void CleanupCachedAssets() {
+		void CleanupCachedAssetsAndMeshes() {
 			foreach( Object asset in cachedAssets )
 				asset.DestroyBranched();
+			foreach( DisposableMesh mesh in cachedMeshes )
+				mesh.ReleaseFromCommand( this );
 		}
 
 		public void Dispose() {
@@ -200,7 +204,7 @@ namespace Shapes {
 
 		void AddToCamera() {
 			cmdBuf = ObjectPool<CommandBuffer>.Alloc();
-			cmdBuf.name = name;
+			cmdBuf.name = "Shapes Command Buffer";
 			AppendToBuffer( cmdBuf );
 			cam.AddCommandBuffer( camEvt, cmdBuf );
 		}
