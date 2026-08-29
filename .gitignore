@@ -9,6 +9,7 @@
 /[Bb]uilds/
 /[Ll]ogs/
 /[Mm]emoryCaptures/
+/[Uu]serSettings/
 
 # Asset meta data should only be ignored when the corresponding asset is also ignored
 !/[Aa]ssets/**/*.meta
@@ -22,6 +23,9 @@
 # Visual Studio cache directory
 .vs/
 
+# VS Code workspace settings (per-user)
+.vscode/
+
 # Gradle cache directory
 .gradle/
 
@@ -31,6 +35,7 @@ ExportedObj/
 *.csproj
 *.unityproj
 *.sln
+*.slnx
 *.suo
 *.tmp
 *.user

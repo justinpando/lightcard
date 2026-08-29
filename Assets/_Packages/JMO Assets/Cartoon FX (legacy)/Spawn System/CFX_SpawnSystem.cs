@@ -24,7 +24,9 @@ public class CFX_SpawnSystem : MonoBehaviour
 	/// </param>
 	static public GameObject GetNextObject(GameObject sourceObj, bool activateObject = true)
 	{
-		int uniqueId = sourceObj.GetInstanceID();
+		// Object.GetHashCode() returns the legacy instance id on all Unity versions and
+		// avoids the obsolete GetInstanceID of Unity 6.3+; only used as a pool identity key
+		int uniqueId = sourceObj.GetHashCode();
 		
 		if(!instance.poolCursors.ContainsKey(uniqueId))
 		{
@@ -133,7 +135,7 @@ public class CFX_SpawnSystem : MonoBehaviour
 	
 	private void addObjectToPool(GameObject sourceObject, int number)
 	{
-		int uniqueId = sourceObject.GetInstanceID();
+		int uniqueId = sourceObject.GetHashCode();
 
 		//Add new entry if it doesn't exist
 		if(!instantiatedObjects.ContainsKey(uniqueId))
@@ -174,8 +176,8 @@ public class CFX_SpawnSystem : MonoBehaviour
 	
 	private void removeObjectsFromPool(GameObject sourceObject)
 	{
-		int uniqueId = sourceObject.GetInstanceID();
-		
+		int uniqueId = sourceObject.GetHashCode();
+
 		if(!instantiatedObjects.ContainsKey(uniqueId))
 		{
 			Debug.LogWarning("[CFX_SpawnSystem.removeObjectsFromPool()] There aren't any preloaded object for: " + sourceObject.name + " (ID:" + uniqueId + ")\n", this.gameObject);
