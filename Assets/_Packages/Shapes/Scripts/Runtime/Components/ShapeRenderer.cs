@@ -419,7 +419,11 @@ namespace Shapes {
 
 			// the next two modes are copy-sensitive, meaning that if we duplicate this object,
 			// we also have to duplicate the mesh and update which mesh the duplicate is pointing to
+#if UNITY_6000_3_OR_NEWER
+			int id = (int)gameObject.GetEntityId();
+#else
 			int id = gameObject.GetInstanceID();
+#endif
 
 			bool createMesh = Mesh == null || meshOwnerID != id;
 

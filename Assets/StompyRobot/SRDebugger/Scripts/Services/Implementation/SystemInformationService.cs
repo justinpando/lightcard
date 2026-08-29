@@ -214,7 +214,8 @@
                 InfoEntry.Create("Image Effects", UnityEngine.SystemInfo.supportsImageEffects),
                 InfoEntry.Create("Cubemaps", UnityEngine.SystemInfo.supportsRenderToCubemap),
                 InfoEntry.Create("Shadows", UnityEngine.SystemInfo.supportsShadows),
-                InfoEntry.Create("Stencil", UnityEngine.SystemInfo.supportsStencil),
+                //SystemInfo.supportsStencil always returns true and is obsolete (error) in Unity 6.3+
+                InfoEntry.Create("Stencil", true),
                 InfoEntry.Create("Sparse Textures", UnityEngine.SystemInfo.supportsSparseTextures)
             });
 #pragma warning restore 618
