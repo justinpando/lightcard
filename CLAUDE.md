@@ -52,12 +52,16 @@ in the editor.
 ## Current state / roadmap position
 
 Roadmap is in `Docs/design/README.md`. Done: phase 0 (build blockers and
-deck-builder bugs fixed), phase 1 (engine + 20-card Expedition/Garden set), and
-the first slice of the phantom AI (heuristic agent + personalities +
-match runner). **Next: phase 2** — wire `Field.unity` to the engine: a
-GameEvent-consuming view layer plus input that emits Commands, playing against
-`HeuristicAgent`. `_LightCard.asmdef` will need a reference to `LightCard.Core`
-(name-based references work).
+deck-builder bugs fixed), phase 1 (engine + 20-card Expedition/Garden set), the
+first slice of the phantom AI (heuristic agent + personalities + match runner),
+and the first slice of phase 2: `Field.unity` is wired to the engine
+(`MatchContext` + view controllers in `Assets/Scripts/Field/`) and playable
+against `HeuristicAgent` — click-driven play/shift/attack/replace, AI turns,
+HUD. Remaining phase 2 work: animate from the `GameEvent` stream instead of
+full-state refreshes, a history/log panel, match end/restart flow, and richer
+unit visuals. Decks thin out on entry (cards missing from `CardCatalogV1` are
+skipped, then padded back from the catalog) until more of the set is
+implemented.
 
 ## Caveats
 
