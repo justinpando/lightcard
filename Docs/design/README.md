@@ -55,7 +55,7 @@ a **deterministic, headless rules engine** in a plain C# assembly
 | Phase | Deliverable | Notes |
 | --- | --- | --- |
 | 0. Hygiene | Buildable project, bugs fixed | Done on this branch. Remaining: revoke the leaked Google OAuth credentials, upgrade off Unity 2020.3 (EOL) before netcode work |
-| 1. Rules engine | `LightCard.Core` + tests; ~20 cards from Expedition and Garden playable headless | The make-or-break phase. Text-only battle log is enough to validate |
+| 1. Rules engine | `LightCard.Core` + tests; ~20 cards from Expedition and Garden playable headless | First slice done on this branch: `Assets/Scripts/Core` + `CoreTests/`, rulings in [rules-v1.md](rules-v1.md) |
 | 2. Playable match | Field scene wired to the engine; play vs. a Tier-1 heuristic AI | Reuses the existing Field.unity art layout |
 | 3. The Descent | Run map, drafting, local phantom pool (starter decks + own saved decks as stand-in phantoms) | Fully offline-capable |
 | 4. Services | Accounts, phantom upload/fetch, then multiplayer | Multiplayer last: it needs the engine, the UI, and the service layer all mature |

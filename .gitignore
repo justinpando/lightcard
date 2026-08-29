@@ -59,3 +59,7 @@ sysinfo.txt
 crashlytics-build.properties
 
 .idea/
+
+# .NET build output (CoreTests)
+CoreTests/bin/
+CoreTests/obj/
