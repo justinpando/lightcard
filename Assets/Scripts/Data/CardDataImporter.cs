@@ -1,46 +1,58 @@
 //Editor-only tool living in a runtime assembly; guarded so player builds compile
 #if UNITY_EDITOR
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Threading;
 using GoogleSheetsToUnity;
-using Sirenix.OdinInspector;
-using Sirenix.OdinInspector.Editor;
 using UnityEditor;
 using UnityEngine;
 
-public class CardDataImporter : OdinEditorWindow
+public class CardDataImporter : EditorWindow
 {
     [MenuItem("LightCard/Card Data Import")]
     private static void OpenWindow()
     {
-        GetWindow<CardDataImporter>().Show();
+        GetWindow<CardDataImporter>("Card Data Import").Show();
     }
 
-    [Button]
+    private void OnGUI()
+    {
+        GUILayout.Label("Imports the Cards tab of the LT Cards sheet into Assets/Data/Cards.", EditorStyles.wordWrappedLabel);
+        GUILayout.Space(8);
+
+        if (GUILayout.Button("Update From Sheet"))
+        {
+            UpdateFromSheet();
+        }
+
+        if (importedCards.Count > 0)
+        {
+            GUILayout.Space(8);
+            GUILayout.Label($"Last import: {importedCards.Count} cards", EditorStyles.boldLabel);
+        }
+    }
+
     public void UpdateFromSheet()
     {
         var search = new GSTU_Search("1yQOt8G8o4LON2B3nm3Oreq9GnfaWEn6Nx5Iourz_4Pw",
             "Cards", "A1", "G500", "C", 1);
-        
+
         SpreadsheetManager.Read(search, Callback);
     }
 
     private void Callback(GstuSpreadSheet ss)
     {
         importedCards.Clear();
-        
+
         List<GSTU_Cell> cells = ss.columns["Name"];
 
         Debug.Log($"Cell count: {cells.Count}");
 
         var newCollection = CreateInstance<CardCollection>();
-        
+
         for (int n = 0; n < cells.Count; n++)
         {
             if(cells[n].value == "" || cells[n].value == "Name") continue;
-            
+
             Card card = CreateInstance<Card>();
             card.name = cells[n].value;
 
@@ -64,7 +76,7 @@ public class CardDataImporter : OdinEditorWindow
             {
                 card.power = atk;
             }
-            
+
             if(int.TryParse(ss[card.name, "Def"].value, out int def))
             {
                 card.life = def;
@@ -81,20 +93,20 @@ public class CardDataImporter : OdinEditorWindow
 
             Debug.Log($"Created card {n}: {card.name}");
             importedCards.Add(card);
-            
+
             AssetDatabase.CreateAsset(card, "Assets/Data/Cards/" + card.name + ".asset");
-            
+
             newCollection.cards.Add(card);
         }
 
         string date = DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss");
         string collectionName = $"CardCollection_{date}";
-        
+
         AssetDatabase.CreateAsset(newCollection, "Assets/Data/CardCollections/" + collectionName + ".asset");
-        
+
         Debug.Log($"Imported {importedCards.Count} cards.");
     }
-    
-    public List<Card> importedCards;
+
+    public List<Card> importedCards = new List<Card>();
 }
 #endif

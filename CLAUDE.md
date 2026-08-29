@@ -1,6 +1,7 @@
 # Light Card Tactics (lightcard)
 
-A tactical collectible card game prototype in Unity **2020.3.1f1**. 1v1 on a
+A tactical collectible card game prototype in Unity **6 (6000.3+)** — originally
+built in 2020.3, migrated in Aug 2026. 1v1 on a
 3-lane x 6-row board (each player owns a 3x3 half); six Archetypes representing
 psychological motivations (Garden, Tower, Expedition, Ocean, Atelier, Heart);
 an Affinity/energy ramp economy driven by replacing cards.
@@ -15,6 +16,7 @@ an Affinity/energy ramp economy driven by replacing cards.
 | `Assets/Scripts/Data/` | JSON save system + `CardDataImporter` (editor-only Google Sheets → ScriptableObject importer; currently unconfigured, see caveats). |
 | `Assets/Scripts/Field/` | Mostly-empty stubs for the match view; `Field.unity` is art layout with no logic yet. |
 | `CoreTests/` | Standalone .NET test runner for the engine — no Unity needed. |
+| `Packages/com.unity.uiextensions/` | Unity UI Extensions v3.0.0, **embedded and locally patched** (Unity 6.3 EntityId guards) — upstream doesn't compile on 6000.3+, so keep the embedded copy rather than a manifest URL. |
 | `Docs/design/` | Design docs: roadmap (`README.md`), roguelike mode, multiplayer, phantom AI, and **`rules-v1.md`** (engine rulings — read before changing rules code). |
 
 Game design source of truth is the "LT Cards" Google Sheet (cards, keywords,
@@ -32,8 +34,9 @@ in the editor.
 
 ## Conventions
 
-- **Engine code is C# 8 max** (Unity 2020.3 compiler) — `CoreTests.csproj` pins
-  `LangVersion 8.0` to enforce this. No records, no init-only setters.
+- **Engine code stays at C# 8** (`CoreTests.csproj` pins `LangVersion 8.0`) —
+  a conservative floor kept from the 2020.3 era; raise it deliberately, not
+  incidentally.
 - The engine must stay **deterministic**: all randomness through
   `GameState.NextRandom`, no wall-clock, no iteration over unordered
   collections where order reaches game state.
@@ -63,10 +66,14 @@ GameEvent-consuming view layer plus input that emits Commands, playing against
   Cloud Console; deleting the file did not remove them from history. Never
   commit `GSTU_Config.asset` or anything under `StreamingAssets/Key/`.
 - The Sheets importer (`LightCard/Card Data Import` menu) null-refs until a new
-  GSTU config with fresh credentials is created.
-- Unity 2020.3 is past EOL; an engine upgrade is planned before any
-  networking work (see `Docs/design/multiplayer-mode.md`).
+  GSTU config with fresh credentials is created. It also still uses the
+  legacy `WWW` API (obsolete warning) — migrate to `UnityWebRequest` when
+  reviving it.
+- **Removed in the Unity 6 migration** (don't reintroduce casually): Odin
+  Inspector, DOTween Pro, SRDebugger, and the old UI Extensions samples. If
+  tweening is needed later, add a current DOTween fresh.
+- Shapes, Translucent Image, and Cartoon FX are old versions under
+  `Assets/_Packages/` — expect Unity 6 breakage when scenes using them are
+  touched; update or replace them then. Keep the repo private (paid assets).
 - `Assets/Scripts/Utility/` is largely vendored/unreferenced code — don't
   extend it; add new utilities near their use site.
-- Paid assets (Odin, DOTween Pro, Shapes, SRDebugger, etc.) are committed under
-  `Assets/` — keep the repo private.

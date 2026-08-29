@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Sirenix.Utilities;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -43,8 +42,8 @@ public class DeckItemView : MonoBehaviour
 
         deck.OnCardsUpdated += UpdateView;
         
-        singleClassIcon.ForEach(x => x.gameObject.SetActive(false));
-        dualClassIcons.ForEach(x => x.gameObject.SetActive(false));
+        foreach (var icon in singleClassIcon) icon.gameObject.SetActive(false);
+        foreach (var icon in dualClassIcons) icon.gameObject.SetActive(false);
         
         UpdateView();
         
@@ -104,13 +103,13 @@ public class DeckItemView : MonoBehaviour
         bgGradient.enabled = false;
         highlightImage.color = archetypeData1.highlightColor;
         
-        infoIcons.ForEach(x => x.color = archetypeData1.highlightColor);
+        foreach (var icon in infoIcons) icon.color = archetypeData1.highlightColor;
         
         //If there's only one archetype, 
         if (archetype2.Value == 0)
         {
-            dualClassIcons.ForEach(x => x.gameObject.SetActive(false));
-            
+            foreach (var icon in dualClassIcons) icon.gameObject.SetActive(false);
+
             //Show the single archetype icon
             foreach (Image image in singleClassIcon)
             {
@@ -137,8 +136,8 @@ public class DeckItemView : MonoBehaviour
             var archetypeData2 = library.classes.Find(x => x.archetype == archetype2.Key);
             
             //Otherwise show the dual archetype icons
-            singleClassIcon.ForEach(x => x.gameObject.SetActive(false));
-            dualClassIcons.ForEach(x => x.gameObject.SetActive(true));
+            foreach (var icon in singleClassIcon) icon.gameObject.SetActive(false);
+            foreach (var icon in dualClassIcons) icon.gameObject.SetActive(true);
 
             dualClassIcons[0].sprite = archetypeData1.symbol;
             dualClassIcons[1].sprite = archetypeData1.symbol;
