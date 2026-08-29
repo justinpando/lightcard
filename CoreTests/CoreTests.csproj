@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Compiles Assets/Scripts/Core directly, outside Unity. LangVersion is pinned
+       to 8.0 so the engine stays compatible with Unity 2020.3's compiler. -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <LangVersion>8.0</LangVersion>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <RootNamespace>LightCard.CoreTests</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="../Assets/Scripts/Core/**/*.cs" />
+  </ItemGroup>
+
+</Project>
