@@ -24,11 +24,9 @@ namespace UnityEngine.UI.Extensions
             return
                 !gameObject.scene.IsValid() &&
                 !gameObject.scene.isLoaded &&
-#if UNITY_6000_3_OR_NEWER
-                (int)gameObject.GetEntityId() >= 0 &&
-#else
-                gameObject.GetInstanceID() >= 0 &&
-#endif
+                //Object.GetHashCode() returns the legacy instance id on all Unity versions,
+                //without the obsolete GetInstanceID/EntityId-to-int conversions of Unity 6.3+
+                gameObject.GetHashCode() >= 0 &&
                 // I noticed that ones with IDs under 0 were objects I didn't recognize
                 !gameObject.hideFlags.HasFlag(HideFlags.HideInHierarchy);
                     // I don't care about GameObjects *inside* prefabs, just the overall prefab.

@@ -419,11 +419,10 @@ namespace Shapes {
 
 			// the next two modes are copy-sensitive, meaning that if we duplicate this object,
 			// we also have to duplicate the mesh and update which mesh the duplicate is pointing to
-#if UNITY_6000_3_OR_NEWER
-			int id = (int)gameObject.GetEntityId();
-#else
-			int id = gameObject.GetInstanceID();
-#endif
+			// Object.GetHashCode() returns the legacy instance id on all Unity versions and
+			// avoids the obsolete GetInstanceID/EntityId-to-int conversions of Unity 6.3+;
+			// only used as an identity token to detect duplicated objects
+			int id = gameObject.GetHashCode();
 
 			bool createMesh = Mesh == null || meshOwnerID != id;
 
