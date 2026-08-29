@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using LightCard.Core;
+using LightCard.Core.Agents;
 
 namespace LightCard.CoreTests
 {
@@ -345,6 +346,45 @@ namespace LightCard.CoreTests
                 AssertTrue(logA.Count > 20, "playout actually did things");
             });
 
+            Test("Agent: takes lethal when available", () =>
+            {
+                var state = EmptyGame();
+                var knight = PlayUnit(state, 0, "Siege Knight", 0, 2);
+                knight.Flux = false;
+                state.Players[1].Life = 2;
+
+                var agent = new HeuristicAgent(0, AgentPersonality.Balanced());
+                var command = agent.ChooseCommand(state);
+
+                AssertTrue(command is AttackCommand attack && attack.UnitId == knight.Id,
+                    $"expected lethal attack, got {command.GetType().Name}");
+            });
+
+            Test("Agent: develops instead of passing on turn one", () =>
+            {
+                var state = GameEngine.CreateGame(SampleDeck(), SampleDeck(), 5, new List<GameEvent>());
+                var agent = new HeuristicAgent(0, AgentPersonality.Balanced());
+
+                var command = agent.ChooseCommand(state);
+                AssertTrue(!(command is EndTurnCommand), "turn one should not be a pass");
+            });
+
+            Test("Agent match: Expedition vs Garden completes deterministically", () =>
+            {
+                var a = MatchRunner.PlayMatch(ArchetypeDeck(Archetype.Expedition), ArchetypeDeck(Archetype.Garden),
+                    AgentPersonality.Formation(), AgentPersonality.Patient(), seed: 3);
+                var b = MatchRunner.PlayMatch(ArchetypeDeck(Archetype.Expedition), ArchetypeDeck(Archetype.Garden),
+                    AgentPersonality.Formation(), AgentPersonality.Patient(), seed: 3);
+
+                AssertEqual(0, a.FailedCommands, "agents never propose illegal commands");
+                AssertTrue(a.Winner >= 0, $"match should finish (winner {a.Winner} after {a.Turns} turns, {a.CommandsIssued} commands)");
+                AssertEqual(a.Winner, b.Winner, "same winner for same seed");
+                AssertEqual(a.CommandsIssued, b.CommandsIssued, "same command count for same seed");
+                AssertEqual(a.Events.Count, b.Events.Count, "same event count for same seed");
+                Console.WriteLine($"      ({a.Turns} turns, {a.CommandsIssued} commands, winner p{a.Winner}: " +
+                                  $"{(a.Winner == 0 ? "Formation/Expedition" : "Patient/Garden")})");
+            });
+
             Console.WriteLine();
             Console.WriteLine($"{passed} passed, {failed} failed");
             return failed == 0 ? 0 : 1;
@@ -434,6 +474,17 @@ namespace LightCard.CoreTests
         }
 
         //---- Helpers ----
+
+        private static List<string> ArchetypeDeck(Archetype archetype)
+        {
+            var deck = new List<string>();
+            foreach (var card in CardCatalogV1.Cards.Values.Where(c => c.Archetype == archetype))
+            {
+                deck.Add(card.Id);
+                deck.Add(card.Id);
+            }
+            return deck;
+        }
 
         private static List<string> SampleDeck()
         {
