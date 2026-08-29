@@ -35,9 +35,6 @@ public class Deck
 
     public List<KeyValuePair<Card.Archetype, int>> archetypeValues;
 
-    [NonSerialized]
-    private bool initialized;
-
     public Deck()
     {
         Initialize();
@@ -54,26 +51,23 @@ public class Deck
             
             foreach (var cardName in saveData.cards)
             {
-                try
-                {
-                    AddCard(library.cardCollection.cards.First(x => x.name == cardName));
-                } 
-                catch(Exception e)
-                {
-                    Debug.LogAssertion($"Library does not contain card: {cardName}, couldn't add to deck {name}");
-                }
+                var card = library.cardCollection.cards.FirstOrDefault(x => x.name == cardName);
+
+                if (card != null) AddCard(card);
+                else Debug.LogAssertion($"Library does not contain card: {cardName}, couldn't add to deck {name}");
             }
         }
     }
     
-    private void Initialize()
+    //Safe to call repeatedly: recomputes counts from the current card list, so decks
+    //deserialized by Unity after construction (e.g. inside DeckData assets) can be refreshed
+    public void Initialize()
     {
-        if (initialized) return;
-        
-        //Debug.Log($"Initializing deck: {name}");
-        
-        cards = new List<Card>(cards.OrderBy(x => x.cost));
-        
+        cards = new List<Card>(cards.Where(x => x != null).OrderBy(x => x.cost));
+
+        cardArchetypeCount.Clear();
+        cardTypeCount.Clear();
+
         foreach( Card.Archetype group in Enum.GetValues(typeof(Card.Archetype)) )
         {
             cardArchetypeCount.Add(group, 0);
@@ -88,21 +82,19 @@ public class Deck
             cardArchetypeCount[card.archetype]++;
             cardTypeCount[card.type]++;
         }
-        
-        archetypeValues = cardArchetypeCount.OrderByDescending(pair => pair.Value).ToList();
 
-        initialized = true;
+        archetypeValues = cardArchetypeCount.OrderByDescending(pair => pair.Value).ToList();
     }
     
     public bool AddCard(Card card)
     {
-        if (cards.Count == cardLimit)
+        if (cards.Count >= cardLimit)
         {
             OnMessage?.Invoke($"Already have {cardLimit} cards in deck.");
             return false;
         }
 
-        if (GetCardCount(card) > individualCardLimit)
+        if (GetCardCount(card) >= individualCardLimit)
         {
             OnMessage?.Invoke($"Already have {individualCardLimit} copies of {card.name}.");
             return false;

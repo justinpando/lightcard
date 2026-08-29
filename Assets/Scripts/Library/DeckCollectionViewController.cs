@@ -82,12 +82,8 @@ public class DeckCollectionViewController : MonoBehaviour
         }
         
         deckViews.Clear();
-        
-        foreach (var deckData in library.starterDecks)
-        {
-            AddDeckView(deckData.deck);
-        }
-        
+
+        //Starter decks are copied into library.Decks on first run, so every deck shown here is editable and persisted
         foreach (var deck in library.Decks)
         {
             AddDeckView(deck);
@@ -101,6 +97,8 @@ public class DeckCollectionViewController : MonoBehaviour
         library.Decks.Add(deck);
 
         AddDeckView(deck);
+
+        saveManager.Save();
     }
     
     private void CopyDeck(DeckItemView deckView)
@@ -113,6 +111,8 @@ public class DeckCollectionViewController : MonoBehaviour
         library.Decks.Add(deck);
 
         AddDeckView(deck);
+
+        saveManager.Save();
     }
 
     private void AddDeckView(Deck deck)
@@ -142,6 +142,8 @@ public class DeckCollectionViewController : MonoBehaviour
         library.Decks.Remove(deckView.deck);
 
         LayoutRebuilder.ForceRebuildLayoutImmediate(deckCollectionPanel as RectTransform);
+
+        saveManager.Save();
     }
     
     private void ShowView()

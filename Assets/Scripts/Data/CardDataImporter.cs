@@ -1,3 +1,5 @@
+//Editor-only tool living in a runtime assembly; guarded so player builds compile
+#if UNITY_EDITOR
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -95,3 +97,4 @@ public class CardDataImporter : OdinEditorWindow
     
     public List<Card> importedCards;
 }
+#endif

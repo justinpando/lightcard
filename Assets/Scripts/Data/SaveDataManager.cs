@@ -1,6 +1,5 @@
 using System;
 using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
 using UnityEngine;
 
 public class SaveDataManager
@@ -26,22 +25,6 @@ public class SaveDataManager
         return LoadAsJSON(filePath);
     }
 
-    private void SaveBinary(SaveData data)
-    {
-        BinaryFormatter bf = new BinaryFormatter();
-        FileStream file = File.Create(filePath);
-        bf.Serialize(file, data);
-        file.Close();
-    }
-
-    private void LoadBinary()
-    {
-        BinaryFormatter bf = new BinaryFormatter();
-        FileStream file = File.Open(filePath, FileMode.Open);
-        SaveData save = (SaveData)bf.Deserialize(file);
-        file.Close();
-    }
-    
     private void SaveAsJSON(SaveData data, string path)
     {
         //Note: JsonUtility might cause hangs if save data is massive
@@ -64,7 +47,7 @@ public class SaveDataManager
             }
             catch (Exception e)
             {
-                Debug.Log("Data could not be read.");
+                Debug.LogWarning($"Save data at {path} could not be read: {e}");
             }
         }
 

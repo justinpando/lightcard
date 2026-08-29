@@ -1,11 +1,5 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 using UnityEngine;
 using TMPro;
-using Random = UnityEngine.Random;
 
 public class TooltipScreenSpaceUI : MonoBehaviour
 {
@@ -19,7 +13,6 @@ public class TooltipScreenSpaceUI : MonoBehaviour
     [SerializeField]
     private RectTransform canvasRectTransform;
 
-    private CancellationTokenSource cancelToken;
     private void Awake()
     {
         rectTransform = GetComponent<RectTransform>();
@@ -27,11 +20,21 @@ public class TooltipScreenSpaceUI : MonoBehaviour
 
     private void Start()
     {
-        cancelToken = new CancellationTokenSource();
-        
-        TestTooltip(cancelToken.Token);
+        Hide();
     }
-    
+
+    public void Show(string tooltipText)
+    {
+        gameObject.SetActive(true);
+        SetText(tooltipText);
+    }
+
+    public void Hide()
+    {
+        gameObject.SetActive(false);
+    }
+
+
     private void Update()
     {
         Vector2 anchoredPosition = Input.mousePosition / canvasRectTransform.localScale.x;
@@ -78,26 +81,4 @@ public class TooltipScreenSpaceUI : MonoBehaviour
         background.sizeDelta = textSize + paddingSize;
     }
 
-    private async void TestTooltip(CancellationToken token)
-    {
-        while (!token.IsCancellationRequested)
-        {
-            string abc = "sdfuiaudfpiadfhpuiIPAUSHPIDUHSH";
-            string message = "I am a tooltip. I love my job.";
-
-            for (int i = 0; i < Random.Range(5, 100); i++)
-            {
-                message += abc[Random.Range(0, abc.Length)];
-            }
-            
-            SetText(message);
-            
-            await Task.Delay(500);
-        }
-    }
-
-    private void OnApplicationQuit()
-    {
-        cancelToken.Cancel();
-    }
 }

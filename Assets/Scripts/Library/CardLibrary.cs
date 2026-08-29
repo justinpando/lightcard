@@ -14,10 +14,27 @@ public class CardLibrary : ScriptableObject
     public void Initialize(SaveData save = null)
     {
         cardCollection.Initialize();
-        
-        if(save != null) Decks = save.decks.ConvertAll(x => new Deck(this, x));
-        
-        Decks = Decks.Where(x => x != null).ToList();
+
+        if (save?.decks != null)
+        {
+            Decks = save.decks.ConvertAll(x => new Deck(this, x)).Where(x => x != null).ToList();
+        }
+        else
+        {
+            //First run: seed the player's collection with copies of the starter decks,
+            //so they can be edited, deleted, and saved like any other deck
+            Decks = new List<Deck>();
+
+            foreach (var deckData in starterDecks)
+            {
+                if (deckData == null || deckData.deck == null) continue;
+
+                var copy = new Deck { name = deckData.deck.name, description = deckData.deck.description };
+                copy.SetCardList(deckData.deck.cards);
+
+                Decks.Add(copy);
+            }
+        }
     }
 
     public void SortDecks(List<DeckItemView> deckViews)

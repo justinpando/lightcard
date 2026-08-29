@@ -34,6 +34,8 @@ public class FilterCollectionViewController : MonoBehaviour
             Destroy(filterViews[n].gameObject);
         }
 
+        filterViews.Clear();
+
         //Set up class filters
         foreach (var classData in cardLibrary.classes)
         {
@@ -43,11 +45,13 @@ public class FilterCollectionViewController : MonoBehaviour
             //Initialize with group data
             filterView.Initialize(classData.archetype.ToString(), classData.baseColor, classData.highlightColor, classData.symbol, new CardFilter("class", card => card.archetype == classData.archetype));
             
-            //Subscribe to toggle event 
+            //Subscribe to toggle event
             filterView.toggle.isOn = false;
             filterView.toggle.onValueChanged.AddListener(isOn => UpdateFilters(filterView.filter, isOn));
+
+            filterViews.Add(filterView);
         }
-        
+
         //Set up type filters
         foreach (var typeData in cardLibrary.types)
         {
@@ -60,6 +64,8 @@ public class FilterCollectionViewController : MonoBehaviour
             //Subscribe to toggle event
             filterView.toggle.isOn = false;
             filterView.toggle.onValueChanged.AddListener(isOn => UpdateFilters(filterView.filter, isOn));
+
+            filterViews.Add(filterView);
         }
     }
 
@@ -73,6 +79,8 @@ public class FilterCollectionViewController : MonoBehaviour
 
     public void FilterCardViews(List<CardViewController> cardViews)
     {
+        if (cardViews.Count == 0) return;
+
         List<CardViewController> validCards = GetValidCards(cardViews);
         
         //Hide all cards in the filtered card list
