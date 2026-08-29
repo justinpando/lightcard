@@ -1,6 +1,9 @@
 # lightcard
 Light Card Tactics, collectible card game prototype
 
+Design docs for the game's modes (single-player roguelike, multiplayer, and the
+phantom AI system that connects them) live in [Docs/design](Docs/design/README.md).
+
 Deck Editor View
 ![Screenshot 2021-06-06 162808](https://user-images.githubusercontent.com/3631080/202827517-132c48ea-0328-46d7-b695-40200617bf44.jpg)
 ![Screenshot 2021-06-06 163144](https://user-images.githubusercontent.com/3631080/202827520-eca80af0-5a2d-4f3f-bd0c-722139a0bc50.jpg)
