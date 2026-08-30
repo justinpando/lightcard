@@ -234,20 +234,22 @@ designer yes/no):
   Clear deck right-clicks a space effect.
 - **Rugged**: shifting in costs +1 energy; damaged survivors on it are knocked
   one space toward their own backline.
-- **Attenuating Rod**: "reduce a random hand Ability's cost" → "your NEXT
-  Ability costs 1 less" (stacking) — avoids per-hand-card state.
+Restored to exact sheet behavior on 2026-08-30 (designer request): **Attenuating
+Rod** discounts a random Ability *copy* in hand (per-copy discounts now exist:
+`PlayerState.HandDiscounts`), **Bauble Merchant** triggers only on a Valuable
+Coin, **Crystal Amplifier** has its adjacent splash, **Adaptive Armature** has
+its charm cost discount (-2 on its space), **Message in a Bottle** uses real
+3-charge counting, **Focus Form / Quick Sketch** tutor a *random* matching
+card. Remaining adaptations, designer-confirmed by trust:
+
 - **Thunder Rod**: "all other targets" → 1 damage to every enemy unit.
 - **Lose Hope**: two targets → "return target unit to its owner's hand".
-- **Bauble Merchant**: triggers on ANY equip attaching, not only Valuable Coin.
 - **Valuable Coin** (two sheet versions): 0-cost Equip charm, Bestow +0/2.
-- **Crystal Amplifier**: Resist 1 only (adjacent-splash half deferred).
-- **Adaptive Armature**: charm-accepting Equip bestowing +0/2 (its cost
-  discount deferred).
-- **Spirit Caller / Sword of Damocles**: "end of turn"/"beginning of next
-  turn" both resolve at the caster's next turn start via the pending queue.
+- **Spirit Caller**: "end of turn" rebind resolves at the caster's next turn
+  start via the pending queue (Sword of Damocles is sheet-exact).
 - **Spirit of Reprisal**: only combat breaks have a source to punish.
-- **Message in a Bottle**: draw + 1 self-damage per friendly death (charges
-  deferred). **Focus Form**: tutors the first matching card, no bonus keyword.
+- **Focus Form**: no bonus keyword on the tutored card (hand-instance
+  keywords still don't exist).
 - **Reckoning**: each sacrificed unit blasts the space directly in front.
 - **Dispersal**: stats scatter to the victim's owner's nearby units.
 - **Frozen** space is defined by the sheet but no card applies it — dormant.

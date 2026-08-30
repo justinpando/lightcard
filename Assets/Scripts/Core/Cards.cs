@@ -249,8 +249,8 @@ namespace LightCard.Core
         FloodBarrage,
         /// <summary>Add the most recently broken spirit's card to the owner's hand (Soulcatcher).</summary>
         ReclaimSpirit,
-        /// <summary>The owner's next Ability costs Amount less (Attenuating Rod, adapted from per-card discounts).</summary>
-        DiscountNextAbility,
+        /// <summary>Reduce the cost of a random Ability copy in the owner's hand by Amount, permanently for that copy (Attenuating Rod).</summary>
+        DiscountRandomHandAbility,
         /// <summary>Static: calling to the space directly behind the source costs Amount less (Trailblazer, Flagbearer).</summary>
         StaticCallDiscountBehind,
         /// <summary>Absorb the owner's half: +1/+1 per own-half space effect, then clear them (Geo).</summary>
@@ -270,7 +270,9 @@ namespace LightCard.Core
         /// <summary>Banish all your charms (no destroy triggers); gain a Valuable Coin card per charm removed (Fire Sale).</summary>
         FireSale,
         /// <summary>Add a random Charm costing at most Amount to the owner's hand (Bauble Merchant).</summary>
-        AddRandomCheapCharm
+        AddRandomCheapCharm,
+        /// <summary>The source gains a charge; every Amount-th charge, the owner draws a card (Message in a Bottle).</summary>
+        ChargeDraw
     }
 
     /// <summary>Which units an effect applies to, relative to its source or its play target.</summary>
@@ -419,6 +421,8 @@ namespace LightCard.Core
         public int Amplify;
         /// <summary>Ability damage aimed at this is redirected to the mirrored space's occupant (Dark Mirror).</summary>
         public bool Reflects;
+        /// <summary>Ability damage aimed at this also hits adjacent spaces' occupants (Crystal Amplifier).</summary>
+        public bool SplashesAdjacent;
         /// <summary>Equip charm that friendly CHARMS may also enter (Adaptive Armature).</summary>
         public bool EquipsCharms;
         /// <summary>Geo: costs 1 less per space effect on the owner's half.</summary>

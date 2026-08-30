@@ -253,9 +253,12 @@ namespace LightCard.Core
             var definition = CardCatalogV1.Get(cardId);
             int cost = state.EffectiveCost(command.Player, definition);
 
-            //Positional call discounts (Trailblazer, Flagbearer)
+            //Per-copy discount on this exact hand card (Attenuating Rod)
+            cost = Math.Max(0, cost - state.HandDiscount(command.Player, command.HandIndex));
+
+            //Positional call discounts (Trailblazer, Flagbearer, Adaptive Armature)
             if (definition.Type != CardType.Ability && definition.PlayTarget == PlayTargetKind.FriendlyEmptySpace)
-                cost = Math.Max(0, cost - state.CallDiscountAt(command.Player, command.TargetX, command.TargetY));
+                cost = Math.Max(0, cost - state.CallDiscountAt(command.Player, definition, command.TargetX, command.TargetY));
 
             if (playerState.Energy < cost)
                 return CommandResult.Fail($"Not enough energy for {cardId} (need {cost}, have {playerState.Energy}).");
@@ -268,7 +271,7 @@ namespace LightCard.Core
 
             var result = new CommandResult { Success = true };
 
-            playerState.Hand.RemoveAt(command.HandIndex);
+            RemoveFromHand(playerState, command.HandIndex);
             playerState.Energy -= cost;
             result.Events.Add(new GameEvent { Type = GameEventType.CardPlayed, Player = command.Player, CardId = cardId, X = command.TargetX, Y = command.TargetY });
             result.Events.Add(new GameEvent { Type = GameEventType.EnergyChanged, Player = command.Player, Amount = playerState.Energy });
@@ -279,7 +282,6 @@ namespace LightCard.Core
                     ResolveEffect(state, effect, null, command.Player, command.TargetX, command.TargetY, result.Events);
 
                 playerState.AbilitiesPlayedThisTurn++;
-                playerState.NextAbilityDiscount = 0; //Attenuating Rod's rebate is spent
 
                 //Ability-play watchers (Diligent Student, Lightning Rod, Combat Bellows)
                 foreach (var watcher in state.Units.ToList())
@@ -405,7 +407,7 @@ namespace LightCard.Core
                 events.Add(new GameEvent { Type = GameEventType.EquipAttached, UnitId = unit.Id, CardId = equip.CardId, X = x, Y = y });
                 foreach (var effect in equip.Definition.Effects.Where(e => e.Trigger == Trigger.OnEquip))
                     ResolveEffect(state, effect, unit, player, x, y, events);
-                foreach (var effect in unit.AllEffects.Where(e => e.Trigger == Trigger.OnEquipped).ToList())
+                foreach (var effect in unit.AllEffects.Where(e => e.Trigger == Trigger.OnEquipped && (e.CalledCardId == null || e.CalledCardId == equip.CardId)).ToList())
                 {
                     if (!state.Units.Contains(unit)) break;
                     ResolveEffect(state, effect, unit, player, x, y, events);
@@ -742,7 +744,7 @@ namespace LightCard.Core
             string cardId = playerState.Hand[command.HandIndex];
             var definition = CardCatalogV1.Get(cardId);
 
-            playerState.Hand.RemoveAt(command.HandIndex);
+            RemoveFromHand(playerState, command.HandIndex);
             playerState.ReplaceUsedThisTurn = true;
             playerState.MaxEnergy += 1;
             playerState.Energy += 1;
@@ -1002,8 +1004,11 @@ namespace LightCard.Core
                 case EffectAction.TutorLowCost:
                 {
                     var playerState = state.Players[owner];
-                    int index = playerState.Deck.FindIndex(id => CardCatalogV1.Get(id).Cost <= effect.Amount);
-                    if (index < 0) break;
+                    var matches = new List<int>();
+                    for (int i = 0; i < playerState.Deck.Count; i++)
+                        if (CardCatalogV1.Get(playerState.Deck[i]).Cost <= effect.Amount) matches.Add(i);
+                    if (matches.Count == 0) break;
+                    int index = matches[state.NextRandom(matches.Count)]; //"random" per Focus Form's sheet text
                     string found = playerState.Deck[index];
                     playerState.Deck.RemoveAt(index);
 
@@ -1296,7 +1301,7 @@ namespace LightCard.Core
                     if (hand.Count == 0) break;
                     int pick = state.NextRandom(hand.Count);
                     string burned = hand[pick];
-                    hand.RemoveAt(pick);
+                    RemoveFromHand(state.Players[owner], pick);
                     state.Players[owner].MaxEnergy += 1;
                     state.Players[owner].Energy += 1;
                     state.Players[owner].Affinity[CardCatalogV1.Get(burned).Archetype] += 1;
@@ -1412,9 +1417,18 @@ namespace LightCard.Core
                     }
                     break;
                 }
-                case EffectAction.DiscountNextAbility:
-                    state.Players[owner].NextAbilityDiscount += effect.Amount;
+                case EffectAction.DiscountRandomHandAbility:
+                {
+                    var playerState = state.Players[owner];
+                    var abilityIndexes = new List<int>();
+                    for (int i = 0; i < playerState.Hand.Count; i++)
+                        if (CardCatalogV1.Get(playerState.Hand[i]).Type == CardType.Ability) abilityIndexes.Add(i);
+                    if (abilityIndexes.Count == 0) break;
+                    int chosen = abilityIndexes[state.NextRandom(abilityIndexes.Count)];
+                    while (playerState.HandDiscounts.Count <= chosen) playerState.HandDiscounts.Add(0);
+                    playerState.HandDiscounts[chosen] += effect.Amount;
                     break;
+                }
                 case EffectAction.StaticCallDiscountBehind:
                     break; //consumed statically by EffectiveCost/CallDiscountAt
                 case EffectAction.GeoAbsorb:
@@ -1505,6 +1519,14 @@ namespace LightCard.Core
                     events.Add(new GameEvent { Type = GameEventType.CardDrawn, Player = owner, CardId = pick });
                     break;
                 }
+                case EffectAction.ChargeDraw:
+                {
+                    if (source == null) break;
+                    source.Charges++;
+                    if (source.Charges % Math.Max(1, effect.Amount) == 0)
+                        DrawCards(state, owner, 1, events);
+                    break;
+                }
                 case EffectAction.ReclaimSpirit:
                 {
                     if (string.IsNullOrEmpty(state.LastBrokenSpiritId)) break;
@@ -1545,7 +1567,8 @@ namespace LightCard.Core
         /// Ability (non-attack) damage: ignores Armor; reduced by the victim's
         /// Resist; +2 if the victim stands on a Primed space, consuming it.
         /// </summary>
-        private static bool reflecting; //Dark Mirror re-entrancy guard
+        private static bool reflecting;  //Dark Mirror re-entrancy guard
+        private static bool splashing;   //Crystal Amplifier re-entrancy guard
 
         private static void DealAbilityDamage(GameState state, UnitState unit, int amount, List<GameEvent> events)
         {
@@ -1560,6 +1583,21 @@ namespace LightCard.Core
                     reflecting = false;
                 }
                 return;
+            }
+
+            //Crystal Amplifier: ability damage here also hits adjacent occupants (sheet)
+            if (unit.Definition.SplashesAdjacent && !splashing)
+            {
+                splashing = true;
+                int cx = unit.X, cy = unit.Y;
+                foreach (var (dx, dy) in new[] { (0, 1), (0, -1), (-1, 0), (1, 0) })
+                {
+                    var neighbor = GameState.InBounds(cx + dx, cy + dy) ? state.GetUnitAt(cx + dx, cy + dy) : null;
+                    if (neighbor != null && state.Units.Contains(neighbor))
+                        DealAbilityDamage(state, neighbor, amount, events);
+                }
+                splashing = false;
+                if (!state.Units.Contains(unit)) return;
             }
 
             if (state.SpaceEffects[unit.X, unit.Y] == SpaceEffectType.Primed)
@@ -1751,7 +1789,7 @@ namespace LightCard.Core
             {
                 foreach (var effect in equip.Definition.Effects.Where(e => e.Trigger == Trigger.OnEquip))
                     ResolveEffect(state, effect, unit, unit.Owner, unit.X, unit.Y, events);
-                foreach (var effect in unit.AllEffects.Where(e => e.Trigger == Trigger.OnEquipped).ToList())
+                foreach (var effect in unit.AllEffects.Where(e => e.Trigger == Trigger.OnEquipped && (e.CalledCardId == null || e.CalledCardId == equip.CardId)).ToList())
                 {
                     if (!state.Units.Contains(unit)) break;
                     ResolveEffect(state, effect, unit, unit.Owner, unit.X, unit.Y, events);
@@ -1984,6 +2022,13 @@ namespace LightCard.Core
             }
         }
 
+        /// <summary>Remove a hand copy, keeping the per-copy discount list index-aligned.</summary>
+        private static void RemoveFromHand(PlayerState playerState, int index)
+        {
+            playerState.Hand.RemoveAt(index);
+            if (index < playerState.HandDiscounts.Count) playerState.HandDiscounts.RemoveAt(index);
+        }
+
         /// <summary>Random discard from a player's hand, firing their discard watchers.</summary>
         private static void DiscardRandom(GameState state, int player, int count, List<GameEvent> events)
         {
@@ -1992,7 +2037,7 @@ namespace LightCard.Core
             {
                 int pick = state.NextRandom(playerState.Hand.Count);
                 string cardId = playerState.Hand[pick];
-                playerState.Hand.RemoveAt(pick);
+                RemoveFromHand(playerState, pick);
                 events.Add(new GameEvent { Type = GameEventType.CardDiscarded, Player = player, CardId = cardId });
                 FireDiscardWatchers(state, player, events);
 

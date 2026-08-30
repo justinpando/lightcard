@@ -587,24 +587,21 @@ namespace LightCard.Core
                 },
                 new CardDefinition
                 {
-                    //Sheet: "power -1 but abilities also hit adjacent" - the amplifier half lands
-                    //as Resist 1; adjacent splash is deferred with Dark Mirror's reflection
                     Id = "Crystal Amplifier", Archetype = Archetype.Atelier, Type = CardType.Charm,
                     Cost = 1, Power = 0, Life = 2,
-                    Text = "Ability damage to this is reduced by 1.",
-                    Resist = 1,
+                    Text = "Abilities targeting this have power -1, but also hit adjacent spaces.",
+                    Resist = 1, SplashesAdjacent = true,
                     PlayTarget = PlayTargetKind.FriendlyEmptySpace
                 },
                 new CardDefinition
                 {
-                    //Sheet's per-card hand discount adapted to "your next Ability"
                     Id = "Attenuating Rod", Archetype = Archetype.Atelier, Type = CardType.Charm,
                     Cost = 1, Power = 0, Life = 3,
-                    Text = "Whenever your opponent plays an Ability, your next Ability costs 1 less.",
+                    Text = "Whenever your opponent plays an Ability, reduce the cost of a random Ability in your hand by 1.",
                     PlayTarget = PlayTargetKind.FriendlyEmptySpace,
                     Effects =
                     {
-                        new EffectDef { Trigger = Trigger.OnEnemyAbilityPlay, Action = EffectAction.DiscountNextAbility, Amount = 1 }
+                        new EffectDef { Trigger = Trigger.OnEnemyAbilityPlay, Action = EffectAction.DiscountRandomHandAbility, Amount = 1 }
                     }
                 },
                 new CardDefinition
@@ -1516,14 +1513,13 @@ namespace LightCard.Core
                 },
                 new CardDefinition
                 {
-                    //Sheet: triggers on receiving a Valuable Coin; adapted to any equip
                     Id = "Bauble Merchant", Archetype = Archetype.Tower, Type = CardType.Unit,
                     Cost = 2, Power = 1, Life = 4,
-                    Text = "When this equips a Charm, gain a random Charm that costs 2 or less.",
+                    Text = "When you give this a Valuable Coin, gain a random Charm that costs 2 or less.",
                     PlayTarget = PlayTargetKind.FriendlyEmptySpace,
                     Effects =
                     {
-                        new EffectDef { Trigger = Trigger.OnEquipped, Action = EffectAction.AddRandomCheapCharm, Amount = 2 }
+                        new EffectDef { Trigger = Trigger.OnEquipped, Action = EffectAction.AddRandomCheapCharm, Amount = 2, CalledCardId = "Valuable Coin" }
                     }
                 },
                 new CardDefinition
@@ -1791,12 +1787,11 @@ namespace LightCard.Core
                 {
                     Id = "Message in a Bottle", Archetype = Archetype.Ocean, Type = CardType.Charm,
                     Cost = 1, Power = 0, Life = 2,
-                    Text = "When a friendly unit is destroyed, draw a card, then this takes 1 damage.",
+                    Text = "Whenever one of your units is destroyed, gain a charge. Every 3 charges, draw a card.",
                     PlayTarget = PlayTargetKind.FriendlyEmptySpace,
                     Effects =
                     {
-                        new EffectDef { Trigger = Trigger.OnFriendlyDestroyed, Action = EffectAction.Draw, Amount = 1 },
-                        new EffectDef { Trigger = Trigger.OnFriendlyDestroyed, Action = EffectAction.DealDamage, Scope = TargetScope.Self, Amount = 1 }
+                        new EffectDef { Trigger = Trigger.OnFriendlyDestroyed, Action = EffectAction.ChargeDraw, Amount = 3 }
                     }
                 }
             };

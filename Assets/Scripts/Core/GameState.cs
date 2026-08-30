@@ -43,6 +43,8 @@ namespace LightCard.Core
         public bool AttackedThisTurn;
         public bool MovedThisTurn;
         public bool ActivatedThisTurn;
+        /// <summary>Accumulated charges (Message in a Bottle).</summary>
+        public int Charges;
         /// <summary>Bound spirit's card id (Heart), or null; the spirit soaks all damage.</summary>
         public string BoundSpiritCardId;
         /// <summary>Damage the bound spirit has absorbed so far.</summary>
@@ -99,8 +101,11 @@ namespace LightCard.Core
         public int AbilitiesPlayedThisTurn;
         /// <summary>Missed draws from an empty deck so far; each deals its count in damage (rules-v2).</summary>
         public int Fatigue;
-        /// <summary>Stacked discount consumed by the next Ability played (Attenuating Rod, adapted).</summary>
-        public int NextAbilityDiscount;
+        /// <summary>
+        /// Per-copy cost discounts, index-aligned with Hand (Attenuating Rod).
+        /// May be shorter than Hand: missing entries mean no discount.
+        /// </summary>
+        public List<int> HandDiscounts = new List<int>();
         //Next-call riders (Virtuous Call, Valorous Call): consumed by the next Unit card played
         public int NextCallDiscount;
         public int NextCallPower;
@@ -118,6 +123,7 @@ namespace LightCard.Core
             var copy = (PlayerState)MemberwiseClone();
             copy.Deck = new List<string>(Deck);
             copy.Hand = new List<string>(Hand);
+            copy.HandDiscounts = new List<int>(HandDiscounts);
             copy.Affinity = new Dictionary<Archetype, int>(Affinity);
             return copy;
         }
@@ -249,7 +255,6 @@ namespace LightCard.Core
                             if (effect.Trigger == Trigger.Static && effect.Action == EffectAction.StaticAbilityDiscount)
                                 cost -= effect.Amount;
                 }
-                cost -= Players[player].NextAbilityDiscount;
             }
             if (definition.Type == CardType.Unit) cost -= Players[player].NextCallDiscount;
             if (definition.CostPerOwnSpaceEffect)
@@ -261,8 +266,15 @@ namespace LightCard.Core
             return Math.Max(0, cost);
         }
 
-        /// <summary>Extra discount for calling to a specific space (Trailblazer/Flagbearer auras).</summary>
-        public int CallDiscountAt(int player, int x, int y)
+        /// <summary>The Attenuating-Rod discount on a specific hand copy (0 when untracked).</summary>
+        public int HandDiscount(int player, int index)
+        {
+            var discounts = Players[player].HandDiscounts;
+            return index >= 0 && index < discounts.Count ? discounts[index] : 0;
+        }
+
+        /// <summary>Extra discount for calling this card to a specific space (Trailblazer/Flagbearer; Adaptive Armature for charms).</summary>
+        public int CallDiscountAt(int player, CardDefinition definition, int x, int y)
         {
             int discount = 0;
             foreach (var source in UnitsOf(player))
@@ -270,6 +282,14 @@ namespace LightCard.Core
                     if (effect.Trigger == Trigger.Static && effect.Action == EffectAction.StaticCallDiscountBehind &&
                         x == source.X && y == source.Y - ForwardDir(player))
                         discount += effect.Amount;
+
+            //Adaptive Armature: a Charm played onto its space costs 2 less (sheet)
+            if (definition.Type == CardType.Charm)
+            {
+                var occupant = GetUnitAt(x, y);
+                if (occupant != null && occupant.Owner == player && occupant.Definition.IsEquip && occupant.Definition.EquipsCharms)
+                    discount += 2;
+            }
             return discount;
         }
 
