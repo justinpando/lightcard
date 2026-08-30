@@ -433,6 +433,22 @@ namespace LightCard.CoreTests
                 AssertEqual(0, untouched.Damage, "no effect removed, no damage");
             });
 
+            Test("Auto-attack: eligible units attack when their owner ends the turn (rules-v2)", () =>
+            {
+                var state = EmptyGame();
+                var ready = PlayUnit(state, 0, "Conscript", 0, 2);
+                ready.Flux = false;
+                var influx = PlayUnit(state, 0, "Conscript", 1, 2);   //still in Flux: skipped
+                var already = PlayUnit(state, 0, "Conscript", 2, 2);
+                already.Flux = false;
+                already.AttackedThisTurn = true;                       //spent: skipped
+
+                int enemyLife = state.Players[1].Life;
+                GameEngine.Execute(state, new EndTurnCommand { Player = 0 });
+                AssertEqual(enemyLife - 1, state.Players[1].Life, "exactly one auto-attack hit the player");
+                AssertTrue(ready.AttackedThisTurn, "eligible unit attacked automatically");
+            });
+
             Test("Pin and Poison: lockdown and DoT (Garden, rules-v2)", () =>
             {
                 var state = EmptyGame();
