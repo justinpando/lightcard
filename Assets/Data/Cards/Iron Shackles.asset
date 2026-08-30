@@ -16,7 +16,7 @@ MonoBehaviour:
   type: 1
   sprite: {fileID: 21300000, guid: 6a84f8ce9bfc90b498bef8f1127dc6b1, type: 3}
   name: Iron Shackles
-  cost: 0
+  cost: 1
   power: 0
-  life: 0
-  description: 'Equip: Bestow +0/2 and Heavy.'
+  life: 1
+  description: 'Equip: Bestow Armor 1 and Heavy.'

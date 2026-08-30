@@ -151,6 +151,55 @@ namespace LightCard.Core
                 },
                 new CardDefinition
                 {
+                    Id = "Blood-Tinged Lance", Archetype = Archetype.Expedition, Type = CardType.Charm,
+                    Cost = 2, Power = 0, Life = 4,
+                    Text = "Equip: Bestow +2/0 and Pierce 1.",
+                    IsEquip = true,
+                    PlayTarget = PlayTargetKind.FriendlyEmptySpace,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.OnEquip, Action = EffectAction.GainStats, Scope = TargetScope.Self, Power = 2 },
+                        new EffectDef { Trigger = Trigger.OnEquip, Action = EffectAction.GainPierce, Scope = TargetScope.Self, Amount = 1 }
+                    }
+                },
+                new CardDefinition
+                {
+                    Id = "Stone-Hewn Blade", Archetype = Archetype.Expedition, Type = CardType.Charm,
+                    Cost = 2, Power = 0, Life = 4,
+                    Text = "Equip: Bestow +1/0 and Parry 1.",
+                    IsEquip = true,
+                    PlayTarget = PlayTargetKind.FriendlyEmptySpace,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.OnEquip, Action = EffectAction.GainStats, Scope = TargetScope.Self, Power = 1 },
+                        new EffectDef { Trigger = Trigger.OnEquip, Action = EffectAction.GainParry, Scope = TargetScope.Self, Amount = 1 }
+                    }
+                },
+                new CardDefinition
+                {
+                    Id = "Well-Worn Shield", Archetype = Archetype.Expedition, Type = CardType.Charm,
+                    Cost = 2, Power = 0, Life = 4,
+                    Text = "Armor 1. Equip: Bestow Armor 1.",
+                    Armor = 1, IsEquip = true,
+                    PlayTarget = PlayTargetKind.FriendlyEmptySpace,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.OnEquip, Action = EffectAction.GainArmor, Scope = TargetScope.Self, Amount = 1 }
+                    }
+                },
+                new CardDefinition
+                {
+                    Id = "Campfire", Archetype = Archetype.Expedition, Type = CardType.Charm,
+                    Cost = 1, Power = 0, Life = 2,
+                    Text = "Nearby units Heal 1 at end of turn.",
+                    PlayTarget = PlayTargetKind.FriendlyEmptySpace,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.EndOfTurn, Action = EffectAction.Heal, Scope = TargetScope.Nearby, Amount = 1 }
+                    }
+                },
+                new CardDefinition
+                {
                     Id = "Battle Banner", Archetype = Archetype.Expedition, Type = CardType.Charm,
                     Cost = 1, Power = 0, Life = 2,
                     Text = "Units in the next row have +1/0.",
@@ -433,6 +482,35 @@ namespace LightCard.Core
                     }
                 },
 
+                new CardDefinition
+                {
+                    Id = "Vinewhip", Archetype = Archetype.Garden, Type = CardType.Charm,
+                    Cost = 2, Power = 0, Life = 2,
+                    Text = "Equip: Bestow +1/0 and Strike: Pull.",
+                    IsEquip = true,
+                    PlayTarget = PlayTargetKind.FriendlyEmptySpace,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.OnEquip, Action = EffectAction.GainStats, Scope = TargetScope.Self, Power = 1 },
+                        new EffectDef
+                        {
+                            Trigger = Trigger.OnEquip, Action = EffectAction.GrantAbility, Scope = TargetScope.Self,
+                            Granted = new EffectDef { Trigger = Trigger.OnAttack, Action = EffectAction.Pull, Scope = TargetScope.TargetUnit }
+                        }
+                    }
+                },
+                new CardDefinition
+                {
+                    Id = "Slumbering Sprout", Archetype = Archetype.Garden, Type = CardType.Unit,
+                    Cost = 2, Power = 1, Life = 4,
+                    Text = "Falls asleep at end of turn.",
+                    PlayTarget = PlayTargetKind.FriendlyEmptySpace,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.EndOfTurn, Action = EffectAction.SetAsleep, Scope = TargetScope.Self }
+                    }
+                },
+
                 //---- Atelier ----
                 new CardDefinition
                 {
@@ -555,6 +633,78 @@ namespace LightCard.Core
                     {
                         new EffectDef { Trigger = Trigger.OnOwnerAbilityPlay, Action = EffectAction.PushAway, Scope = TargetScope.NearestEnemyInLane }
                     }
+                },
+                new CardDefinition
+                {
+                    Id = "Arcane Umbrella", Archetype = Archetype.Atelier, Type = CardType.Charm,
+                    Cost = 1, Power = 0, Life = 2,
+                    Text = "Equip: Bestow Resist 1.",
+                    IsEquip = true,
+                    PlayTarget = PlayTargetKind.FriendlyEmptySpace,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.OnEquip, Action = EffectAction.GainResist, Scope = TargetScope.Self, Amount = 1 }
+                    }
+                },
+
+                //---- Tower ----
+                new CardDefinition
+                {
+                    Id = "Wretch", Archetype = Archetype.Tower, Type = CardType.Unit,
+                    Cost = 0, Power = 1, Life = 1,
+                    PlayTarget = PlayTargetKind.FriendlyEmptySpace
+                },
+                new CardDefinition
+                {
+                    Id = "Snarling Hound", Archetype = Archetype.Tower, Type = CardType.Unit,
+                    Cost = 2, Power = 2, Life = 2,
+                    PlayTarget = PlayTargetKind.FriendlyEmptySpace
+                },
+                new CardDefinition
+                {
+                    Id = "Thrower of Stones", Archetype = Archetype.Tower, Type = CardType.Unit,
+                    Cost = 2, Power = 2, Life = 3,
+                    Text = "Ranged.",
+                    Ranged = true,
+                    PlayTarget = PlayTargetKind.FriendlyEmptySpace
+                },
+                new CardDefinition
+                {
+                    Id = "Overworked Laborer", Archetype = Archetype.Tower, Type = CardType.Unit,
+                    Cost = 3, Power = 2, Life = 6,
+                    Text = "Falls asleep at end of turn.",
+                    PlayTarget = PlayTargetKind.FriendlyEmptySpace,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.EndOfTurn, Action = EffectAction.SetAsleep, Scope = TargetScope.Self }
+                    }
+                },
+                new CardDefinition
+                {
+                    Id = "Tombstone", Archetype = Archetype.Tower, Type = CardType.Charm,
+                    Cost = 1, Power = 0, Life = 4,
+                    PlayTarget = PlayTargetKind.FriendlyEmptySpace
+                },
+                new CardDefinition
+                {
+                    Id = "Iron Shackles", Archetype = Archetype.Tower, Type = CardType.Charm,
+                    Cost = 1, Power = 0, Life = 1,
+                    Text = "Equip: Bestow Armor 1 and Heavy.",
+                    IsEquip = true,
+                    PlayTarget = PlayTargetKind.FriendlyEmptySpace,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.OnEquip, Action = EffectAction.GainArmor, Scope = TargetScope.Self, Amount = 1 },
+                        new EffectDef { Trigger = Trigger.OnEquip, Action = EffectAction.GrantHeavy, Scope = TargetScope.Self }
+                    }
+                },
+
+                //---- Ocean ----
+                new CardDefinition
+                {
+                    Id = "Chimera", Archetype = Archetype.Ocean, Type = CardType.Unit,
+                    Cost = 1, Power = 1, Life = 1,
+                    PlayTarget = PlayTargetKind.FriendlyEmptySpace
                 }
             };
 

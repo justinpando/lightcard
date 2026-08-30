@@ -102,9 +102,15 @@ namespace LightCard.Core.Agents
                 case PlayTargetKind.FriendlyEmptySpace:
                 {
                     for (int x = 0; x < GameConfig.Lanes; x++)
+                    {
                         for (int y = 0; y < GameConfig.Rows; y++)
-                            if (GameState.SideOfRow(y) == Player && state.GetUnitAt(x, y) == null)
+                        {
+                            if (GameState.SideOfRow(y) != Player) continue;
+                            var occupant = state.GetUnitAt(x, y);
+                            if (occupant == null || (occupant.Owner == Player && occupant.Definition.IsEquip && definition.Type != CardType.Charm))
                                 yield return (x, y);
+                        }
+                    }
                     break;
                 }
                 case PlayTargetKind.AnySpace:

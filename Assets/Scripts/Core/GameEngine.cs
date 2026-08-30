@@ -139,7 +139,7 @@ namespace LightCard.Core
             foreach (var unit in state.UnitsOf(player).OrderBy(u => player == 0 ? -u.Y : u.Y).ToList())
             {
                 if (!state.Units.Contains(unit)) continue;
-                foreach (var effect in unit.Definition.Effects.Where(e => e.Trigger == Trigger.EndOfTurn))
+                foreach (var effect in unit.AllEffects.Where(e => e.Trigger == Trigger.EndOfTurn))
                     ResolveEffect(state, effect, unit, player, unit.X, unit.Y, result.Events);
             }
 
@@ -196,7 +196,7 @@ namespace LightCard.Core
                 {
                     if (!state.Units.Contains(watcher)) continue;
                     var trigger = watcher.Owner == command.Player ? Trigger.OnOwnerAbilityPlay : Trigger.OnEnemyAbilityPlay;
-                    foreach (var effect in watcher.Definition.Effects.Where(e => e.Trigger == trigger))
+                    foreach (var effect in watcher.AllEffects.Where(e => e.Trigger == trigger))
                         ResolveEffect(state, effect, watcher, watcher.Owner, watcher.X, watcher.Y, result.Events);
                 }
             }
@@ -217,7 +217,7 @@ namespace LightCard.Core
                 case PlayTargetKind.FriendlyEmptySpace:
                     if (!GameState.InBounds(x, y)) return "Target space is out of bounds.";
                     if (GameState.SideOfRow(y) != player) return "Units must be called to your half of the field.";
-                    if (state.GetUnitAt(x, y) != null) return "Target space is occupied.";
+                    if (state.GetUnitAt(x, y) != null && FriendlyEquipAt(state, player, x, y) == null) return "Target space is occupied.";
                     return null;
                 case PlayTargetKind.AnySpace:
                     return GameState.InBounds(x, y) ? null : "Target space is out of bounds.";
@@ -232,6 +232,14 @@ namespace LightCard.Core
         private static void CallUnit(GameState state, int player, string cardId, int x, int y, List<GameEvent> events)
         {
             var definition = CardCatalogV1.Get(cardId);
+
+            //Calling a non-charm onto a friendly Equip charm consumes it (bestowed below)
+            var equip = definition.Type != CardType.Charm ? FriendlyEquipAt(state, player, x, y) : null;
+            if (equip != null)
+            {
+                state.Units.Remove(equip);
+            }
+
             var unit = new UnitState
             {
                 Id = state.NextUnitId++,
@@ -253,6 +261,14 @@ namespace LightCard.Core
                 events.Add(new GameEvent { Type = GameEventType.UnitStatsChanged, UnitId = unit.Id, CardId = cardId, Amount = 1 });
             }
 
+            //Consumed equip bestows onto the arrival before anything else reacts
+            if (equip != null && state.Units.Contains(unit))
+            {
+                events.Add(new GameEvent { Type = GameEventType.EquipAttached, UnitId = unit.Id, CardId = equip.CardId, X = x, Y = y });
+                foreach (var effect in equip.Definition.Effects.Where(e => e.Trigger == Trigger.OnEquip))
+                    ResolveEffect(state, effect, unit, player, x, y, events);
+            }
+
             foreach (var effect in definition.Effects.Where(e => e.Trigger == Trigger.OnCall))
                 ResolveEffect(state, effect, unit, player, x, y, events);
 
@@ -262,7 +278,7 @@ namespace LightCard.Core
                 if (watcher == unit || !state.Units.Contains(watcher)) continue;
                 bool adjacent = Math.Abs(watcher.X - x) + Math.Abs(watcher.Y - y) == 1;
                 bool inFront = x == watcher.X && y == watcher.Y + GameState.ForwardDir(player);
-                foreach (var effect in watcher.Definition.Effects)
+                foreach (var effect in watcher.AllEffects)
                 {
                     if ((effect.Trigger == Trigger.OnAllyCallAdjacent && adjacent) ||
                         (effect.Trigger == Trigger.OnAllyCallInFront && inFront))
@@ -276,7 +292,7 @@ namespace LightCard.Core
                 foreach (var watcher in state.UnitsOf(1 - player).ToList())
                 {
                     if (!state.Units.Contains(watcher)) continue;
-                    foreach (var effect in watcher.Definition.Effects.Where(e => e.Trigger == Trigger.OnEnemyCall))
+                    foreach (var effect in watcher.AllEffects.Where(e => e.Trigger == Trigger.OnEnemyCall))
                         ResolveEffect(state, effect, watcher, watcher.Owner, watcher.X, watcher.Y, events);
                 }
             }
@@ -312,14 +328,15 @@ namespace LightCard.Core
             if (GameState.SideOfRow(destY) != command.Player) return CommandResult.Fail("Units must stay on your half of the field.");
 
             var occupant = state.GetUnitAt(destX, destY);
-            if (occupant != null && occupant.IsCharm) return CommandResult.Fail("Cannot Shift onto a charm.");
+            bool ontoEquip = occupant != null && FriendlyEquipAt(state, command.Player, destX, destY) != null;
+            if (occupant != null && occupant.IsCharm && !ontoEquip) return CommandResult.Fail("Cannot Shift onto a charm.");
 
             var result = new CommandResult { Success = true };
             playerState.Energy -= GameConfig.ShiftEnergyCost;
             playerState.ShiftUsedThisTurn = true;
             result.Events.Add(new GameEvent { Type = GameEventType.EnergyChanged, Player = command.Player, Amount = playerState.Energy });
 
-            if (occupant != null)
+            if (occupant != null && !ontoEquip)
             {
                 //Occupied by a friendly unit: the units switch places
                 MoveUnitTo(state, occupant, unit.X, unit.Y, result.Events);
@@ -332,7 +349,7 @@ namespace LightCard.Core
             //Shift triggers (Duelist, Dancer) fire for the commanded unit only
             if (state.Units.Contains(unit))
             {
-                foreach (var effect in unit.Definition.Effects.Where(e => e.Trigger == Trigger.OnShift))
+                foreach (var effect in unit.AllEffects.Where(e => e.Trigger == Trigger.OnShift))
                     ResolveEffect(state, effect, unit, unit.Owner, unit.X, unit.Y, result.Events);
             }
 
@@ -385,7 +402,7 @@ namespace LightCard.Core
             //OnAttack triggers (e.g. Master Painter) aim at the struck unit's space
             if (state.Units.Contains(attacker))
             {
-                foreach (var effect in attacker.Definition.Effects.Where(e => e.Trigger == Trigger.OnAttack))
+                foreach (var effect in attacker.AllEffects.Where(e => e.Trigger == Trigger.OnAttack))
                     ResolveEffect(state, effect, attacker, attacker.Owner, attacker.X, firstTargetY, result.Events);
             }
 
@@ -510,7 +527,7 @@ namespace LightCard.Core
                         foreach (var watcher in state.UnitsOf(owner).ToList())
                         {
                             if (!state.Units.Contains(watcher)) continue;
-                            foreach (var watcherEffect in watcher.Definition.Effects.Where(e => e.Trigger == Trigger.OnOwnerSpaceEffect))
+                            foreach (var watcherEffect in watcher.AllEffects.Where(e => e.Trigger == Trigger.OnOwnerSpaceEffect))
                                 ResolveEffect(state, watcherEffect, watcher, owner, watcher.X, watcher.Y, events);
                         }
                     }
@@ -684,11 +701,37 @@ namespace LightCard.Core
                     break;
                 }
                 case EffectAction.GainArmor:
+                case EffectAction.GainParry:
+                case EffectAction.GainResist:
                 {
                     foreach (var unit in GatherUnits(state, effect.Scope, source, owner, targetX, targetY))
                     {
-                        unit.BonusArmor += effect.Amount;
+                        if (effect.Action == EffectAction.GainArmor) unit.BonusArmor += effect.Amount;
+                        else if (effect.Action == EffectAction.GainParry) unit.BonusParry += effect.Amount;
+                        else unit.BonusResist += effect.Amount;
                         events.Add(new GameEvent { Type = GameEventType.UnitStatsChanged, UnitId = unit.Id, CardId = unit.CardId, Amount = effect.Amount });
+                    }
+                    break;
+                }
+                case EffectAction.GrantHeavy:
+                {
+                    foreach (var unit in GatherUnits(state, effect.Scope, source, owner, targetX, targetY))
+                    {
+                        if (unit.IsCharm) continue;
+                        unit.GrantedHeavy = true;
+                        events.Add(new GameEvent { Type = GameEventType.UnitStatsChanged, UnitId = unit.Id, CardId = unit.CardId });
+                    }
+                    break;
+                }
+                case EffectAction.GrantAbility:
+                {
+                    if (effect.Granted == null) break;
+                    foreach (var unit in GatherUnits(state, effect.Scope, source, owner, targetX, targetY))
+                    {
+                        if (unit.IsCharm) continue;
+                        if (unit.GrantedEffects == null) unit.GrantedEffects = new List<EffectDef>();
+                        unit.GrantedEffects.Add(effect.Granted);
+                        events.Add(new GameEvent { Type = GameEventType.UnitStatsChanged, UnitId = unit.Id, CardId = unit.CardId });
                     }
                     break;
                 }
@@ -708,7 +751,7 @@ namespace LightCard.Core
                 events.Add(new GameEvent { Type = GameEventType.SpaceEffectApplied, X = unit.X, Y = unit.Y, SpaceEffect = SpaceEffectType.None });
             }
 
-            amount -= unit.Definition.Resist;
+            amount -= state.EffectiveResist(unit);
             DamageUnit(state, unit, amount, events);
         }
 
@@ -792,13 +835,21 @@ namespace LightCard.Core
 
         //---- Movement ----
 
+        /// <summary>The friendly Equip charm occupying (x,y), if any - a space a unit of that owner may enter.</summary>
+        private static UnitState FriendlyEquipAt(GameState state, int owner, int x, int y)
+        {
+            var occupant = state.GetUnitAt(x, y);
+            return occupant != null && occupant.Owner == owner && occupant.Definition.IsEquip ? occupant : null;
+        }
+
         /// <summary>Voluntary or automatic move; fails silently if blocked.</summary>
         private static bool TryMoveUnit(GameState state, UnitState unit, int dx, int dy, List<GameEvent> events)
         {
             int destX = unit.X + dx, destY = unit.Y + dy;
             if (!GameState.InBounds(destX, destY)) return false;
             if (GameState.SideOfRow(destY) != unit.Owner) return false;
-            if (state.GetUnitAt(destX, destY) != null) return false;
+            var occupant = state.GetUnitAt(destX, destY);
+            if (occupant != null && FriendlyEquipAt(state, unit.Owner, destX, destY) == null) return false;
 
             MoveUnitTo(state, unit, destX, destY, events);
             return true;
@@ -806,6 +857,14 @@ namespace LightCard.Core
 
         private static void MoveUnitTo(GameState state, UnitState unit, int destX, int destY, List<GameEvent> events)
         {
+            //Entering a friendly Equip charm's space consumes it and bestows its effects
+            var equip = !unit.IsCharm ? FriendlyEquipAt(state, unit.Owner, destX, destY) : null;
+            if (equip != null)
+            {
+                state.Units.Remove(equip);
+                events.Add(new GameEvent { Type = GameEventType.EquipAttached, UnitId = unit.Id, CardId = equip.CardId, X = destX, Y = destY });
+            }
+
             int fromX = unit.X, fromY = unit.Y;
             bool leftBramble = state.SpaceEffects[fromX, fromY] == SpaceEffectType.Brambled;
 
@@ -824,7 +883,15 @@ namespace LightCard.Core
 
             if (!state.Units.Contains(unit)) return;
 
-            foreach (var effect in unit.Definition.Effects)
+            if (equip != null)
+            {
+                foreach (var effect in equip.Definition.Effects.Where(e => e.Trigger == Trigger.OnEquip))
+                    ResolveEffect(state, effect, unit, unit.Owner, unit.X, unit.Y, events);
+            }
+
+            if (!state.Units.Contains(unit)) return;
+
+            foreach (var effect in unit.AllEffects)
             {
                 if ((advanced && effect.Trigger == Trigger.OnAdvance) ||
                     (retreated && effect.Trigger == Trigger.OnRetreat))
@@ -837,13 +904,15 @@ namespace LightCard.Core
         /// <summary>Forced movement away from the pusher; collisions deal 1 damage to both.</summary>
         private static void PushUnit(GameState state, UnitState unit, int pushDir, List<GameEvent> events)
         {
+            if (unit.IsHeavy) return; //Heavy: cannot be moved by Push or Pull
+
             int destY = unit.Y + pushDir;
 
             //Pushed off the back of the field: no move
             if (!GameState.InBounds(unit.X, destY) || GameState.SideOfRow(destY) != unit.Owner) return;
 
             var occupant = state.GetUnitAt(unit.X, destY);
-            if (occupant != null)
+            if (occupant != null && FriendlyEquipAt(state, unit.Owner, unit.X, destY) == null)
             {
                 DamageUnit(state, unit, 1, events);
                 if (state.Units.Contains(occupant)) DamageUnit(state, occupant, 1, events);
@@ -894,7 +963,7 @@ namespace LightCard.Core
             state.Units.Remove(unit);
             events.Add(new GameEvent { Type = GameEventType.UnitDestroyed, UnitId = unit.Id, CardId = unit.CardId, X = unit.X, Y = unit.Y });
 
-            foreach (var effect in unit.Definition.Effects.Where(e => e.Trigger == Trigger.OnDestroy))
+            foreach (var effect in unit.AllEffects.Where(e => e.Trigger == Trigger.OnDestroy))
                 ResolveEffect(state, effect, unit, unit.Owner, unit.X, unit.Y, events);
         }
 

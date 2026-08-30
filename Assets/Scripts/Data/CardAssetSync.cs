@@ -115,6 +115,37 @@ public static class CardAssetSync
         return AssetDatabase.LoadAssetAtPath<Sprite>(path);
     }
 
+    [MenuItem("LightCard/Regenerate ALL Procedural Card Art")]
+    public static void RegenerateAllProceduralArt()
+    {
+        Directory.CreateDirectory(PlaceholderFolder);
+        var library = AssetDatabase.LoadAssetAtPath<CardLibrary>(LibraryPath);
+        int regenerated = 0;
+        foreach (var definition in CardCatalogV1.Cards.Values)
+        {
+            //Cards whose art lives outside the placeholder folder (2021 sketches,
+            //hand-assigned art) are never touched - writing a placeholder PNG
+            //would override them through the drop-in rule on the next sync
+            var card = library != null ? library.cardCollection.cards.FirstOrDefault(c => c != null && c.name == definition.Id) : null;
+            if (card != null && card.sprite != null && !AssetDatabase.GetAssetPath(card.sprite).StartsWith(PlaceholderFolder)) continue;
+
+            string path = $"{PlaceholderFolder}/{definition.Id}.png";
+            //Only (re)write files that are missing or themselves procedural
+            //(128x128) - never clobber Midjourney drop-ins or other real art
+            if (File.Exists(path))
+            {
+                var existing = AssetDatabase.LoadAssetAtPath<Texture2D>(path);
+                if (existing != null && (existing.width != PlaceholderSize || existing.height != PlaceholderSize)) continue;
+            }
+            File.WriteAllBytes(path, RenderPlaceholder(definition).EncodeToPNG());
+            AssetDatabase.ImportAsset(path);
+            regenerated++;
+        }
+        AssetDatabase.SaveAssets();
+        Debug.Log($"CardAssetSync: regenerated {regenerated} procedural placeholder images. Run Sync to assign any new ones.");
+        Sync();
+    }
+
     private static Texture2D RenderPlaceholder(CardDefinition definition)
     {
         var texture = new Texture2D(PlaceholderSize, PlaceholderSize, TextureFormat.RGBA32, false);
@@ -124,29 +155,79 @@ public static class CardAssetSync
         foreach (char c in definition.Id) seed = seed * 31 + c;
         var rng = new System.Random(seed);
 
-        var background = Color.Lerp(baseColor, Color.black, 0.55f);
+        //Transparent background: figures stand directly on the field
         var pixels = new Color[PlaceholderSize * PlaceholderSize];
-        for (int i = 0; i < pixels.Length; i++) pixels[i] = background;
+        for (int i = 0; i < pixels.Length; i++) pixels[i] = Color.clear;
         texture.SetPixels(pixels);
 
-        //A few seeded translucent discs and bars in the archetype's palette
-        int shapes = 4 + rng.Next(3);
-        for (int n = 0; n < shapes; n++)
+        var bodyColor = Color.Lerp(baseColor, Color.black, 0.25f + 0.15f * (float)rng.NextDouble());
+        var accent = Color.Lerp(baseColor, Color.white, 0.45f + 0.3f * (float)rng.NextDouble());
+
+        //Card-type silhouette motif so units, charms, and abilities read apart at a glance
+        switch (definition.Type)
         {
-            var tint = Color.Lerp(baseColor, Color.white, 0.15f + 0.55f * (float)rng.NextDouble());
-            tint.a = 0.55f;
-            if (rng.Next(2) == 0)
-                BlendDisc(texture, rng.Next(PlaceholderSize), rng.Next(PlaceholderSize), 12 + rng.Next(34), tint);
-            else
-                BlendBar(texture, rng.Next(PlaceholderSize), 6 + rng.Next(14), tint, rng.Next(2) == 0);
+            case CardType.Unit:
+            {
+                //Blocky figure: legs, torso, head, seeded stance and build
+                int stance = 10 + rng.Next(10);
+                int torsoW = 26 + rng.Next(16);
+                int headR = 11 + rng.Next(7);
+                FillRect(texture, 64 - stance - 6, 14, 12, 34, bodyColor);           //left leg
+                FillRect(texture, 64 + stance - 6, 14, 12, 34, bodyColor);           //right leg
+                FillRect(texture, 64 - torsoW / 2, 44, torsoW, 40, bodyColor);       //torso
+                BlendDisc(texture, 64, 96, headR, bodyColor);                        //head
+                BlendDisc(texture, 64 - torsoW / 4, 64 + rng.Next(12), 5, accent);   //emblem
+                if (rng.Next(2) == 0) FillRect(texture, 64 + torsoW / 2, 40 + rng.Next(20), 6, 40, accent); //weapon
+                break;
+            }
+            case CardType.Charm:
+            {
+                //Totem: plinth + tapering obelisk + floating gem
+                FillRect(texture, 34, 12, 60, 12, bodyColor);
+                FillRect(texture, 46, 24, 36, 46 + rng.Next(16), bodyColor);
+                FillRect(texture, 54, 70, 20, 22, bodyColor);
+                BlendDisc(texture, 64, 100 + rng.Next(8), 9 + rng.Next(5), accent);
+                break;
+            }
+            default:
+            {
+                //Ability: radiating burst
+                int spokes = 6 + rng.Next(5);
+                for (int n = 0; n < spokes; n++)
+                {
+                    double angle = (System.Math.PI * 2 * n) / spokes + rng.NextDouble() * 0.3;
+                    int ex = 64 + (int)(System.Math.Cos(angle) * (34 + rng.Next(16)));
+                    int ey = 64 + (int)(System.Math.Sin(angle) * (34 + rng.Next(16)));
+                    DrawThickLine(texture, 64, 64, ex, ey, 4, bodyColor);
+                }
+                BlendDisc(texture, 64, 64, 15 + rng.Next(6), accent);
+                break;
+            }
         }
 
         //Cost pips along the bottom edge so the art hints at the card even tiny
         for (int pip = 0; pip < definition.Cost && pip < 8; pip++)
-            BlendDisc(texture, 12 + pip * 15, 10, 5, Color.Lerp(baseColor, Color.white, 0.8f));
+            BlendDisc(texture, 12 + pip * 15, 6, 5, accent);
 
         texture.Apply();
         return texture;
+    }
+
+    private static void FillRect(Texture2D texture, int x0, int y0, int width, int height, Color color)
+    {
+        for (int y = Mathf.Max(0, y0); y < Mathf.Min(PlaceholderSize, y0 + height); y++)
+            for (int x = Mathf.Max(0, x0); x < Mathf.Min(PlaceholderSize, x0 + width); x++)
+                texture.SetPixel(x, y, color);
+    }
+
+    private static void DrawThickLine(Texture2D texture, int x0, int y0, int x1, int y1, int thickness, Color color)
+    {
+        int steps = Mathf.Max(Mathf.Abs(x1 - x0), Mathf.Abs(y1 - y0));
+        for (int n = 0; n <= steps; n++)
+        {
+            float t = steps == 0 ? 0f : (float)n / steps;
+            BlendDisc(texture, Mathf.RoundToInt(Mathf.Lerp(x0, x1, t)), Mathf.RoundToInt(Mathf.Lerp(y0, y1, t)), thickness / 2 + 1, color);
+        }
     }
 
     private static void BlendDisc(Texture2D texture, int cx, int cy, int radius, Color color)

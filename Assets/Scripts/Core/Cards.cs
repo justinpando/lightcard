@@ -47,7 +47,9 @@ namespace LightCard.Core
         /// <summary>Fires when the owner calls a unit or charm to the space directly in front of this; target coords are the called unit's space.</summary>
         OnAllyCallInFront,
         /// <summary>Fires when the owner applies a space effect (Navigator).</summary>
-        OnOwnerSpaceEffect
+        OnOwnerSpaceEffect,
+        /// <summary>Equip charms only: resolved on the unit that enters the equip's space.</summary>
+        OnEquip
     }
 
     /// <summary>What an effect does. Magnitudes live in EffectDef.Power/Life/Amount.</summary>
@@ -112,7 +114,15 @@ namespace LightCard.Core
         /// <summary>Static: grant Parry Amount while the condition holds (Trigger.Static only).</summary>
         StaticParry,
         /// <summary>Static: units in Scope have Auto-Advance while the condition holds (Trigger.Static only).</summary>
-        StaticAutoAdvance
+        StaticAutoAdvance,
+        /// <summary>Grant Amount permanent Parry to units in Scope.</summary>
+        GainParry,
+        /// <summary>Grant Amount permanent Resist to units in Scope.</summary>
+        GainResist,
+        /// <summary>Make units in Scope permanently Heavy.</summary>
+        GrantHeavy,
+        /// <summary>Attach EffectDef.Granted as a permanent extra ability of units in Scope (equips, Ocean mutations).</summary>
+        GrantAbility
     }
 
     /// <summary>Which units an effect applies to, relative to its source or its play target.</summary>
@@ -176,6 +186,8 @@ namespace LightCard.Core
         public SpaceEffectType SpaceEffect = SpaceEffectType.None;
         /// <summary>Catalog id of the card summoned by CallUnit.</summary>
         public string CalledCardId;
+        /// <summary>The ability attached by GrantAbility.</summary>
+        public EffectDef Granted;
     }
 
     /// <summary>Immutable definition of a card. Instances on the board are UnitState.</summary>
@@ -207,6 +219,13 @@ namespace LightCard.Core
         public bool Agile;
         /// <summary>Prevents combat damage this many times per turn.</summary>
         public int Parry;
+        /// <summary>Cannot be moved by Push or Pull.</summary>
+        public bool Heavy;
+        /// <summary>
+        /// Equip charm: a friendly unit may enter its space, consuming the charm
+        /// and receiving its Trigger.OnEquip effects (glossary "Equip").
+        /// </summary>
+        public bool IsEquip;
 
         public PlayTargetKind PlayTarget = PlayTargetKind.None;
 

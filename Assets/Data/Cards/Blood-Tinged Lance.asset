@@ -19,4 +19,4 @@ MonoBehaviour:
   cost: 2
   power: 0
   life: 4
-  description: 'Equip: Bestow +2/0 and Piercing 1.'
+  description: 'Equip: Bestow +2/0 and Pierce 1.'

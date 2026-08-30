@@ -495,9 +495,15 @@ public class MatchContext : MonoBehaviour
         {
             case PlayTargetKind.FriendlyEmptySpace:
                 for (int x = 0; x < GameConfig.Lanes; x++)
+                {
                     for (int y = 0; y < GameConfig.Rows; y++)
-                        if (GameState.SideOfRow(y) == LocalPlayer && state.GetUnitAt(x, y) == null)
+                    {
+                        if (GameState.SideOfRow(y) != LocalPlayer) continue;
+                        var occupant = state.GetUnitAt(x, y);
+                        if (occupant == null || (occupant.Owner == LocalPlayer && occupant.Definition.IsEquip && definition.Type != CardType.Charm))
                             yield return (x, y);
+                    }
+                }
                 break;
             case PlayTargetKind.AnySpace:
                 for (int x = 0; x < GameConfig.Lanes; x++)

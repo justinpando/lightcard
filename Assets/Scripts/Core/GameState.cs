@@ -17,6 +17,11 @@ namespace LightCard.Core
         public int BonusLife;
         public int BonusPierce;
         public int BonusArmor;
+        public int BonusParry;
+        public int BonusResist;
+        public bool GrantedHeavy;
+        /// <summary>Extra abilities attached at runtime (equips, mutations). Null until first grant.</summary>
+        public List<EffectDef> GrantedEffects;
         //Temp grants last until the start of the owner's next turn (rules-v2)
         public int TempPower;
         public int TempParry;
@@ -36,8 +41,18 @@ namespace LightCard.Core
 
         public CardDefinition Definition => CardCatalogV1.Get(CardId);
         public bool IsCharm => Definition.Type == CardType.Charm;
+        public bool IsHeavy => Definition.Heavy || GrantedHeavy;
 
-        public UnitState Clone() => (UnitState)MemberwiseClone();
+        /// <summary>Printed effects plus any runtime-granted abilities.</summary>
+        public IEnumerable<EffectDef> AllEffects =>
+            GrantedEffects == null ? Definition.Effects : Definition.Effects.Concat(GrantedEffects);
+
+        public UnitState Clone()
+        {
+            var copy = (UnitState)MemberwiseClone();
+            if (GrantedEffects != null) copy.GrantedEffects = new List<EffectDef>(GrantedEffects);
+            return copy;
+        }
     }
 
     public class PlayerState
@@ -134,7 +149,9 @@ namespace LightCard.Core
         }
 
         public int EffectiveParry(UnitState unit) =>
-            unit.Definition.Parry + unit.TempParry + StaticContribution(unit, EffectAction.StaticParry, statsPower: false);
+            unit.Definition.Parry + unit.BonusParry + unit.TempParry + StaticContribution(unit, EffectAction.StaticParry, statsPower: false);
+
+        public int EffectiveResist(UnitState unit) => unit.Definition.Resist + unit.BonusResist;
 
         /// <summary>True if any static aura (or the unit's own printed keyword) gives it Auto-Advance.</summary>
         public bool HasAutoAdvance(UnitState unit)
@@ -142,7 +159,7 @@ namespace LightCard.Core
             if (unit.Definition.AutoAdvance) return true;
             foreach (var source in Units)
             {
-                foreach (var effect in source.Definition.Effects)
+                foreach (var effect in source.AllEffects)
                 {
                     if (effect.Trigger != Trigger.Static || effect.Action != EffectAction.StaticAutoAdvance) continue;
                     if (effect.Condition == EffectCondition.Frontline && source.Y != FrontlineRow(source.Owner)) continue;
@@ -170,7 +187,7 @@ namespace LightCard.Core
 
             foreach (var source in Units)
             {
-                foreach (var effect in source.Definition.Effects)
+                foreach (var effect in source.AllEffects)
                 {
                     if (effect.Trigger != Trigger.Static || effect.Action != action) continue;
                     if (effect.Condition == EffectCondition.Frontline && source.Y != FrontlineRow(source.Owner)) continue;
