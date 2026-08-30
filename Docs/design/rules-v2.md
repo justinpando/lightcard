@@ -89,6 +89,24 @@ Ability damage is a new pipeline, distinct from attacks:
 - **Master Painter** primes the space of the unit it strikes; attacks that hit
   the player prime nothing.
 
+## Auto-attack at end of turn (designer ruling)
+
+When a player ends their turn, every one of their units that can still legally
+attack does so automatically, front-most first (the same legality as a manual
+attack: melee blocking, Flux, sleep, moved/attacked flags, 0-power all apply).
+Manual attacks earlier in the turn remain possible — attacking early lets you
+resolve combat before playing more cards — and any unit that already attacked
+or moved is skipped by the sweep. Auto-attacks resolve before end-of-turn
+triggers.
+
+## "Attune" — the in-world term for Replace
+
+Player-facing UI calls the Replace action **Attuning** a card: you dissolve a
+card to gain +1 max energy and +1 Affinity of its archetype (matching the
+roguelike's Attunement sites). The engine keeps `ReplaceCardCommand` as the
+code name. In the match view: drag a card onto the energy dial (or the Attune
+drop area) to Attune it.
+
 ## Garden offense rulings (Pin Down, Pin Prick)
 
 - **Pinned**: the unit cannot Shift and its Auto-Advance does not fire. Forced

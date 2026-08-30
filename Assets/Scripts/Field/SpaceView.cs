@@ -37,32 +37,60 @@ public class SpaceView : MonoBehaviour
     {
         baseScale = transform.localScale;
 
-        if (GetComponent<Collider>() == null)
+        //Clickable volume on an identity-rotation child: the space transforms in
+        //the scene art are rotated and scaled (the discs lie flat via rotation),
+        //so a collider on the space itself would extend sideways. The child is
+        //counter-scaled so the volume is ~0.7 x 0.9 x 0.7 world units, tall
+        //enough that clicking anywhere on the floating unit art selects the space.
+        if (GetComponentInChildren<BoxCollider>() == null)
         {
-            var box = gameObject.AddComponent<BoxCollider>();
-            box.size = new Vector3(0.7f, 0.1f, 0.7f);
+            var volume = new GameObject("Click Volume", typeof(BoxCollider));
+            volume.transform.SetParent(transform, false);
+            volume.transform.rotation = Quaternion.identity;
+            volume.transform.position = transform.position;
+            var scale = transform.lossyScale;
+            volume.transform.localScale = new Vector3(
+                1f / Mathf.Max(0.01f, scale.x), 1f / Mathf.Max(0.01f, scale.y), 1f / Mathf.Max(0.01f, scale.z));
+            var box = volume.GetComponent<BoxCollider>();
+            box.size = new Vector3(0.70f, 0.90f, 0.70f);
+            box.center = new Vector3(0f, 0.35f, 0f);
         }
 
         unitCanvas = GetComponentInChildren<Canvas>(true);
         if (unitCanvas == null) return;
 
+        //The unit canvas is display-only: it must never swallow pointer events,
+        //or clicks on the unit art would count as "over UI" and be ignored
+        var canvasRaycaster = unitCanvas.GetComponent<UnityEngine.UI.GraphicRaycaster>();
+        if (canvasRaycaster != null) canvasRaycaster.enabled = false;
+        foreach (var graphic in unitCanvas.GetComponentsInChildren<UnityEngine.UI.Graphic>(true))
+            graphic.raycastTarget = false;
+
         var imageTransform = unitCanvas.transform.Find("Image");
         unitImage = imageTransform != null ? imageTransform.GetComponent<Image>() : null;
         if (unitImage != null)
         {
-            //Inset the art so the owner frame reads as a border around it
+            //Full-rect figure; transparent-background art stands directly on the field
             var rect = (RectTransform)unitImage.transform;
-            rect.anchorMin = new Vector2(0.08f, 0.08f);
-            rect.anchorMax = new Vector2(0.92f, 0.92f);
+            rect.anchorMin = new Vector2(0.02f, 0.10f);
+            rect.anchorMax = new Vector2(0.98f, 0.98f);
             rect.offsetMin = Vector2.zero;
             rect.offsetMax = Vector2.zero;
+            unitImage.preserveAspect = true;
         }
 
         effectImage = CreateOverlay("Effect Overlay");
         effectImage.transform.SetAsFirstSibling();
 
-        ownerFrame = CreateOverlay("Owner Frame");
+        //Owner shown as a colored base strip the figure stands on, so cutout art
+        //never sits inside a colored box
+        ownerFrame = CreateOverlay("Owner Base");
         ownerFrame.transform.SetSiblingIndex(1);
+        var baseRect = (RectTransform)ownerFrame.transform;
+        baseRect.anchorMin = new Vector2(0.10f, 0.00f);
+        baseRect.anchorMax = new Vector2(0.90f, 0.10f);
+        baseRect.offsetMin = Vector2.zero;
+        baseRect.offsetMax = Vector2.zero;
 
         highlightImage = CreateOverlay("Highlight Overlay");
 
@@ -213,9 +241,6 @@ public class SpaceView : MonoBehaviour
         transform.localScale = highlight == Highlight.None ? baseScale : baseScale * 1.08f;
     }
 
-    private void OnMouseUpAsButton()
-    {
-        if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject()) return;
-        OnClicked?.Invoke(this);
-    }
+    //Clicks are detected centrally by MatchContext (raycast against the child
+    //Click Volume), which invokes OnClicked - the same path drag-drop uses.
 }

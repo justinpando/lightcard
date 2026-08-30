@@ -40,8 +40,13 @@ public class MatchHudController
     public Action OnRematchClicked;
     public Action OnMenuClicked;
 
-    public MatchHudController(Transform uiCanvas)
+    private Canvas rootCanvas;
+    private RectTransform energyPanelRect;
+    private RectTransform cycleAreaRect;
+
+    public MatchHudController(Transform uiCanvas, CardLibrary library)
     {
+        rootCanvas = uiCanvas.GetComponent<Canvas>();
         var margin = uiCanvas.Find("Margin");
         if (margin == null)
         {
@@ -55,14 +60,40 @@ public class MatchHudController
         opponentLifeText = FindComponent<TMP_Text>(margin, "Opponent Status Panel/Opponent Life/Slider/Text (TMP)");
         energyText = FindComponent<TMP_Text>(margin, "Energy Panel/Radial Slider/Text (TMP)");
 
+        var energyPanel = margin.Find("Energy Panel");
+        energyPanelRect = energyPanel as RectTransform;
+
         var affinityPanel = margin.Find("Energy Panel/Affinity Panel");
         if (affinityPanel != null)
         {
             affinityTexts = new TMP_Text[affinityPanel.childCount];
+            var archetypes = (Archetype[])Enum.GetValues(typeof(Archetype));
             for (int i = 0; i < affinityPanel.childCount; i++)
             {
-                var label = affinityPanel.GetChild(i).Find("Text (TMP)");
-                if (label != null) affinityTexts[i] = label.GetComponent<TMP_Text>();
+                var indicator = affinityPanel.GetChild(i);
+                var label = indicator.Find("Text (TMP)");
+                if (label != null)
+                {
+                    affinityTexts[i] = label.GetComponent<TMP_Text>();
+                    if (affinityTexts[i] != null)
+                    {
+                        affinityTexts[i].color = Color.white;
+                        affinityTexts[i].fontStyle = FontStyles.Bold;
+                    }
+                }
+
+                //Give each indicator its archetype's symbol and color so they read apart
+                if (library != null && i < archetypes.Length)
+                {
+                    var data = library.classes?.Find(c => c != null && (int)c.archetype == i);
+                    var iconTransform = indicator.Find("Archetype Icon");
+                    var icon = iconTransform != null ? iconTransform.GetComponent<Image>() : null;
+                    if (data != null && icon != null)
+                    {
+                        icon.sprite = data.symbol;
+                        icon.color = data.highlightColor;
+                    }
+                }
             }
         }
 
@@ -77,6 +108,7 @@ public class MatchHudController
         if (cycleTransform != null)
         {
             cycleArea = cycleTransform.gameObject;
+            cycleAreaRect = cycleTransform as RectTransform;
             var button = cycleArea.GetComponent<Button>();
             if (button == null) button = cycleArea.AddComponent<Button>();
             button.onClick.AddListener(() => OnReplaceClicked?.Invoke());
@@ -84,9 +116,9 @@ public class MatchHudController
             var label = cycleArea.GetComponentInChildren<TMP_Text>(true);
             if (label == null)
             {
-                var text = CreateText(cycleArea.transform, "Replace Label");
-                text.text = "Replace\n(+1 max energy)";
+                label = CreateText(cycleArea.transform, "Attune Label");
             }
+            label.text = "Attune\n+1 energy, +1 affinity";
             cycleArea.SetActive(false);
         }
 
@@ -284,6 +316,18 @@ public class MatchHudController
     public void ShowReplaceTarget(bool show)
     {
         if (cycleArea != null) cycleArea.SetActive(show);
+    }
+
+    /// <summary>True if the screen point is over the energy dial or the Attune drop area.</summary>
+    public bool IsOverAttuneZone(Vector2 screenPosition)
+    {
+        Camera eventCamera = rootCanvas != null && rootCanvas.renderMode != RenderMode.ScreenSpaceOverlay
+            ? rootCanvas.worldCamera
+            : null;
+        if (energyPanelRect != null && RectTransformUtility.RectangleContainsScreenPoint(energyPanelRect, screenPosition, eventCamera))
+            return true;
+        return cycleAreaRect != null && cycleArea.activeSelf &&
+               RectTransformUtility.RectangleContainsScreenPoint(cycleAreaRect, screenPosition, eventCamera);
     }
 
     public void SetStatus(string message)

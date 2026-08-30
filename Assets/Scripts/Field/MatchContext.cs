@@ -47,6 +47,20 @@ public class MatchContext : MonoBehaviour
     private List<(int x, int y)> shiftTargets = new List<(int x, int y)>();
     private bool attackSelectable;
     private bool aiRunning;
+    private int suppressClickFrame = -1;
+
+    private void Update()
+    {
+        //Central board-click detection: same raycast path as drag-and-drop.
+        //Skipped right after a drop (same mouse-up) and when over UI.
+        if (!Input.GetMouseButtonUp(0)) return;
+        if (Time.frameCount <= suppressClickFrame + 1) return;
+        if (UnityEngine.EventSystems.EventSystem.current != null &&
+            UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject()) return;
+
+        var space = RaycastSpace(Input.mousePosition, SpacePreference.Occupied);
+        if (space != null) OnSpaceClicked(space);
+    }
 
     private void Start()
     {
@@ -71,8 +85,10 @@ public class MatchContext : MonoBehaviour
         var uiCanvas = GameObject.Find("UI Canvas");
         handView = new HandViewController(library, uiCanvas.transform.Find("Margin/Hand"));
         handView.OnCardClicked = OnHandCardClicked;
+        handView.OnCardDragStart = OnCardDragStarted;
+        handView.OnCardDropped = OnCardDropped;
 
-        hud = new MatchHudController(uiCanvas.transform);
+        hud = new MatchHudController(uiCanvas.transform, library);
         hud.OnEndTurnClicked = OnEndTurnClicked;
         hud.OnReplaceClicked = OnReplaceClicked;
         hud.OnRematchClicked = () => SceneManager.LoadScene(SceneManager.GetActiveScene().name);
@@ -224,7 +240,11 @@ public class MatchContext : MonoBehaviour
         }
 
         ClearSelection();
+        SelectHandCard(handIndex);
+    }
 
+    private void SelectHandCard(int handIndex)
+    {
         var cardId = state.Players[LocalPlayer].Hand[handIndex];
         var card = CardCatalogV1.Get(cardId);
         var playerState = state.Players[LocalPlayer];
@@ -232,11 +252,11 @@ public class MatchContext : MonoBehaviour
                         playerState.Affinity[card.Archetype] >= card.AffinityRequirement;
         if (card.Cost > playerState.Energy)
         {
-            hud.SetStatus($"Not enough energy for {cardId} ({card.Cost}). You can still Replace it.");
+            hud.SetStatus($"Not enough energy for {cardId} ({card.Cost}). Drag it onto the energy dial to Attune it.");
         }
         else if (!playable)
         {
-            hud.SetStatus($"{cardId} needs {card.Archetype} Affinity {card.AffinityRequirement} (you have {playerState.Affinity[card.Archetype]}). Replace {card.Archetype} cards to attune.");
+            hud.SetStatus($"{cardId} needs {card.Archetype} Affinity {card.AffinityRequirement} (you have {playerState.Affinity[card.Archetype]}). Attune {card.Archetype} cards to reach it.");
         }
 
         selectedHandIndex = handIndex;
@@ -248,9 +268,108 @@ public class MatchContext : MonoBehaviour
             playTargets = EnumeratePlayTargets(card).ToList();
             fieldView.HighlightSpaces(playTargets, SpaceView.Highlight.PlayTarget);
             hud.SetStatus(card.PlayTarget == PlayTargetKind.None
-                ? $"Click {cardId} again to play it."
-                : $"Choose a target for {cardId}.");
+                ? $"Click {cardId} again to play it, or drag it to the board."
+                : $"Drag {cardId} to a green space, or click one.");
         }
+    }
+
+    private bool OnCardDragStarted(int handIndex)
+    {
+        if (!InputAllowed()) return false;
+        ClearSelection();
+        SelectHandCard(handIndex);
+        return true;
+    }
+
+    private void OnCardDropped(int handIndex, Vector2 screenPosition)
+    {
+        suppressClickFrame = Time.frameCount;
+        if (!InputAllowed() || selectedHandIndex != handIndex)
+        {
+            ClearSelection();
+            return;
+        }
+
+        if (hud.IsOverAttuneZone(screenPosition))
+        {
+            Submit(new ReplaceCardCommand { Player = LocalPlayer, HandIndex = handIndex });
+            return;
+        }
+
+        var dropCard = CardCatalogV1.Get(state.Players[LocalPlayer].Hand[handIndex]);
+        var preference = dropCard.PlayTarget == PlayTargetKind.AnyUnit ? SpacePreference.Occupied
+                       : dropCard.PlayTarget == PlayTargetKind.FriendlyEmptySpace ? SpacePreference.Empty
+                       : SpacePreference.Nearest;
+        var space = RaycastSpace(screenPosition, preference);
+        if (space != null)
+        {
+            var card = dropCard;
+            if (card.PlayTarget == PlayTargetKind.None && playTargets.Count == 0 &&
+                card.Cost <= state.Players[LocalPlayer].Energy &&
+                state.Players[LocalPlayer].Affinity[card.Archetype] >= card.AffinityRequirement)
+            {
+                //Untargeted cards play when dropped anywhere on the board
+                Submit(new PlayCardCommand { Player = LocalPlayer, HandIndex = handIndex, TargetX = 0, TargetY = 0 });
+                return;
+            }
+            if (playTargets.Contains((space.X, space.Y)))
+            {
+                Submit(new PlayCardCommand { Player = LocalPlayer, HandIndex = handIndex, TargetX = space.X, TargetY = space.Y });
+                return;
+            }
+        }
+
+        ClearSelection();
+    }
+
+    private enum SpacePreference { Nearest, Occupied, Empty }
+
+    private SpaceView RaycastSpace(Vector2 screenPosition, SpacePreference preference = SpacePreference.Nearest)
+    {
+        var camera = Camera.main;
+        if (camera == null) return null;
+        var ray = camera.ScreenPointToRay(screenPosition);
+
+        if (preference == SpacePreference.Occupied)
+        {
+            //Clicking a unit: the tall click volumes ARE the unit silhouettes, so
+            //raycast them, preferring the nearest occupied one (the visible art
+            //belongs to it; an empty space's airspace is invisible).
+            var hits = Physics.RaycastAll(ray, 100f);
+            SpaceView nearest = null, occupied = null;
+            float nearestDistance = float.MaxValue, occupiedDistance = float.MaxValue;
+            foreach (var hit in hits)
+            {
+                var space = hit.collider.GetComponentInParent<SpaceView>();
+                if (space == null) continue;
+                if (hit.distance < nearestDistance) { nearestDistance = hit.distance; nearest = space; }
+                if (space.UnitId >= 0 && hit.distance < occupiedDistance) { occupiedDistance = hit.distance; occupied = space; }
+            }
+            return occupied != null ? occupied : nearest;
+        }
+
+        //Dropping onto a space: project the ray onto the board plane and take
+        //the space whose disc is under the pointer - unambiguous regardless of
+        //how the tall volumes overlap on screen.
+        var plane = new Plane(Vector3.up, Vector3.zero);
+        float enter;
+        if (!plane.Raycast(ray, out enter)) return null;
+        var point = ray.GetPoint(enter);
+
+        SpaceView best = null;
+        float bestDistance = 0.45f; //roughly half a space of slack
+        for (int x = 0; x < GameConfig.Lanes; x++)
+        {
+            for (int y = 0; y < GameConfig.Rows; y++)
+            {
+                var space = fieldView.GetSpace(x, y);
+                if (space == null) continue;
+                var offset = space.transform.position - point;
+                float planar = new Vector2(offset.x, offset.z).magnitude;
+                if (planar < bestDistance) { bestDistance = planar; best = space; }
+            }
+        }
+        return best;
     }
 
     private void OnSpaceClicked(SpaceView space)
@@ -347,7 +466,7 @@ public class MatchContext : MonoBehaviour
         }
 
         hud.SetStatus(attackSelectable
-            ? $"{unit.CardId}: click it again to attack, or a blue space to Shift."
+            ? $"{unit.CardId} attacks automatically at end of turn — click it again to attack now, or a blue space to Shift."
             : $"{unit.CardId}: click a blue space to Shift.");
     }
 

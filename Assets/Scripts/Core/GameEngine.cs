@@ -116,6 +116,19 @@ namespace LightCard.Core
         {
             var result = new CommandResult { Success = true };
 
+            //Rules-v2: every unit that can still legally attack does so
+            //automatically at end of turn, front-most first. Manual attacks
+            //earlier in the turn remain possible (they mark AttackedThisTurn).
+            foreach (var unit in state.UnitsOf(player).OrderBy(u => player == 0 ? -u.Y : u.Y).ToList())
+            {
+                if (state.IsOver) break;
+                if (!state.Units.Contains(unit)) continue;
+                var attack = ExecuteAttack(state, new AttackCommand { Player = player, UnitId = unit.Id });
+                if (attack.Success) result.Events.AddRange(attack.Events);
+            }
+
+            if (state.IsOver) return result;
+
             //End-of-turn triggers for the active player's units, front-most first
             foreach (var unit in state.UnitsOf(player).OrderBy(u => player == 0 ? -u.Y : u.Y).ToList())
             {

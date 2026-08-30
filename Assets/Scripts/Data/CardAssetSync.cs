@@ -103,12 +103,13 @@ public static class CardAssetSync
     {
         AssetDatabase.ImportAsset(path);
         var importer = (TextureImporter)AssetImporter.GetAtPath(path);
-        if (importer.textureType != TextureImporterType.Sprite)
+        if (importer.textureType != TextureImporterType.Sprite || !importer.alphaIsTransparency)
         {
             importer.textureType = TextureImporterType.Sprite;
             importer.spriteImportMode = SpriteImportMode.Single;
             importer.filterMode = FilterMode.Bilinear;
             importer.mipmapEnabled = false;
+            importer.alphaIsTransparency = true;
             importer.SaveAndReimport();
         }
         return AssetDatabase.LoadAssetAtPath<Sprite>(path);

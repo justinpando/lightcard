@@ -12,11 +12,20 @@
 
 ## House style
 
-Append to every prompt for a consistent set:
+Append to every prompt for a consistent set. Units and charms want
+**transparent backgrounds** so the figure stands directly on the field and can
+animate — Midjourney can't output alpha, so prompt for clean isolation and cut
+the background afterward (remove.bg, Photoshop, or Midjourney's web editor):
 
 > `loose ink and watercolor illustration, symbolic dreamlike imagery from the
-> collective unconscious, minimal background, soft vignette, card game art
-> --ar 1:1 --no text, letters, frame, border`
+> collective unconscious, full body character isolated on a plain white
+> background, no scenery, no shadow, card game art
+> --ar 1:1 --no text, letters, frame, border, background scenery`
+
+Export as PNG **with alpha** after background removal; the sync tool imports
+alpha correctly and the board shows the figure standing on an owner-colored
+base strip. Abilities can keep painted backgrounds if you prefer — they only
+appear in hand, not on the field.
 
 Archetype palettes (from the design sheet): **Garden** verdant greens with rose
 accents · **Expedition** warm golds and sunlit ochre · **Atelier** deep
