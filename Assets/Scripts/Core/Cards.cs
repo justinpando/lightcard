@@ -10,7 +10,9 @@ namespace LightCard.Core
     {
         None, Verdant, Brambled, Vista,
         /// <summary>Ability damage to a unit on this space is +2; consumed by that boost (Atelier).</summary>
-        Primed
+        Primed,
+        /// <summary>Units here have +1/0 and take 1 damage at the end of their owner's turn (Heart).</summary>
+        Inferno
     }
 
     /// <summary>When an effect fires.</summary>
@@ -55,7 +57,11 @@ namespace LightCard.Core
         /// <summary>Fires after this unit takes damage and survives.</summary>
         OnDamaged,
         /// <summary>Fires after this Guardian redirects a strike onto itself.</summary>
-        OnGuard
+        OnGuard,
+        /// <summary>Spirit cards: fires (host as source) when the spirit's bond breaks.</summary>
+        OnBondBreak,
+        /// <summary>Fires on a unit when a spirit binds to it (Attuners).</summary>
+        OnBonded
     }
 
     /// <summary>What an effect does. Magnitudes live in EffectDef.Power/Life/Amount.</summary>
@@ -138,7 +144,15 @@ namespace LightCard.Core
         /// <summary>Add a copy of the card played before this one to the owner's hand (Trace).</summary>
         CopyLastCard,
         /// <summary>The unit becomes CalledCardId, keeping damage, bonuses, and statuses (Prideful Soul).</summary>
-        TransformSelf
+        TransformSelf,
+        /// <summary>Deal Amount damage to both players (Spirit of Balance).</summary>
+        DamageBothPlayers,
+        /// <summary>Apply SpaceEffect to the source's space AND the mirrored space on the enemy half (Spirit of Inferno).</summary>
+        ApplySpaceEffectMirrored,
+        /// <summary>Add a random spirit card from the catalog to the owner's hand (Dreamwalker).</summary>
+        AddRandomSpirit,
+        /// <summary>Destroy the targeted friendly unit, then deal its remaining life as ability damage to every enemy in its lane (Release Energy).</summary>
+        SacrificeLaneBurst
     }
 
     /// <summary>Which units an effect applies to, relative to its source or its play target.</summary>
@@ -164,6 +178,10 @@ namespace LightCard.Core
         UnblockedFriendlyUnits,
         /// <summary>The nearest enemy unit or charm in the source's lane, scanning from the enemy frontline back.</summary>
         NearestEnemyInLane,
+        /// <summary>Every enemy unit or charm in the source's lane (Spirit of Wrath).</summary>
+        EnemiesInLane,
+        /// <summary>The space (or its occupant) directly in front of the source.</summary>
+        InFront,
         /// <summary>Friendly units in the eight spaces around the source (glossary "Nearby").</summary>
         Nearby,
         /// <summary>Friendly non-charm units that have at least one adjacent friendly unit or charm.</summary>
@@ -185,7 +203,9 @@ namespace LightCard.Core
         FriendlyEmptySpace,
         None,
         AnySpace,
-        AnyUnit
+        AnyUnit,
+        /// <summary>Spirits: a friendly non-charm, non-spirit-bearing unit to bind to.</summary>
+        FriendlyUnit
     }
 
     /// <summary>
@@ -246,6 +266,13 @@ namespace LightCard.Core
         public bool IsEquip;
         /// <summary>Takes attack damage in place of friendly units beside or behind it.</summary>
         public bool Guardian;
+        /// <summary>
+        /// Spirit unit (Heart): played onto a friendly unit instead of a space.
+        /// While bonded, the host gains the spirit's printed Parry/Resist/Rush and
+        /// the spirit takes all damage; its Trigger.OnBondBreak effects fire (with
+        /// the host as source) when it is destroyed.
+        /// </summary>
+        public bool IsSpirit;
 
         public PlayTargetKind PlayTarget = PlayTargetKind.None;
 

@@ -38,6 +38,12 @@ namespace LightCard.Core
         public bool Flux;
         public bool AttackedThisTurn;
         public bool MovedThisTurn;
+        /// <summary>Bound spirit's card id (Heart), or null; the spirit soaks all damage.</summary>
+        public string BoundSpiritCardId;
+        /// <summary>Damage the bound spirit has absorbed so far.</summary>
+        public int SpiritDamage;
+
+        public CardDefinition BoundSpirit => BoundSpiritCardId == null ? null : CardCatalogV1.Get(BoundSpiritCardId);
 
         public CardDefinition Definition => CardCatalogV1.Get(CardId);
         public bool IsCharm => Definition.Type == CardType.Charm;
@@ -148,13 +154,17 @@ namespace LightCard.Core
         public int EffectivePower(UnitState unit)
         {
             int power = unit.Definition.Power + unit.BonusPower + unit.TempPower + StaticContribution(unit, EffectAction.StaticStats, statsPower: true);
+            if (SpaceEffects[unit.X, unit.Y] == SpaceEffectType.Inferno && !unit.IsCharm) power += 1;
             return Math.Max(0, power);
         }
 
         public int EffectiveParry(UnitState unit) =>
-            unit.Definition.Parry + unit.BonusParry + unit.TempParry + StaticContribution(unit, EffectAction.StaticParry, statsPower: false);
+            unit.Definition.Parry + unit.BonusParry + unit.TempParry +
+            (unit.BoundSpirit != null ? unit.BoundSpirit.Parry : 0) +
+            StaticContribution(unit, EffectAction.StaticParry, statsPower: false);
 
-        public int EffectiveResist(UnitState unit) => unit.Definition.Resist + unit.BonusResist;
+        public int EffectiveResist(UnitState unit) =>
+            unit.Definition.Resist + unit.BonusResist + (unit.BoundSpirit != null ? unit.BoundSpirit.Resist : 0);
 
         /// <summary>Card cost after static discounts (Scholar's first-ability rebate).</summary>
         public int EffectiveCost(int player, CardDefinition definition)

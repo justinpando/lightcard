@@ -126,6 +126,12 @@ namespace LightCard.Core.Agents
                         yield return (unit.X, unit.Y);
                     break;
                 }
+                case PlayTargetKind.FriendlyUnit:
+                {
+                    foreach (var unit in state.UnitsOf(Player).Where(u => !u.IsCharm && !u.Definition.IsSpirit))
+                        yield return (unit.X, unit.Y);
+                    break;
+                }
             }
         }
 

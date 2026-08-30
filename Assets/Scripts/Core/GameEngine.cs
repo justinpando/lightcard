@@ -144,6 +144,13 @@ namespace LightCard.Core
                     ResolveEffect(state, effect, unit, player, unit.X, unit.Y, result.Events);
             }
 
+            //Inferno: the ending player's units standing in fire take 1 (Heart)
+            foreach (var unit in state.UnitsOf(player).Where(u => !u.IsCharm).ToList())
+            {
+                if (state.Units.Contains(unit) && state.SpaceEffects[unit.X, unit.Y] == SpaceEffectType.Inferno)
+                    DamageUnit(state, unit, 1, result.Events);
+            }
+
             //Pins on the ending player's units expire now (rules-v2)
             foreach (var unit in state.UnitsOf(player))
                 unit.Pinned = false;
@@ -204,6 +211,18 @@ namespace LightCard.Core
                         ResolveEffect(state, effect, watcher, watcher.Owner, watcher.X, watcher.Y, result.Events);
                 }
             }
+            else if (definition.IsSpirit)
+            {
+                //Spirit Bind: attach to the friendly host; rebinding overwrites
+                //the old spirit without triggering its break (design notes)
+                var host = state.GetUnitAt(command.TargetX, command.TargetY);
+                host.BoundSpiritCardId = cardId;
+                host.SpiritDamage = 0;
+                result.Events.Add(new GameEvent { Type = GameEventType.UnitBonded, UnitId = host.Id, CardId = cardId, X = host.X, Y = host.Y });
+
+                foreach (var effect in host.AllEffects.Where(e => e.Trigger == Trigger.OnBonded).ToList())
+                    ResolveEffect(state, effect, host, host.Owner, host.X, host.Y, result.Events);
+            }
             else
             {
                 CallUnit(state, command.Player, cardId, command.TargetX, command.TargetY, result.Events);
@@ -229,6 +248,15 @@ namespace LightCard.Core
                 case PlayTargetKind.AnyUnit:
                     if (!GameState.InBounds(x, y)) return "Target space is out of bounds.";
                     return state.GetUnitAt(x, y) != null ? null : "No unit on target space.";
+                case PlayTargetKind.FriendlyUnit:
+                {
+                    if (!GameState.InBounds(x, y)) return "Target space is out of bounds.";
+                    var host = state.GetUnitAt(x, y);
+                    if (host == null || host.Owner != player) return "Spirits bind to your own units.";
+                    if (host.IsCharm) return "Spirits cannot bind to charms.";
+                    if (host.Definition.IsSpirit) return "Spirits cannot bind to spirits.";
+                    return null;
+                }
                 default:
                     return "Unknown target kind.";
             }
@@ -371,7 +399,8 @@ namespace LightCard.Core
             if (attacker.Owner != command.Player) return CommandResult.Fail("You don't control that unit.");
             if (attacker.IsCharm) return CommandResult.Fail("Charms cannot attack.");
             if (attacker.Asleep) return CommandResult.Fail("That unit is asleep.");
-            if (attacker.Flux) return CommandResult.Fail("That unit was called this turn.");
+            bool hasRush = attacker.Definition.Rush || (attacker.BoundSpirit != null && attacker.BoundSpirit.Rush);
+            if (attacker.Flux && !hasRush) return CommandResult.Fail("That unit was called this turn.");
             if (attacker.AttackedThisTurn) return CommandResult.Fail("That unit has already attacked this turn.");
             if (attacker.MovedThisTurn && !attacker.Definition.Agile) return CommandResult.Fail("That unit has already moved this turn.");
             if (state.EffectivePower(attacker) <= 0) return CommandResult.Fail("Units with 0 Attack do not attack.");
@@ -810,6 +839,44 @@ namespace LightCard.Core
                     events.Add(new GameEvent { Type = GameEventType.UnitTransformed, UnitId = source.Id, CardId = source.CardId, X = source.X, Y = source.Y });
                     break;
                 }
+                case EffectAction.DamageBothPlayers:
+                {
+                    DamagePlayer(state, 0, effect.Amount, events);
+                    if (!state.IsOver) DamagePlayer(state, 1, effect.Amount, events);
+                    break;
+                }
+                case EffectAction.ApplySpaceEffectMirrored:
+                {
+                    if (source == null) break;
+                    state.SpaceEffects[source.X, source.Y] = effect.SpaceEffect;
+                    events.Add(new GameEvent { Type = GameEventType.SpaceEffectApplied, X = source.X, Y = source.Y, SpaceEffect = effect.SpaceEffect });
+                    int mirrorY = GameConfig.Rows - 1 - source.Y;
+                    state.SpaceEffects[source.X, mirrorY] = effect.SpaceEffect;
+                    events.Add(new GameEvent { Type = GameEventType.SpaceEffectApplied, X = source.X, Y = mirrorY, SpaceEffect = effect.SpaceEffect });
+                    break;
+                }
+                case EffectAction.AddRandomSpirit:
+                {
+                    var spirits = CardCatalogV1.Cards.Values.Where(c => c.IsSpirit).OrderBy(c => c.Id).ToList();
+                    if (spirits.Count == 0) break;
+                    string pick = spirits[state.NextRandom(spirits.Count)].Id;
+                    state.Players[owner].Hand.Add(pick);
+                    events.Add(new GameEvent { Type = GameEventType.CardDrawn, Player = owner, CardId = pick });
+                    break;
+                }
+                case EffectAction.SacrificeLaneBurst:
+                {
+                    var sacrifice = state.GetUnitAt(targetX, targetY);
+                    if (sacrifice == null || sacrifice.Owner != owner || sacrifice.IsCharm) break;
+                    int burst = state.CurrentLife(sacrifice);
+                    DestroyUnit(state, sacrifice, events);
+                    foreach (var enemy in state.Units.Where(u => u.Owner != owner && u.X == targetX).ToList())
+                    {
+                        if (state.Units.Contains(enemy))
+                            DealAbilityDamage(state, enemy, burst, events);
+                    }
+                    break;
+                }
                 case EffectAction.GrantAbility:
                 {
                     if (effect.Granted == null) break;
@@ -875,6 +942,15 @@ namespace LightCard.Core
                     }
                     return new List<UnitState>();
                 }
+                case TargetScope.EnemiesInLane:
+                    return source == null ? new List<UnitState>() :
+                        state.Units.Where(u => u.Owner != owner && u.X == source.X).ToList();
+                case TargetScope.InFront:
+                {
+                    if (source == null) return new List<UnitState>();
+                    var inFront = state.GetUnitAt(source.X, source.Y + GameState.ForwardDir(owner));
+                    return inFront != null ? new List<UnitState> { inFront } : new List<UnitState>();
+                }
                 case TargetScope.Nearby:
                     return source == null ? new List<UnitState>() :
                         state.UnitsOf(owner).Where(u => u != source &&
@@ -907,6 +983,13 @@ namespace LightCard.Core
                 case TargetScope.TargetRow:
                 {
                     for (int x = 0; x < GameConfig.Lanes; x++) spaces.Add((x, targetY));
+                    break;
+                }
+                case TargetScope.InFront:
+                {
+                    if (source == null) break;
+                    int fy = source.Y + GameState.ForwardDir(source.Owner);
+                    if (GameState.InBounds(source.X, fy)) spaces.Add((source.X, fy));
                     break;
                 }
             }
@@ -1016,6 +1099,31 @@ namespace LightCard.Core
         private static void DamageUnit(GameState state, UnitState unit, int amount, List<GameEvent> events)
         {
             if (amount <= 0 || !state.Units.Contains(unit)) return;
+
+            //Spirit Bind: the bound spirit takes all damage in the host's place.
+            //When it breaks, its OnBondBreak effects fire with the HOST as source;
+            //excess damage is lost.
+            if (unit.BoundSpiritCardId != null)
+            {
+                var spirit = unit.BoundSpirit;
+                unit.SpiritDamage += amount;
+                events.Add(new GameEvent { Type = GameEventType.UnitDamaged, UnitId = unit.Id, CardId = unit.BoundSpiritCardId, Amount = amount });
+
+                if (unit.SpiritDamage >= spirit.Life)
+                {
+                    string spiritId = unit.BoundSpiritCardId;
+                    unit.BoundSpiritCardId = null;
+                    unit.SpiritDamage = 0;
+                    events.Add(new GameEvent { Type = GameEventType.BondBroken, UnitId = unit.Id, CardId = spiritId, X = unit.X, Y = unit.Y });
+
+                    foreach (var effect in spirit.Effects.Where(e => e.Trigger == Trigger.OnBondBreak))
+                    {
+                        if (!state.Units.Contains(unit)) break;
+                        ResolveEffect(state, effect, unit, unit.Owner, unit.X, unit.Y, events);
+                    }
+                }
+                return;
+            }
 
             //Evade: prevent any damage instance, consuming one charge
             if (unit.TempEvade - unit.EvadeUsedThisTurn > 0)

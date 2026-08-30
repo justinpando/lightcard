@@ -812,6 +812,178 @@ namespace LightCard.Core
                     }
                 },
 
+                //---- Heart ----
+                new CardDefinition
+                {
+                    Id = "Dead Man Walking", Archetype = Archetype.Heart, Type = CardType.Unit,
+                    Cost = 1, Power = 1, Life = 3,
+                    Text = "Loses 1 life at start of your turn. On Destroy: Draw a card.",
+                    PlayTarget = PlayTargetKind.FriendlyEmptySpace,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.OnCall, Action = EffectAction.Poison, Scope = TargetScope.Self, Amount = 1 },
+                        new EffectDef { Trigger = Trigger.OnDestroy, Action = EffectAction.Draw, Amount = 1 }
+                    }
+                },
+                new CardDefinition
+                {
+                    Id = "Proximity Bomb", Archetype = Archetype.Heart, Type = CardType.Charm,
+                    Cost = 2, Power = 0, Life = 2,
+                    Text = "Destroyed: Deal 2 damage to this lane.",
+                    PlayTarget = PlayTargetKind.FriendlyEmptySpace,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.OnDestroy, Action = EffectAction.LaneDamage, Power = 2, Amount = 0 }
+                    }
+                },
+                new CardDefinition
+                {
+                    Id = "Burn", Archetype = Archetype.Heart, Type = CardType.Ability,
+                    Cost = 1,
+                    Text = "Deal 1 damage to target space and apply Inferno effect.",
+                    PlayTarget = PlayTargetKind.AnySpace,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.OnPlay, Action = EffectAction.DealDamage, Scope = TargetScope.TargetUnit, Amount = 1 },
+                        new EffectDef { Trigger = Trigger.OnPlay, Action = EffectAction.ApplySpaceEffect, Scope = TargetScope.TargetSpace, SpaceEffect = SpaceEffectType.Inferno }
+                    }
+                },
+                new CardDefinition
+                {
+                    Id = "Fire-spitter", Archetype = Archetype.Heart, Type = CardType.Unit,
+                    Cost = 3, Power = 2, Life = 3,
+                    Text = "On Damaged: The space in front of this ignites and its occupant takes 1 damage.",
+                    PlayTarget = PlayTargetKind.FriendlyEmptySpace,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.OnDamaged, Action = EffectAction.ApplySpaceEffect, Scope = TargetScope.InFront, SpaceEffect = SpaceEffectType.Inferno },
+                        new EffectDef { Trigger = Trigger.OnDamaged, Action = EffectAction.DealDamage, Scope = TargetScope.InFront, Amount = 1 }
+                    }
+                },
+                new CardDefinition
+                {
+                    Id = "Release Energy", Archetype = Archetype.Heart, Type = CardType.Ability,
+                    Cost = 4,
+                    Text = "Destroy target friendly Unit. Deal damage to enemies in its lane equal to its life.",
+                    PlayTarget = PlayTargetKind.FriendlyUnit,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.OnPlay, Action = EffectAction.SacrificeLaneBurst }
+                    }
+                },
+                new CardDefinition
+                {
+                    Id = "Novice Attuner", Archetype = Archetype.Heart, Type = CardType.Unit,
+                    Cost = 2, Power = 1, Life = 3,
+                    Text = "On Bond: Gain 0/+1.",
+                    PlayTarget = PlayTargetKind.FriendlyEmptySpace,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.OnBonded, Action = EffectAction.GainStats, Scope = TargetScope.Self, Life = 1 }
+                    }
+                },
+                new CardDefinition
+                {
+                    Id = "Adept Attuner", Archetype = Archetype.Heart, Type = CardType.Unit,
+                    Cost = 4, Power = 2, Life = 4,
+                    Text = "On Bond: Gain 0/+2.",
+                    PlayTarget = PlayTargetKind.FriendlyEmptySpace,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.OnBonded, Action = EffectAction.GainStats, Scope = TargetScope.Self, Life = 2 }
+                    }
+                },
+                new CardDefinition
+                {
+                    Id = "Dreamwalker", Archetype = Archetype.Heart, Type = CardType.Unit,
+                    Cost = 2, Power = 2, Life = 3,
+                    Text = "On Destroy: Draw a random Spirit card.",
+                    PlayTarget = PlayTargetKind.FriendlyEmptySpace,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.OnDestroy, Action = EffectAction.AddRandomSpirit }
+                    }
+                },
+                new CardDefinition
+                {
+                    Id = "Spirit of Wrath", Archetype = Archetype.Heart, Type = CardType.Unit,
+                    Cost = 1, Power = 1, Life = 1, IsSpirit = true,
+                    Text = "Bond Break: Deal 1 damage to enemies in this lane.",
+                    PlayTarget = PlayTargetKind.FriendlyUnit,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.OnBondBreak, Action = EffectAction.DealDamage, Scope = TargetScope.EnemiesInLane, Amount = 1 }
+                    }
+                },
+                new CardDefinition
+                {
+                    Id = "Spirit of Tenacity", Archetype = Archetype.Heart, Type = CardType.Unit,
+                    Cost = 2, Power = 2, Life = 3, IsSpirit = true,
+                    Text = "Bond Break: This unit gains +0/2.",
+                    PlayTarget = PlayTargetKind.FriendlyUnit,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.OnBondBreak, Action = EffectAction.GainStats, Scope = TargetScope.Self, Life = 2 }
+                    }
+                },
+                new CardDefinition
+                {
+                    Id = "Spirit of Balance", Archetype = Archetype.Heart, Type = CardType.Unit,
+                    Cost = 2, Power = 1, Life = 1, IsSpirit = true,
+                    Text = "Bond Break: Deal 1 damage to both players.",
+                    PlayTarget = PlayTargetKind.FriendlyUnit,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.OnBondBreak, Action = EffectAction.DamageBothPlayers, Amount = 1 }
+                    }
+                },
+                new CardDefinition
+                {
+                    Id = "Spirit of Curiosity", Archetype = Archetype.Heart, Type = CardType.Unit,
+                    Cost = 2, Power = 0, Life = 2, IsSpirit = true,
+                    Text = "Bond Break: Draw a card.",
+                    PlayTarget = PlayTargetKind.FriendlyUnit,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.OnBondBreak, Action = EffectAction.Draw, Amount = 1 }
+                    }
+                },
+                new CardDefinition
+                {
+                    Id = "Spirit of Inferno", Archetype = Archetype.Heart, Type = CardType.Unit,
+                    Cost = 2, Power = 2, Life = 2, IsSpirit = true,
+                    Text = "Bond Break: This space ignites, mirrored on the opponent's side.",
+                    PlayTarget = PlayTargetKind.FriendlyUnit,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.OnBondBreak, Action = EffectAction.ApplySpaceEffectMirrored, SpaceEffect = SpaceEffectType.Inferno }
+                    }
+                },
+                new CardDefinition
+                {
+                    Id = "Spirit of Rejection", Archetype = Archetype.Heart, Type = CardType.Unit,
+                    Cost = 2, Power = 0, Life = 3, IsSpirit = true,
+                    Text = "Spirit Bind: Parry 1.",
+                    Parry = 1,
+                    PlayTarget = PlayTargetKind.FriendlyUnit
+                },
+                new CardDefinition
+                {
+                    Id = "Spirit of Resistance", Archetype = Archetype.Heart, Type = CardType.Unit,
+                    Cost = 1, Power = 0, Life = 4, IsSpirit = true,
+                    Text = "Spirit Bind: Resist 1.",
+                    Resist = 1,
+                    PlayTarget = PlayTargetKind.FriendlyUnit
+                },
+                new CardDefinition
+                {
+                    Id = "Spirit of Haste", Archetype = Archetype.Heart, Type = CardType.Unit,
+                    Cost = 3, Power = 0, Life = 1, IsSpirit = true,
+                    Text = "Spirit Bind: Rush.",
+                    Rush = true,
+                    PlayTarget = PlayTargetKind.FriendlyUnit
+                },
+
                 //---- Ocean ----
                 new CardDefinition
                 {

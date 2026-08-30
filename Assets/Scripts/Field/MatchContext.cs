@@ -519,6 +519,10 @@ public class MatchContext : MonoBehaviour
                 foreach (var unit in state.Units)
                     yield return (unit.X, unit.Y);
                 break;
+            case PlayTargetKind.FriendlyUnit:
+                foreach (var unit in state.Units.Where(u => u.Owner == LocalPlayer && !u.IsCharm && !u.Definition.IsSpirit))
+                    yield return (unit.X, unit.Y);
+                break;
         }
     }
 

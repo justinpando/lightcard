@@ -29,7 +29,9 @@ namespace LightCard.Core
         DamageEvaded,
         CardBurned,
         EquipAttached,
-        UnitTransformed
+        UnitTransformed,
+        UnitBonded,
+        BondBroken
     }
 
     /// <summary>
