@@ -68,3 +68,9 @@ crashlytics-build.properties
 # .NET build output (CoreTests)
 CoreTests/bin/
 CoreTests/obj/
+
+# Google Sheets importer credentials — never commit these (an old client
+# leaked via git history once; that client is deleted, keep it impossible)
+GSTU_Config.asset
+GSTU_Config.asset.meta
+/[Aa]ssets/StreamingAssets/Key/

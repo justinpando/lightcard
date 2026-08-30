@@ -65,10 +65,11 @@ implemented.
 
 ## Caveats
 
-- **Secrets in git history**: an old commit (`d516ea8^`) contains Google OAuth
-  credentials from the Sheets importer config. They must be revoked in Google
-  Cloud Console; deleting the file did not remove them from history. Never
-  commit `GSTU_Config.asset` or anything under `StreamingAssets/Key/`.
+- **Secrets in git history (defused)**: an old commit (`d516ea8^`) contains
+  Google OAuth credentials from the Sheets importer config. The client was
+  verified deleted on 2026-08-29 (Google returns `401: deleted_client`), so the
+  strings in history are inert. `.gitignore` now blocks `GSTU_Config.asset` and
+  `StreamingAssets/Key/`; keep it that way when creating fresh credentials.
 - The Sheets importer (`LightCard/Card Data Import` menu) null-refs until a new
   GSTU config with fresh credentials is created. It also still uses the
   legacy `WWW` API (obsolete warning) — migrate to `UnityWebRequest` when
