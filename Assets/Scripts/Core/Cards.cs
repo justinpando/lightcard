@@ -49,7 +49,13 @@ namespace LightCard.Core
         /// <summary>Fires when the owner applies a space effect (Navigator).</summary>
         OnOwnerSpaceEffect,
         /// <summary>Equip charms only: resolved on the unit that enters the equip's space.</summary>
-        OnEquip
+        OnEquip,
+        /// <summary>Fires after this unit's attack destroys a unit (Prideful Soul).</summary>
+        OnKill,
+        /// <summary>Fires after this unit takes damage and survives.</summary>
+        OnDamaged,
+        /// <summary>Fires after this Guardian redirects a strike onto itself.</summary>
+        OnGuard
     }
 
     /// <summary>What an effect does. Magnitudes live in EffectDef.Power/Life/Amount.</summary>
@@ -122,7 +128,17 @@ namespace LightCard.Core
         /// <summary>Make units in Scope permanently Heavy.</summary>
         GrantHeavy,
         /// <summary>Attach EffectDef.Granted as a permanent extra ability of units in Scope (equips, Ocean mutations).</summary>
-        GrantAbility
+        GrantAbility,
+        /// <summary>Static: the owner's first Ability each turn costs Amount less (Scholar).</summary>
+        StaticAbilityDiscount,
+        /// <summary>Take the first card in the deck costing at most Amount; Units are called to a random empty own-half space, others go to hand (Quick Sketch).</summary>
+        TutorLowCost,
+        /// <summary>Add a random Ability card from the catalog to the owner's hand (Ailing Scholar).</summary>
+        AddRandomAbility,
+        /// <summary>Add a copy of the card played before this one to the owner's hand (Trace).</summary>
+        CopyLastCard,
+        /// <summary>The unit becomes CalledCardId, keeping damage, bonuses, and statuses (Prideful Soul).</summary>
+        TransformSelf
     }
 
     /// <summary>Which units an effect applies to, relative to its source or its play target.</summary>
@@ -142,6 +158,8 @@ namespace LightCard.Core
         /// <summary>The row one space forward of the source, from its owner's perspective.</summary>
         RowInFront,
         AllFriendlyUnits,
+        /// <summary>All units in the target space's lane (same x), friend or foe.</summary>
+        TargetLane,
         /// <summary>Friendly units with no enemy unit or charm in their lane.</summary>
         UnblockedFriendlyUnits,
         /// <summary>The nearest enemy unit or charm in the source's lane, scanning from the enemy frontline back.</summary>
@@ -226,6 +244,8 @@ namespace LightCard.Core
         /// and receiving its Trigger.OnEquip effects (glossary "Equip").
         /// </summary>
         public bool IsEquip;
+        /// <summary>Takes attack damage in place of friendly units beside or behind it.</summary>
+        public bool Guardian;
 
         public PlayTargetKind PlayTarget = PlayTargetKind.None;
 

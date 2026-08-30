@@ -65,6 +65,7 @@ namespace LightCard.Core
         public Dictionary<Archetype, int> Affinity = new Dictionary<Archetype, int>();
         public bool ReplaceUsedThisTurn;
         public bool ShiftUsedThisTurn;
+        public int AbilitiesPlayedThisTurn;
         /// <summary>Missed draws from an empty deck so far; each deals its count in damage (rules-v2).</summary>
         public int Fatigue;
 
@@ -94,6 +95,8 @@ namespace LightCard.Core
         public int NextUnitId = 1;
         public int Seed;
         public int RngCalls;
+        /// <summary>Id of the most recently resolved card play (Trace).</summary>
+        public string LastCardPlayed;
         /// <summary>-1 while the game is running.</summary>
         public int Winner = -1;
 
@@ -152,6 +155,20 @@ namespace LightCard.Core
             unit.Definition.Parry + unit.BonusParry + unit.TempParry + StaticContribution(unit, EffectAction.StaticParry, statsPower: false);
 
         public int EffectiveResist(UnitState unit) => unit.Definition.Resist + unit.BonusResist;
+
+        /// <summary>Card cost after static discounts (Scholar's first-ability rebate).</summary>
+        public int EffectiveCost(int player, CardDefinition definition)
+        {
+            int cost = definition.Cost;
+            if (definition.Type == CardType.Ability && Players[player].AbilitiesPlayedThisTurn == 0)
+            {
+                foreach (var source in UnitsOf(player))
+                    foreach (var effect in source.AllEffects)
+                        if (effect.Trigger == Trigger.Static && effect.Action == EffectAction.StaticAbilityDiscount)
+                            cost -= effect.Amount;
+            }
+            return Math.Max(0, cost);
+        }
 
         /// <summary>True if any static aura (or the unit's own printed keyword) gives it Auto-Advance.</summary>
         public bool HasAutoAdvance(UnitState unit)

@@ -140,6 +140,14 @@ namespace LightCard.Core
                 },
                 new CardDefinition
                 {
+                    Id = "Honor Guard", Archetype = Archetype.Expedition, Type = CardType.Unit,
+                    Cost = 4, Power = 2, Life = 5,
+                    Text = "Armor 1. Guardian.",
+                    Armor = 1, Guardian = true,
+                    PlayTarget = PlayTargetKind.FriendlyEmptySpace
+                },
+                new CardDefinition
+                {
                     Id = "In This Together", Archetype = Archetype.Expedition, Type = CardType.Ability,
                     Cost = 6,
                     Text = "Your units that are adjacent to friendly units gain +1/+1.",
@@ -647,7 +655,112 @@ namespace LightCard.Core
                     }
                 },
 
+                new CardDefinition
+                {
+                    Id = "Scholar", Archetype = Archetype.Atelier, Type = CardType.Unit,
+                    Cost = 1, Power = 1, Life = 2,
+                    Text = "The first time you use an Ability each turn, it costs 1 less.",
+                    PlayTarget = PlayTargetKind.FriendlyEmptySpace,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.Static, Action = EffectAction.StaticAbilityDiscount, Amount = 1 }
+                    }
+                },
+                new CardDefinition
+                {
+                    Id = "Quick Sketch", Archetype = Archetype.Atelier, Type = CardType.Ability,
+                    Cost = 1,
+                    Text = "Draw a card that costs 2 or less. If it's a Unit, Call it.",
+                    PlayTarget = PlayTargetKind.None,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.OnPlay, Action = EffectAction.TutorLowCost, Amount = 2 }
+                    }
+                },
+                new CardDefinition
+                {
+                    Id = "Ailing Scholar", Archetype = Archetype.Atelier, Type = CardType.Unit,
+                    Cost = 4, Power = 0, Life = 4,
+                    Text = "At end of turn, add a random Ability to your hand and this gets 0/-1.",
+                    PlayTarget = PlayTargetKind.FriendlyEmptySpace,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.EndOfTurn, Action = EffectAction.AddRandomAbility },
+                        new EffectDef { Trigger = Trigger.EndOfTurn, Action = EffectAction.GainStats, Scope = TargetScope.Self, Life = -1 }
+                    }
+                },
+                new CardDefinition
+                {
+                    Id = "Trace", Archetype = Archetype.Atelier, Type = CardType.Ability,
+                    Cost = 2,
+                    Text = "Add a copy of the last card played to your hand.",
+                    PlayTarget = PlayTargetKind.None,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.OnPlay, Action = EffectAction.CopyLastCard }
+                    }
+                },
+                new CardDefinition
+                {
+                    //Sheet prints no cost; ruled 2
+                    Id = "Dense Lecture", Archetype = Archetype.Atelier, Type = CardType.Ability,
+                    Cost = 2,
+                    Text = "Units in target column gain +0/1 and fall asleep.",
+                    PlayTarget = PlayTargetKind.AnySpace,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.OnPlay, Action = EffectAction.GainStats, Scope = TargetScope.TargetLane, Life = 1 },
+                        new EffectDef { Trigger = Trigger.OnPlay, Action = EffectAction.SetAsleep, Scope = TargetScope.TargetLane }
+                    }
+                },
+                new CardDefinition
+                {
+                    Id = "Geo Rod", Archetype = Archetype.Atelier, Type = CardType.Charm,
+                    Cost = 2, Power = 0, Life = 1,
+                    Text = "When a space effect is applied to your field, this gets 0/+1.",
+                    PlayTarget = PlayTargetKind.FriendlyEmptySpace,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.OnOwnerSpaceEffect, Action = EffectAction.GainStats, Scope = TargetScope.Self, Life = 1 }
+                    }
+                },
+
                 //---- Tower ----
+                new CardDefinition
+                {
+                    Id = "Seeker of Redemption", Archetype = Archetype.Tower, Type = CardType.Unit,
+                    Cost = 4, Power = 0, Life = 6,
+                    Text = "Guardian. Gain +1/+1 when Guardian activates.",
+                    Guardian = true,
+                    PlayTarget = PlayTargetKind.FriendlyEmptySpace,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.OnGuard, Action = EffectAction.GainStats, Scope = TargetScope.Self, Power = 1, Life = 1 }
+                    }
+                },
+                new CardDefinition
+                {
+                    Id = "Prideful Soul", Archetype = Archetype.Tower, Type = CardType.Unit,
+                    Cost = 4, Power = 4, Life = 1,
+                    Text = "Rush. Transforms into a Guilt-Wracked Soul when it defeats another Unit.",
+                    Rush = true,
+                    PlayTarget = PlayTargetKind.FriendlyEmptySpace,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.OnKill, Action = EffectAction.TransformSelf, CalledCardId = "Guilt-Wracked Soul" }
+                    }
+                },
+                new CardDefinition
+                {
+                    Id = "Guilt-Wracked Soul", Archetype = Archetype.Tower, Type = CardType.Unit,
+                    Cost = 4, Power = 1, Life = 6,
+                    Text = "Transforms into a Prideful Soul when it takes damage.",
+                    PlayTarget = PlayTargetKind.FriendlyEmptySpace,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.OnDamaged, Action = EffectAction.TransformSelf, CalledCardId = "Prideful Soul" }
+                    }
+                },
                 new CardDefinition
                 {
                     Id = "Wretch", Archetype = Archetype.Tower, Type = CardType.Unit,

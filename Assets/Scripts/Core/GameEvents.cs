@@ -28,7 +28,8 @@ namespace LightCard.Core
         AttackParried,
         DamageEvaded,
         CardBurned,
-        EquipAttached
+        EquipAttached,
+        UnitTransformed
     }
 
     /// <summary>

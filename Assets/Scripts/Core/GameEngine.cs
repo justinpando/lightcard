@@ -76,6 +76,7 @@ namespace LightCard.Core
             playerState.Energy = playerState.MaxEnergy;
             playerState.ReplaceUsedThisTurn = false;
             playerState.ShiftUsedThisTurn = false;
+            playerState.AbilitiesPlayedThisTurn = 0;
 
             events.Add(new GameEvent { Type = GameEventType.TurnStarted, Player = player, Amount = state.TurnNumber });
             events.Add(new GameEvent { Type = GameEventType.EnergyChanged, Player = player, Amount = playerState.Energy });
@@ -169,9 +170,10 @@ namespace LightCard.Core
 
             string cardId = playerState.Hand[command.HandIndex];
             var definition = CardCatalogV1.Get(cardId);
+            int cost = state.EffectiveCost(command.Player, definition);
 
-            if (playerState.Energy < definition.Cost)
-                return CommandResult.Fail($"Not enough energy for {cardId} (need {definition.Cost}, have {playerState.Energy}).");
+            if (playerState.Energy < cost)
+                return CommandResult.Fail($"Not enough energy for {cardId} (need {cost}, have {playerState.Energy}).");
 
             if (playerState.Affinity[definition.Archetype] < definition.AffinityRequirement)
                 return CommandResult.Fail($"{cardId} requires {definition.Archetype} Affinity {definition.AffinityRequirement} (have {playerState.Affinity[definition.Archetype]}).");
@@ -182,7 +184,7 @@ namespace LightCard.Core
             var result = new CommandResult { Success = true };
 
             playerState.Hand.RemoveAt(command.HandIndex);
-            playerState.Energy -= definition.Cost;
+            playerState.Energy -= cost;
             result.Events.Add(new GameEvent { Type = GameEventType.CardPlayed, Player = command.Player, CardId = cardId, X = command.TargetX, Y = command.TargetY });
             result.Events.Add(new GameEvent { Type = GameEventType.EnergyChanged, Player = command.Player, Amount = playerState.Energy });
 
@@ -190,6 +192,8 @@ namespace LightCard.Core
             {
                 foreach (var effect in definition.Effects.Where(e => e.Trigger == Trigger.OnPlay))
                     ResolveEffect(state, effect, null, command.Player, command.TargetX, command.TargetY, result.Events);
+
+                playerState.AbilitiesPlayedThisTurn++;
 
                 //Ability-play watchers (Diligent Student, Lightning Rod, Combat Bellows)
                 foreach (var watcher in state.Units.ToList())
@@ -205,6 +209,7 @@ namespace LightCard.Core
                 CallUnit(state, command.Player, cardId, command.TargetX, command.TargetY, result.Events);
             }
 
+            state.LastCardPlayed = cardId; //after resolution: Trace copies the card played before it
             return result;
         }
 
@@ -421,6 +426,31 @@ namespace LightCard.Core
 
         private static void StrikeUnit(GameState state, UnitState attacker, UnitState target, int power, List<GameEvent> events, bool allowRiders = true)
         {
+            //Guardian: a friendly Guardian beside or behind the target takes the strike
+            //in its place (no chains - a redirected strike is not redirected again)
+            if (!target.Definition.Guardian)
+            {
+                var guardian = state.UnitsOf(target.Owner).FirstOrDefault(g =>
+                    g.Definition.Guardian && g != target && !g.Asleep &&
+                    ((g.Y == target.Y && Math.Abs(g.X - target.X) == 1) ||
+                     (g.X == target.X && g.Y == target.Y - GameState.ForwardDir(target.Owner))));
+                if (guardian != null)
+                {
+                    StrikeGuarded(state, attacker, guardian, power, events, allowRiders);
+                    if (state.Units.Contains(guardian))
+                    {
+                        foreach (var effect in guardian.AllEffects.Where(e => e.Trigger == Trigger.OnGuard))
+                            ResolveEffect(state, effect, guardian, guardian.Owner, guardian.X, guardian.Y, events);
+                    }
+                    return;
+                }
+            }
+
+            StrikeGuarded(state, attacker, target, power, events, allowRiders);
+        }
+
+        private static void StrikeGuarded(GameState state, UnitState attacker, UnitState target, int power, List<GameEvent> events, bool allowRiders)
+        {
             int damage = Math.Max(0, power - state.EffectiveArmor(target));
 
             //Parry: prevent combat damage, consuming one charge (riders still apply)
@@ -442,6 +472,13 @@ namespace LightCard.Core
             //Retaliate: a surviving defender strikes back (ignores armor: effect damage)
             if (targetAlive && target.Definition.Retaliate > 0 && state.Units.Contains(attacker))
                 DamageUnit(state, attacker, target.Definition.Retaliate, events);
+
+            //OnKill (Prideful Soul): the attacker's strike destroyed the target
+            if (!targetAlive && state.Units.Contains(attacker))
+            {
+                foreach (var effect in attacker.AllEffects.Where(e => e.Trigger == Trigger.OnKill).ToList())
+                    ResolveEffect(state, effect, attacker, attacker.Owner, attacker.X, attacker.Y, events);
+            }
         }
 
         private static bool HasFriendlyUnitInFront(GameState state, UnitState unit)
@@ -723,6 +760,56 @@ namespace LightCard.Core
                     }
                     break;
                 }
+                case EffectAction.TutorLowCost:
+                {
+                    var playerState = state.Players[owner];
+                    int index = playerState.Deck.FindIndex(id => CardCatalogV1.Get(id).Cost <= effect.Amount);
+                    if (index < 0) break;
+                    string found = playerState.Deck[index];
+                    playerState.Deck.RemoveAt(index);
+
+                    if (CardCatalogV1.Get(found).Type == CardType.Unit)
+                    {
+                        //Call it to a random empty space on the owner's half; hand if none
+                        var open = new List<(int x, int y)>();
+                        for (int x = 0; x < GameConfig.Lanes; x++)
+                            for (int y = 0; y < GameConfig.Rows; y++)
+                                if (GameState.SideOfRow(y) == owner && state.GetUnitAt(x, y) == null)
+                                    open.Add((x, y));
+                        if (open.Count > 0)
+                        {
+                            var (cx, cy) = open[state.NextRandom(open.Count)];
+                            CallUnit(state, owner, found, cx, cy, events);
+                            break;
+                        }
+                    }
+                    playerState.Hand.Add(found);
+                    events.Add(new GameEvent { Type = GameEventType.CardDrawn, Player = owner, CardId = found });
+                    break;
+                }
+                case EffectAction.AddRandomAbility:
+                {
+                    var abilities = CardCatalogV1.Cards.Values.Where(c => c.Type == CardType.Ability).OrderBy(c => c.Id).ToList();
+                    if (abilities.Count == 0) break;
+                    string pick = abilities[state.NextRandom(abilities.Count)].Id;
+                    state.Players[owner].Hand.Add(pick);
+                    events.Add(new GameEvent { Type = GameEventType.CardDrawn, Player = owner, CardId = pick });
+                    break;
+                }
+                case EffectAction.CopyLastCard:
+                {
+                    if (string.IsNullOrEmpty(state.LastCardPlayed)) break;
+                    state.Players[owner].Hand.Add(state.LastCardPlayed);
+                    events.Add(new GameEvent { Type = GameEventType.CardDrawn, Player = owner, CardId = state.LastCardPlayed });
+                    break;
+                }
+                case EffectAction.TransformSelf:
+                {
+                    if (source == null || string.IsNullOrEmpty(effect.CalledCardId) || !state.Units.Contains(source)) break;
+                    source.CardId = effect.CalledCardId;
+                    events.Add(new GameEvent { Type = GameEventType.UnitTransformed, UnitId = source.Id, CardId = source.CardId, X = source.X, Y = source.Y });
+                    break;
+                }
                 case EffectAction.GrantAbility:
                 {
                     if (effect.Granted == null) break;
@@ -768,6 +855,8 @@ namespace LightCard.Core
                 }
                 case TargetScope.TargetRow:
                     return state.Units.Where(u => u.Y == targetY).ToList();
+                case TargetScope.TargetLane:
+                    return state.Units.Where(u => u.X == targetX).ToList();
                 case TargetScope.SourceRow:
                     return source != null ? state.Units.Where(u => u.Y == source.Y).ToList() : new List<UnitState>();
                 case TargetScope.AllFriendlyUnits:
@@ -946,7 +1035,17 @@ namespace LightCard.Core
             }
 
             if (state.CurrentLife(unit) <= 0)
+            {
                 DestroyUnit(state, unit, events);
+                return;
+            }
+
+            //OnDamaged (Guilt-Wracked Soul, Fire-spitter, Floppy Fish): survived the hit
+            foreach (var effect in unit.AllEffects.Where(e => e.Trigger == Trigger.OnDamaged).ToList())
+            {
+                if (!state.Units.Contains(unit)) break;
+                ResolveEffect(state, effect, unit, unit.Owner, unit.X, unit.Y, events);
+            }
         }
 
         private static void HealUnit(GameState state, UnitState unit, int amount, List<GameEvent> events)

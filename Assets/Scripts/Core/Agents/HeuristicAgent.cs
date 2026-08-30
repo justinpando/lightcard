@@ -56,7 +56,7 @@ namespace LightCard.Core.Agents
             for (int handIndex = 0; handIndex < playerState.Hand.Count; handIndex++)
             {
                 var definition = CardCatalogV1.Get(playerState.Hand[handIndex]);
-                if (definition.Cost > playerState.Energy) continue;
+                if (state.EffectiveCost(Player, definition) > playerState.Energy) continue;
                 if (playerState.Affinity[definition.Archetype] < definition.AffinityRequirement) continue;
 
                 foreach (var (x, y) in EnumerateTargets(state, definition))

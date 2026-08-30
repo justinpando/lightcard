@@ -248,9 +248,10 @@ public class MatchContext : MonoBehaviour
         var cardId = state.Players[LocalPlayer].Hand[handIndex];
         var card = CardCatalogV1.Get(cardId);
         var playerState = state.Players[LocalPlayer];
-        bool playable = card.Cost <= playerState.Energy &&
+        int cost = state.EffectiveCost(LocalPlayer, card);
+        bool playable = cost <= playerState.Energy &&
                         playerState.Affinity[card.Archetype] >= card.AffinityRequirement;
-        if (card.Cost > playerState.Energy)
+        if (cost > playerState.Energy)
         {
             hud.SetStatus($"Not enough energy for {cardId} ({card.Cost}). Drag it onto the energy dial to Attune it.");
         }
@@ -271,6 +272,12 @@ public class MatchContext : MonoBehaviour
                 ? $"Click {cardId} again to play it, or drag it to the board."
                 : $"Drag {cardId} to a green space, or click one.");
         }
+    }
+
+    private bool DropCardPlayable(CardDefinition card)
+    {
+        return state.EffectiveCost(LocalPlayer, card) <= state.Players[LocalPlayer].Energy &&
+               state.Players[LocalPlayer].Affinity[card.Archetype] >= card.AffinityRequirement;
     }
 
     private bool OnCardDragStarted(int handIndex)
@@ -304,9 +311,7 @@ public class MatchContext : MonoBehaviour
         if (space != null)
         {
             var card = dropCard;
-            if (card.PlayTarget == PlayTargetKind.None && playTargets.Count == 0 &&
-                card.Cost <= state.Players[LocalPlayer].Energy &&
-                state.Players[LocalPlayer].Affinity[card.Archetype] >= card.AffinityRequirement)
+            if (card.PlayTarget == PlayTargetKind.None && playTargets.Count == 0 && DropCardPlayable(card))
             {
                 //Untargeted cards play when dropped anywhere on the board
                 Submit(new PlayCardCommand { Player = LocalPlayer, HandIndex = handIndex, TargetX = 0, TargetY = 0 });
