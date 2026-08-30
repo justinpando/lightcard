@@ -19,4 +19,4 @@ MonoBehaviour:
   cost: 2
   power: 2
   life: 2
-  description: 'Call: Destroy an adjacent unit. Gain +1/+1 and Rush if so.'
+  description: 'Call: Destroy an adjacent friendly unit. Gain +1/+1 and Rush if so.'

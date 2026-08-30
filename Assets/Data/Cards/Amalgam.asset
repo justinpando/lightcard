@@ -19,5 +19,5 @@ MonoBehaviour:
   cost: 5
   power: 3
   life: 3
-  description: 'Call: Destroy all adjacent units. Gain +1/+1 and a random Keyword
-    ability for each unit destroyed.'
+  description: 'Call: Destroy all adjacent friendly units. Gain +1/+1 and a random
+    Keyword per unit destroyed.'

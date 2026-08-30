@@ -31,7 +31,9 @@ namespace LightCard.Core
         EquipAttached,
         UnitTransformed,
         UnitBonded,
-        BondBroken
+        BondBroken,
+        CardDiscarded,
+        PlayerHealed
     }
 
     /// <summary>

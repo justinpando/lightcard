@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Proximity Bomb
   m_EditorClassIdentifier: 
   archetype: 2
-  type: 0
+  type: 1
   sprite: {fileID: 21300000, guid: 7f5df46dce900fc4ebfbe8e5e297974e, type: 3}
   name: Proximity Bomb
   cost: 2

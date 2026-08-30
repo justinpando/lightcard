@@ -19,4 +19,4 @@ MonoBehaviour:
   cost: 1
   power: 0
   life: 0
-  description: Deal 1 damage to target space and add Inferno effect.
+  description: Deal 1 damage to target space and apply Inferno effect.

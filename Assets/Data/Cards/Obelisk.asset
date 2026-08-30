@@ -19,4 +19,4 @@ MonoBehaviour:
   cost: 3
   power: 0
   life: 5
-  description: 'Destroyed: Place a Dune on a random space in front of this.'
+  description: 'Destroyed: The space in front of this becomes Desert.'

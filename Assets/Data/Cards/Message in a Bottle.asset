@@ -19,5 +19,5 @@ MonoBehaviour:
   cost: 1
   power: 0
   life: 2
-  description: Whenever one of your units is destroyed, gain a charge. Every 3 charges,
-    draw a card.
+  description: When a friendly unit is destroyed, draw a card, then this takes 1
+    damage.

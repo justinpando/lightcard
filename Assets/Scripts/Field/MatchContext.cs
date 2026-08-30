@@ -14,8 +14,8 @@ using LightCard.Core.Agents;
 /// </summary>
 public class MatchContext : MonoBehaviour
 {
-    public enum AiStyle { Balanced, Formation, Patient, Relentless, Control }
-    public enum AiDeckSource { Starter, CatalogExpedition, CatalogGarden, CatalogAtelier }
+    public enum AiStyle { Balanced, Formation, Patient, Relentless, Control, Attrition, Chaotic }
+    public enum AiDeckSource { Starter, CatalogExpedition, CatalogGarden, CatalogAtelier, CatalogHeart, CatalogTower, CatalogOcean }
 
     public CardLibrary library;
 
@@ -125,6 +125,9 @@ public class MatchContext : MonoBehaviour
         {
             var archetype = aiDeckSource == AiDeckSource.CatalogExpedition ? Archetype.Expedition
                           : aiDeckSource == AiDeckSource.CatalogGarden ? Archetype.Garden
+                          : aiDeckSource == AiDeckSource.CatalogHeart ? Archetype.Heart
+                          : aiDeckSource == AiDeckSource.CatalogTower ? Archetype.Tower
+                          : aiDeckSource == AiDeckSource.CatalogOcean ? Archetype.Ocean
                           : Archetype.Atelier;
             var catalogDeck = new List<string>();
             foreach (var card in CardCatalogV1.Cards.Values)
@@ -214,6 +217,8 @@ public class MatchContext : MonoBehaviour
             case AiStyle.Patient: return AgentPersonality.Patient();
             case AiStyle.Relentless: return AgentPersonality.Relentless();
             case AiStyle.Control: return AgentPersonality.Control();
+            case AiStyle.Attrition: return AgentPersonality.Attrition();
+            case AiStyle.Chaotic: return AgentPersonality.Chaotic();
             default: return AgentPersonality.Balanced();
         }
     }

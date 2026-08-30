@@ -12,7 +12,11 @@ namespace LightCard.Core
         /// <summary>Ability damage to a unit on this space is +2; consumed by that boost (Atelier).</summary>
         Primed,
         /// <summary>Units here have +1/0 and take 1 damage at the end of their owner's turn (Heart).</summary>
-        Inferno
+        Inferno,
+        /// <summary>Units called to this space gain a random keyword (Ocean).</summary>
+        Flooded,
+        /// <summary>Units here lose 1/1 at the start of their owner's turn (Ocean).</summary>
+        Desert
     }
 
     /// <summary>When an effect fires.</summary>
@@ -61,7 +65,19 @@ namespace LightCard.Core
         /// <summary>Spirit cards: fires (host as source) when the spirit's bond breaks.</summary>
         OnBondBreak,
         /// <summary>Fires on a unit when a spirit binds to it (Attuners).</summary>
-        OnBonded
+        OnBonded,
+        /// <summary>Fires at the start of the owner's turn (Living Torrent).</summary>
+        StartOfTurn,
+        /// <summary>Fires at the start of the OPPOSING player's turn (Grotesque Mirror).</summary>
+        OnEnemyTurnStart,
+        /// <summary>Fires when the owner discards a card - burns and effect discards alike (Keeper of Debts).</summary>
+        OnOwnerDiscard,
+        /// <summary>Fires when any friendly unit or charm is destroyed (Mourner's Altar).</summary>
+        OnFriendlyDestroyed,
+        /// <summary>Fires when a friendly unit or charm is destroyed in the eight surrounding spaces; target coords are its space (Dinner Bell).</summary>
+        OnFriendlyDestroyedNearby,
+        /// <summary>Fires whenever either player draws a card (Seer's Guillotine).</summary>
+        OnAnyDraw
     }
 
     /// <summary>What an effect does. Magnitudes live in EffectDef.Power/Life/Amount.</summary>
@@ -152,7 +168,29 @@ namespace LightCard.Core
         /// <summary>Add a random spirit card from the catalog to the owner's hand (Dreamwalker).</summary>
         AddRandomSpirit,
         /// <summary>Destroy the targeted friendly unit, then deal its remaining life as ability damage to every enemy in its lane (Release Energy).</summary>
-        SacrificeLaneBurst
+        SacrificeLaneBurst,
+        /// <summary>The owner discards Amount random cards from hand.</summary>
+        DiscardRandom,
+        /// <summary>The opposing player discards Amount random cards from hand (Grotesque Mirror).</summary>
+        EnemyDiscardRandom,
+        /// <summary>The owner gains Amount life (uncapped).</summary>
+        GainPlayerLife,
+        /// <summary>OnAnyDraw watchers: the player who drew takes Amount damage (Seer's Guillotine).</summary>
+        DamageDrawingPlayer,
+        /// <summary>Call CalledCardId at the trigger's target space if it is empty and on the owner's half (Dinner Bell, Floppier Fish).</summary>
+        CallUnitAtTarget,
+        /// <summary>Units in Scope gain a random small keyword: +1 Armor, Pierce, Parry, +1/0, or +0/1 (Ocean).</summary>
+        GainRandomKeyword,
+        /// <summary>The source moves to a random empty adjacent space on its half (Floppy Fish).</summary>
+        MoveRandomAdjacent,
+        /// <summary>Destroy adjacent friendly units: one random if Amount is 1, all if 0. Source gains +1/+1 per unit consumed, sheds Flux, and with SpaceEffect set also rolls a random keyword each (Fractal, Amalgam).</summary>
+        ConsumeAdjacent,
+        /// <summary>Per lane: the nearest enemy takes Amount ability damage and its space becomes SpaceEffect (Tidal Wave).</summary>
+        LaneProjectiles,
+        /// <summary>Every Flooded space becomes Desert and vice versa (Mirage).</summary>
+        SwapFloodDesert,
+        /// <summary>Static: the source has +Power attack per board space bearing SpaceEffect (Living Torrent).</summary>
+        StaticPowerPerSpace
     }
 
     /// <summary>Which units an effect applies to, relative to its source or its play target.</summary>
@@ -185,7 +223,11 @@ namespace LightCard.Core
         /// <summary>Friendly units in the eight spaces around the source (glossary "Nearby").</summary>
         Nearby,
         /// <summary>Friendly non-charm units that have at least one adjacent friendly unit or charm.</summary>
-        FriendlyUnitsWithAdjacentAlly
+        FriendlyUnitsWithAdjacentAlly,
+        /// <summary>Spaces orthogonally adjacent to the target space (Oasis).</summary>
+        AdjacentToTarget,
+        /// <summary>One random space in the eight around the source (Living Torrent's flood).</summary>
+        RandomNearbySpace
     }
 
     /// <summary>Extra requirement for static effects.</summary>
@@ -193,7 +235,9 @@ namespace LightCard.Core
     {
         None,
         /// <summary>Source is on its owner's frontline row.</summary>
-        Frontline
+        Frontline,
+        /// <summary>No enemy unit or charm in the source's lane.</summary>
+        Unblocked
     }
 
     /// <summary>What a card may be aimed at when played.</summary>
@@ -273,6 +317,10 @@ namespace LightCard.Core
         /// the host as source) when it is destroyed.
         /// </summary>
         public bool IsSpirit;
+        /// <summary>X-bound (Ocean): destroyed at its owner's turn start unless standing on this effect.</summary>
+        public SpaceEffectType BoundTo = SpaceEffectType.None;
+        /// <summary>Immune to the Desert drain (Sand Shark).</summary>
+        public bool DesertImmune;
 
         public PlayTargetKind PlayTarget = PlayTargetKind.None;
 

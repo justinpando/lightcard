@@ -800,6 +800,85 @@ namespace LightCard.Core
                 },
                 new CardDefinition
                 {
+                    Id = "Forlorn Whisper", Archetype = Archetype.Tower, Type = CardType.Ability,
+                    Cost = 0,
+                    Text = "Discard a card, then draw a card.",
+                    PlayTarget = PlayTargetKind.None,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.OnPlay, Action = EffectAction.DiscardRandom, Amount = 1 },
+                        new EffectDef { Trigger = Trigger.OnPlay, Action = EffectAction.Draw, Amount = 1 }
+                    }
+                },
+                new CardDefinition
+                {
+                    Id = "Keeper of Debts", Archetype = Archetype.Tower, Type = CardType.Unit,
+                    Cost = 2, Power = 1, Life = 3,
+                    Text = "Gains +1/+1 when you discard a card.",
+                    PlayTarget = PlayTargetKind.FriendlyEmptySpace,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.OnOwnerDiscard, Action = EffectAction.GainStats, Scope = TargetScope.Self, Power = 1, Life = 1 }
+                    }
+                },
+                new CardDefinition
+                {
+                    Id = "Mourner's Altar", Archetype = Archetype.Tower, Type = CardType.Charm,
+                    Cost = 1, Power = 0, Life = 3,
+                    Text = "Each time a friendly unit is defeated, gain 1 life.",
+                    PlayTarget = PlayTargetKind.FriendlyEmptySpace,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.OnFriendlyDestroyed, Action = EffectAction.GainPlayerLife, Amount = 1 }
+                    }
+                },
+                new CardDefinition
+                {
+                    Id = "Font of Sorrows", Archetype = Archetype.Tower, Type = CardType.Charm,
+                    Cost = 2, Power = 0, Life = 1,
+                    Text = "Gain 1 life when a nearby friendly unit is destroyed.",
+                    PlayTarget = PlayTargetKind.FriendlyEmptySpace,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.OnFriendlyDestroyedNearby, Action = EffectAction.GainPlayerLife, Amount = 1 }
+                    }
+                },
+                new CardDefinition
+                {
+                    Id = "Seer's Guillotine", Archetype = Archetype.Tower, Type = CardType.Charm,
+                    Cost = 2, Power = 0, Life = 3,
+                    Text = "Each time a player draws a card, they take 1 damage.",
+                    PlayTarget = PlayTargetKind.FriendlyEmptySpace,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.OnAnyDraw, Action = EffectAction.DamageDrawingPlayer, Amount = 1 }
+                    }
+                },
+                new CardDefinition
+                {
+                    Id = "Grotesque Mirror", Archetype = Archetype.Tower, Type = CardType.Charm,
+                    Cost = 2, Power = 0, Life = 2,
+                    Text = "At the start of your opponent's turn, they discard a card at random if this is unblocked.",
+                    PlayTarget = PlayTargetKind.FriendlyEmptySpace,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.OnEnemyTurnStart, Action = EffectAction.EnemyDiscardRandom, Condition = EffectCondition.Unblocked, Amount = 1 }
+                    }
+                },
+                new CardDefinition
+                {
+                    Id = "Dinner Bell", Archetype = Archetype.Tower, Type = CardType.Charm,
+                    Cost = 3, Power = 0, Life = 3,
+                    Text = "When a nearby friendly unit is defeated, call a Snarling Hound to its space and this takes 1 damage.",
+                    PlayTarget = PlayTargetKind.FriendlyEmptySpace,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.OnFriendlyDestroyedNearby, Action = EffectAction.CallUnitAtTarget, CalledCardId = "Snarling Hound" },
+                        new EffectDef { Trigger = Trigger.OnFriendlyDestroyedNearby, Action = EffectAction.DealDamage, Scope = TargetScope.Self, Amount = 1 }
+                    }
+                },
+                new CardDefinition
+                {
                     Id = "Iron Shackles", Archetype = Archetype.Tower, Type = CardType.Charm,
                     Cost = 1, Power = 0, Life = 1,
                     Text = "Equip: Bestow Armor 1 and Heavy.",
@@ -990,6 +1069,202 @@ namespace LightCard.Core
                     Id = "Chimera", Archetype = Archetype.Ocean, Type = CardType.Unit,
                     Cost = 1, Power = 1, Life = 1,
                     PlayTarget = PlayTargetKind.FriendlyEmptySpace
+                },
+                new CardDefinition
+                {
+                    Id = "Flicker", Archetype = Archetype.Ocean, Type = CardType.Unit,
+                    Cost = 1, Power = 1, Life = 2,
+                    Text = "Call: Gains a random Keyword ability.",
+                    PlayTarget = PlayTargetKind.FriendlyEmptySpace,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.OnCall, Action = EffectAction.GainRandomKeyword, Scope = TargetScope.Self }
+                    }
+                },
+                new CardDefinition
+                {
+                    Id = "Floppy Fish", Archetype = Archetype.Ocean, Type = CardType.Unit,
+                    Cost = 1, Power = 0, Life = 3,
+                    Text = "Moves to a random adjacent space upon taking damage.",
+                    PlayTarget = PlayTargetKind.FriendlyEmptySpace,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.OnDamaged, Action = EffectAction.MoveRandomAdjacent }
+                    }
+                },
+                new CardDefinition
+                {
+                    Id = "Floppier Fish", Archetype = Archetype.Ocean, Type = CardType.Unit,
+                    Cost = 3, Power = 0, Life = 5,
+                    Text = "Moves to a random adjacent space upon taking damage. Destroyed: Call a Floppy Fish to this space.",
+                    PlayTarget = PlayTargetKind.FriendlyEmptySpace,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.OnDamaged, Action = EffectAction.MoveRandomAdjacent },
+                        new EffectDef { Trigger = Trigger.OnDestroy, Action = EffectAction.CallUnitAtTarget, CalledCardId = "Floppy Fish" }
+                    }
+                },
+                new CardDefinition
+                {
+                    Id = "Fractal", Archetype = Archetype.Ocean, Type = CardType.Unit,
+                    Cost = 2, Power = 2, Life = 2,
+                    Text = "Call: Destroy an adjacent friendly unit. Gain +1/+1 and Rush if so.",
+                    PlayTarget = PlayTargetKind.FriendlyEmptySpace,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.OnCall, Action = EffectAction.ConsumeAdjacent, Amount = 1 }
+                    }
+                },
+                new CardDefinition
+                {
+                    Id = "Amalgam", Archetype = Archetype.Ocean, Type = CardType.Unit,
+                    Cost = 5, Power = 3, Life = 3,
+                    Text = "Call: Destroy all adjacent friendly units. Gain +1/+1 and a random Keyword per unit destroyed.",
+                    PlayTarget = PlayTargetKind.FriendlyEmptySpace,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.OnCall, Action = EffectAction.ConsumeAdjacent, Amount = 0 }
+                    }
+                },
+                new CardDefinition
+                {
+                    Id = "Sand Spirit", Archetype = Archetype.Ocean, Type = CardType.Unit,
+                    Cost = 1, Power = 2, Life = 2,
+                    Text = "Rush. Desert-bound. Destroyed: This space becomes Desert.",
+                    Rush = true, BoundTo = SpaceEffectType.Desert,
+                    PlayTarget = PlayTargetKind.FriendlyEmptySpace,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.OnDestroy, Action = EffectAction.ApplySpaceEffect, Scope = TargetScope.Self, SpaceEffect = SpaceEffectType.Desert }
+                    }
+                },
+                new CardDefinition
+                {
+                    Id = "Dune Beast", Archetype = Archetype.Ocean, Type = CardType.Unit,
+                    Cost = 2, Power = 4, Life = 3,
+                    Text = "Call: This space becomes Desert. Desert-bound.",
+                    BoundTo = SpaceEffectType.Desert,
+                    PlayTarget = PlayTargetKind.FriendlyEmptySpace,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.OnCall, Action = EffectAction.ApplySpaceEffect, Scope = TargetScope.Self, SpaceEffect = SpaceEffectType.Desert }
+                    }
+                },
+                new CardDefinition
+                {
+                    Id = "Sand Shark", Archetype = Archetype.Ocean, Type = CardType.Unit,
+                    Cost = 3, Power = 3, Life = 4,
+                    Text = "Immune to Desert. On Move: This space becomes Desert.",
+                    DesertImmune = true,
+                    PlayTarget = PlayTargetKind.FriendlyEmptySpace,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.OnShift, Action = EffectAction.ApplySpaceEffect, Scope = TargetScope.Self, SpaceEffect = SpaceEffectType.Desert },
+                        new EffectDef { Trigger = Trigger.OnAdvance, Action = EffectAction.ApplySpaceEffect, Scope = TargetScope.Self, SpaceEffect = SpaceEffectType.Desert },
+                        new EffectDef { Trigger = Trigger.OnRetreat, Action = EffectAction.ApplySpaceEffect, Scope = TargetScope.Self, SpaceEffect = SpaceEffectType.Desert }
+                    }
+                },
+                new CardDefinition
+                {
+                    Id = "Living Torrent", Archetype = Archetype.Ocean, Type = CardType.Unit,
+                    Cost = 5, Power = 0, Life = 9,
+                    Text = "Has +1 Attack per Flooded space. Each turn, Flood a random nearby space.",
+                    PlayTarget = PlayTargetKind.FriendlyEmptySpace,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.Static, Action = EffectAction.StaticPowerPerSpace, SpaceEffect = SpaceEffectType.Flooded, Power = 1 },
+                        new EffectDef { Trigger = Trigger.StartOfTurn, Action = EffectAction.ApplySpaceEffect, Scope = TargetScope.RandomNearbySpace, SpaceEffect = SpaceEffectType.Flooded }
+                    }
+                },
+                new CardDefinition
+                {
+                    Id = "Obelisk", Archetype = Archetype.Ocean, Type = CardType.Charm,
+                    Cost = 3, Power = 0, Life = 5,
+                    Text = "Destroyed: The space in front of this becomes Desert.",
+                    PlayTarget = PlayTargetKind.FriendlyEmptySpace,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.OnDestroy, Action = EffectAction.ApplySpaceEffect, Scope = TargetScope.InFront, SpaceEffect = SpaceEffectType.Desert }
+                    }
+                },
+                new CardDefinition
+                {
+                    Id = "Font of Spirits", Archetype = Archetype.Ocean, Type = CardType.Charm,
+                    Cost = 3, Power = 0, Life = 6,
+                    Text = "Creates a Flicker on a random space when damaged.",
+                    PlayTarget = PlayTargetKind.FriendlyEmptySpace,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.OnDamaged, Action = EffectAction.CallUnit, CalledCardId = "Flicker", Amount = 1 }
+                    }
+                },
+                new CardDefinition
+                {
+                    Id = "Tidal Wave", Archetype = Archetype.Ocean, Type = CardType.Ability,
+                    Cost = 3,
+                    Text = "Fire a projectile in each lane that deals 2 damage and floods on impact.",
+                    PlayTarget = PlayTargetKind.None,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.OnPlay, Action = EffectAction.LaneProjectiles, Amount = 2, SpaceEffect = SpaceEffectType.Flooded }
+                    }
+                },
+                new CardDefinition
+                {
+                    Id = "Focus Form", Archetype = Archetype.Ocean, Type = CardType.Ability,
+                    Cost = 0,
+                    Text = "Draw the first card in your deck that costs 1 or less; call it if it is a Unit.",
+                    PlayTarget = PlayTargetKind.None,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.OnPlay, Action = EffectAction.TutorLowCost, Amount = 1 }
+                    }
+                },
+                new CardDefinition
+                {
+                    Id = "Oasis", Archetype = Archetype.Ocean, Type = CardType.Ability,
+                    Cost = 3,
+                    Text = "Target space becomes Flooded. All adjacent spaces become Desert.",
+                    PlayTarget = PlayTargetKind.AnySpace,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.OnPlay, Action = EffectAction.ApplySpaceEffect, Scope = TargetScope.TargetSpace, SpaceEffect = SpaceEffectType.Flooded },
+                        new EffectDef { Trigger = Trigger.OnPlay, Action = EffectAction.ApplySpaceEffect, Scope = TargetScope.AdjacentToTarget, SpaceEffect = SpaceEffectType.Desert }
+                    }
+                },
+                new CardDefinition
+                {
+                    Id = "Sand Storm", Archetype = Archetype.Ocean, Type = CardType.Ability,
+                    Cost = 3,
+                    Text = "Spaces in target column become Desert.",
+                    PlayTarget = PlayTargetKind.AnySpace,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.OnPlay, Action = EffectAction.ApplySpaceEffect, Scope = TargetScope.TargetLane, SpaceEffect = SpaceEffectType.Desert }
+                    }
+                },
+                new CardDefinition
+                {
+                    Id = "Mirage", Archetype = Archetype.Ocean, Type = CardType.Ability,
+                    Cost = 3,
+                    Text = "Desert and Flooded spaces switch.",
+                    PlayTarget = PlayTargetKind.None,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.OnPlay, Action = EffectAction.SwapFloodDesert }
+                    }
+                },
+                new CardDefinition
+                {
+                    Id = "Message in a Bottle", Archetype = Archetype.Ocean, Type = CardType.Charm,
+                    Cost = 1, Power = 0, Life = 2,
+                    Text = "When a friendly unit is destroyed, draw a card, then this takes 1 damage.",
+                    PlayTarget = PlayTargetKind.FriendlyEmptySpace,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.OnFriendlyDestroyed, Action = EffectAction.Draw, Amount = 1 },
+                        new EffectDef { Trigger = Trigger.OnFriendlyDestroyed, Action = EffectAction.DealDamage, Scope = TargetScope.Self, Amount = 1 }
+                    }
                 }
             };
 

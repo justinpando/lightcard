@@ -19,5 +19,5 @@ MonoBehaviour:
   cost: 2
   power: 0
   life: 2
-  description: When a unit in this Charm's row dies, your opponent discards a card
-    at random.
+  description: At the start of your opponent's turn, they discard a card at random
+    if this is unblocked.

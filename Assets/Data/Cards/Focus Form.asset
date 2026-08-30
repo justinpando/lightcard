@@ -19,4 +19,5 @@ MonoBehaviour:
   cost: 0
   power: 0
   life: 0
-  description: Retrieve a random Unit card that costs 1 or less from your deck.
+  description: Draw the first card in your deck that costs 1 or less; call it if
+    it is a Unit.

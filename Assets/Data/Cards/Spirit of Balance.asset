@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 157475c9d69ad9844ac0355862f6cf76, type: 3}
+  m_Name: Spirit of Balance
+  m_EditorClassIdentifier: _LightCard::Card
+  archetype: 2
+  type: 0
+  sprite: {fileID: 21300000, guid: 2499018d2a20c304aa96304cf5b02bc5, type: 3}
+  name: Spirit of Balance
+  cost: 2
+  power: 1
+  life: 1
+  description: 'Bond Break: Deal 1 damage to both players.'

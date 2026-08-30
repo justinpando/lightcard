@@ -155,7 +155,19 @@ namespace LightCard.Core
         {
             int power = unit.Definition.Power + unit.BonusPower + unit.TempPower + StaticContribution(unit, EffectAction.StaticStats, statsPower: true);
             if (SpaceEffects[unit.X, unit.Y] == SpaceEffectType.Inferno && !unit.IsCharm) power += 1;
+            foreach (var effect in unit.AllEffects)
+                if (effect.Trigger == Trigger.Static && effect.Action == EffectAction.StaticPowerPerSpace)
+                    power += CountSpaces(effect.SpaceEffect) * effect.Power;
             return Math.Max(0, power);
+        }
+
+        public int CountSpaces(SpaceEffectType effect)
+        {
+            int count = 0;
+            for (int x = 0; x < GameConfig.Lanes; x++)
+                for (int y = 0; y < GameConfig.Rows; y++)
+                    if (SpaceEffects[x, y] == effect) count++;
+            return count;
         }
 
         public int EffectiveParry(UnitState unit) =>

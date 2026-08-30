@@ -19,4 +19,4 @@ MonoBehaviour:
   cost: 1
   power: 0
   life: 0
-  description: Draw a card. If it's a Unit that costs 2 or less, summon it.
+  description: Draw a card that costs 2 or less. If it's a Unit, Call it.

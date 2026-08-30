@@ -18,5 +18,5 @@ MonoBehaviour:
   name: Font of Sorrows
   cost: 2
   power: 0
-  life: 0
-  description: Gain 1 life when one of your nearby units is destroyed.
+  life: 1
+  description: Gain 1 life when a nearby friendly unit is destroyed.

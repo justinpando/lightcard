@@ -94,11 +94,45 @@ namespace LightCard.Core
                 unit.EvadeUsedThisTurn = 0;
             }
 
+            //X-bound (Ocean): destroyed unless standing on the required effect
+            foreach (var unit in state.UnitsOf(player).Where(u => u.Definition.BoundTo != SpaceEffectType.None).ToList())
+            {
+                if (state.Units.Contains(unit) && state.SpaceEffects[unit.X, unit.Y] != unit.Definition.BoundTo)
+                    DestroyUnit(state, unit, events);
+            }
+
+            //Desert drain (Ocean): -1/-1 at the owner's turn start
+            foreach (var unit in state.UnitsOf(player).Where(u => !u.IsCharm && !u.Definition.DesertImmune).ToList())
+            {
+                if (state.Units.Contains(unit) && state.SpaceEffects[unit.X, unit.Y] == SpaceEffectType.Desert)
+                {
+                    unit.BonusPower -= 1;
+                    unit.BonusLife -= 1;
+                    events.Add(new GameEvent { Type = GameEventType.UnitStatsChanged, UnitId = unit.Id, CardId = unit.CardId, Amount = -2 });
+                }
+            }
+
             //Poison ticks at the start of the owner's turn (ignores armor and Resist)
             foreach (var unit in state.UnitsOf(player).Where(u => u.Poison > 0).ToList())
             {
                 if (state.Units.Contains(unit))
                     DamageUnit(state, unit, unit.Poison, events);
+            }
+
+            //Start-of-turn triggers (Living Torrent) for the active player's units
+            foreach (var unit in state.UnitsOf(player).ToList())
+            {
+                if (!state.Units.Contains(unit)) continue;
+                foreach (var effect in unit.AllEffects.Where(e => e.Trigger == Trigger.StartOfTurn))
+                    ResolveEffect(state, effect, unit, player, unit.X, unit.Y, events);
+            }
+
+            //Enemy-turn-start watchers (Grotesque Mirror) belong to the OTHER player
+            foreach (var watcher in state.UnitsOf(1 - player).ToList())
+            {
+                if (!state.Units.Contains(watcher)) continue;
+                foreach (var effect in watcher.AllEffects.Where(e => e.Trigger == Trigger.OnEnemyTurnStart))
+                    ResolveEffect(state, effect, watcher, watcher.Owner, watcher.X, watcher.Y, events);
             }
 
             //Verdant: units regen 1 life at the start of their owner's turn
@@ -293,6 +327,10 @@ namespace LightCard.Core
                 unit.BonusLife += 1;
                 events.Add(new GameEvent { Type = GameEventType.UnitStatsChanged, UnitId = unit.Id, CardId = cardId, Amount = 1 });
             }
+
+            //Flooded: units called here mutate (Ocean)
+            if (state.SpaceEffects[x, y] == SpaceEffectType.Flooded && definition.Type != CardType.Charm)
+                GrantRandomKeyword(state, unit, events);
 
             //Consumed equip bestows onto the arrival before anything else reacts
             if (equip != null && state.Units.Contains(unit))
@@ -554,6 +592,8 @@ namespace LightCard.Core
             //Conditions apply to triggered effects too (static effects re-check in GameState)
             if (effect.Condition == EffectCondition.Frontline &&
                 (source == null || source.Y != GameState.FrontlineRow(owner))) return;
+            if (effect.Condition == EffectCondition.Unblocked &&
+                (source == null || !state.LaneUnblockedFor(owner, source.X))) return;
 
             switch (effect.Action)
             {
@@ -580,7 +620,7 @@ namespace LightCard.Core
                 case EffectAction.ApplySpaceEffect:
                 {
                     bool appliedAny = false;
-                    foreach (var (x, y) in GatherSpaces(effect.Scope, source, targetX, targetY))
+                    foreach (var (x, y) in GatherSpaces(state, effect.Scope, source, targetX, targetY))
                     {
                         state.SpaceEffects[x, y] = effect.SpaceEffect;
                         events.Add(new GameEvent { Type = GameEventType.SpaceEffectApplied, X = x, Y = y, SpaceEffect = effect.SpaceEffect });
@@ -877,6 +917,111 @@ namespace LightCard.Core
                     }
                     break;
                 }
+                case EffectAction.DiscardRandom:
+                    DiscardRandom(state, owner, effect.Amount, events);
+                    break;
+                case EffectAction.EnemyDiscardRandom:
+                    DiscardRandom(state, 1 - owner, effect.Amount, events);
+                    break;
+                case EffectAction.GainPlayerLife:
+                {
+                    state.Players[owner].Life += effect.Amount;
+                    events.Add(new GameEvent { Type = GameEventType.PlayerHealed, Player = owner, Amount = effect.Amount });
+                    break;
+                }
+                case EffectAction.CallUnitAtTarget:
+                {
+                    if (string.IsNullOrEmpty(effect.CalledCardId)) break;
+                    if (!GameState.InBounds(targetX, targetY) || GameState.SideOfRow(targetY) != owner) break;
+                    if (state.GetUnitAt(targetX, targetY) != null) break;
+                    CallUnit(state, owner, effect.CalledCardId, targetX, targetY, events);
+                    break;
+                }
+                case EffectAction.GainRandomKeyword:
+                {
+                    foreach (var unit in GatherUnits(state, effect.Scope, source, owner, targetX, targetY))
+                    {
+                        if (unit.IsCharm) continue;
+                        GrantRandomKeyword(state, unit, events);
+                    }
+                    break;
+                }
+                case EffectAction.MoveRandomAdjacent:
+                {
+                    if (source == null || !state.Units.Contains(source)) break;
+                    var moves = new List<(int dx, int dy)>();
+                    foreach (var (dx, dy) in new[] { (0, 1), (0, -1), (-1, 0), (1, 0) })
+                    {
+                        int nx = source.X + dx, ny = source.Y + dy;
+                        if (GameState.InBounds(nx, ny) && GameState.SideOfRow(ny) == source.Owner && state.GetUnitAt(nx, ny) == null)
+                            moves.Add((dx, dy));
+                    }
+                    if (moves.Count > 0)
+                    {
+                        var (mx, my) = moves[state.NextRandom(moves.Count)];
+                        TryMoveUnit(state, source, mx, my, events);
+                    }
+                    break;
+                }
+                case EffectAction.ConsumeAdjacent:
+                {
+                    if (source == null || !state.Units.Contains(source)) break;
+                    var adjacent = state.UnitsOf(owner)
+                        .Where(u => u != source && !u.IsCharm && Math.Abs(u.X - source.X) + Math.Abs(u.Y - source.Y) == 1)
+                        .OrderBy(u => u.Id).ToList();
+                    if (adjacent.Count == 0) break;
+
+                    var meals = effect.Amount == 1
+                        ? new List<UnitState> { adjacent[state.NextRandom(adjacent.Count)] }
+                        : adjacent;
+                    foreach (var meal in meals)
+                    {
+                        if (!state.Units.Contains(meal) || !state.Units.Contains(source)) break;
+                        DestroyUnit(state, meal, events);
+                        if (!state.Units.Contains(source)) break;
+                        source.BonusPower += 1;
+                        source.BonusLife += 1;
+                        source.Flux = false;
+                        events.Add(new GameEvent { Type = GameEventType.UnitStatsChanged, UnitId = source.Id, CardId = source.CardId, Amount = 2 });
+                        if (effect.Amount == 0) GrantRandomKeyword(state, source, events); //Amalgam
+                    }
+                    break;
+                }
+                case EffectAction.LaneProjectiles:
+                {
+                    int enemy = 1 - owner;
+                    int forward = GameState.ForwardDir(owner);
+                    for (int lane = 0; lane < GameConfig.Lanes; lane++)
+                    {
+                        for (int y = GameState.FrontlineRow(enemy); GameState.InBounds(lane, y) && GameState.SideOfRow(y) == enemy; y += forward)
+                        {
+                            var victim = state.GetUnitAt(lane, y);
+                            if (victim == null) continue;
+                            DealAbilityDamage(state, victim, effect.Amount, events);
+                            if (effect.SpaceEffect != SpaceEffectType.None)
+                            {
+                                state.SpaceEffects[lane, y] = effect.SpaceEffect;
+                                events.Add(new GameEvent { Type = GameEventType.SpaceEffectApplied, X = lane, Y = y, SpaceEffect = effect.SpaceEffect });
+                            }
+                            break;
+                        }
+                    }
+                    break;
+                }
+                case EffectAction.SwapFloodDesert:
+                {
+                    for (int x = 0; x < GameConfig.Lanes; x++)
+                    {
+                        for (int y = 0; y < GameConfig.Rows; y++)
+                        {
+                            if (state.SpaceEffects[x, y] == SpaceEffectType.Flooded) state.SpaceEffects[x, y] = SpaceEffectType.Desert;
+                            else if (state.SpaceEffects[x, y] == SpaceEffectType.Desert) state.SpaceEffects[x, y] = SpaceEffectType.Flooded;
+                            else continue;
+                            events.Add(new GameEvent { Type = GameEventType.SpaceEffectApplied, X = x, Y = y, SpaceEffect = state.SpaceEffects[x, y] });
+                        }
+                    }
+                    break;
+                }
                 case EffectAction.GrantAbility:
                 {
                     if (effect.Granted == null) break;
@@ -890,6 +1035,20 @@ namespace LightCard.Core
                     break;
                 }
             }
+        }
+
+        /// <summary>Small random buff for Ocean mutations and Flooded calls.</summary>
+        private static void GrantRandomKeyword(GameState state, UnitState unit, List<GameEvent> events)
+        {
+            switch (state.NextRandom(5))
+            {
+                case 0: unit.BonusArmor += 1; break;
+                case 1: unit.BonusPierce += 1; break;
+                case 2: unit.BonusParry += 1; break;
+                case 3: unit.BonusPower += 1; break;
+                default: unit.BonusLife += 1; break;
+            }
+            events.Add(new GameEvent { Type = GameEventType.UnitStatsChanged, UnitId = unit.Id, CardId = unit.CardId, Amount = 1 });
         }
 
         /// <summary>
@@ -963,7 +1122,7 @@ namespace LightCard.Core
             }
         }
 
-        private static List<(int x, int y)> GatherSpaces(TargetScope scope, UnitState source, int targetX, int targetY)
+        private static List<(int x, int y)> GatherSpaces(GameState state, TargetScope scope, UnitState source, int targetX, int targetY)
         {
             var spaces = new List<(int, int)>();
             switch (scope)
@@ -990,6 +1149,28 @@ namespace LightCard.Core
                     if (source == null) break;
                     int fy = source.Y + GameState.ForwardDir(source.Owner);
                     if (GameState.InBounds(source.X, fy)) spaces.Add((source.X, fy));
+                    break;
+                }
+                case TargetScope.AdjacentToTarget:
+                {
+                    foreach (var (dx, dy) in new[] { (0, 1), (0, -1), (-1, 0), (1, 0) })
+                        if (GameState.InBounds(targetX + dx, targetY + dy)) spaces.Add((targetX + dx, targetY + dy));
+                    break;
+                }
+                case TargetScope.TargetLane:
+                {
+                    for (int y = 0; y < GameConfig.Rows; y++) spaces.Add((targetX, y));
+                    break;
+                }
+                case TargetScope.RandomNearbySpace:
+                {
+                    if (source == null) break;
+                    var candidates = new List<(int, int)>();
+                    for (int dx = -1; dx <= 1; dx++)
+                        for (int dy = -1; dy <= 1; dy++)
+                            if ((dx != 0 || dy != 0) && GameState.InBounds(source.X + dx, source.Y + dy))
+                                candidates.Add((source.X + dx, source.Y + dy));
+                    if (candidates.Count > 0) spaces.Add(candidates[state.NextRandom(candidates.Count)]);
                     break;
                 }
             }
@@ -1172,6 +1353,19 @@ namespace LightCard.Core
 
             foreach (var effect in unit.AllEffects.Where(e => e.Trigger == Trigger.OnDestroy))
                 ResolveEffect(state, effect, unit, unit.Owner, unit.X, unit.Y, events);
+
+            //Death watchers (Mourner's Altar, Font of Sorrows, Dinner Bell)
+            foreach (var watcher in state.UnitsOf(unit.Owner).ToList())
+            {
+                if (!state.Units.Contains(watcher) || watcher == unit) continue;
+                bool nearby = Math.Abs(watcher.X - unit.X) <= 1 && Math.Abs(watcher.Y - unit.Y) <= 1;
+                foreach (var effect in watcher.AllEffects)
+                {
+                    if (effect.Trigger == Trigger.OnFriendlyDestroyed ||
+                        (effect.Trigger == Trigger.OnFriendlyDestroyedNearby && nearby))
+                        ResolveEffect(state, effect, watcher, watcher.Owner, unit.X, unit.Y, events);
+                }
+            }
         }
 
         private static void DamagePlayer(GameState state, int player, int amount, List<GameEvent> events)
@@ -1213,11 +1407,47 @@ namespace LightCard.Core
                 if (playerState.Hand.Count >= GameConfig.MaxHandSize)
                 {
                     events.Add(new GameEvent { Type = GameEventType.CardBurned, Player = player, CardId = cardId });
+                    FireDiscardWatchers(state, player, events);
                     continue;
                 }
 
                 playerState.Hand.Add(cardId);
                 events.Add(new GameEvent { Type = GameEventType.CardDrawn, Player = player, CardId = cardId });
+
+                //Draw watchers (Seer's Guillotine): the drawer pays
+                foreach (var watcher in state.Units.ToList())
+                {
+                    if (state.IsOver) return;
+                    if (!state.Units.Contains(watcher)) continue;
+                    foreach (var effect in watcher.AllEffects.Where(e => e.Trigger == Trigger.OnAnyDraw))
+                        if (effect.Action == EffectAction.DamageDrawingPlayer)
+                            DamagePlayer(state, player, effect.Amount, events);
+                }
+            }
+        }
+
+        /// <summary>Random discard from a player's hand, firing their discard watchers.</summary>
+        private static void DiscardRandom(GameState state, int player, int count, List<GameEvent> events)
+        {
+            var playerState = state.Players[player];
+            for (int n = 0; n < count && playerState.Hand.Count > 0; n++)
+            {
+                int pick = state.NextRandom(playerState.Hand.Count);
+                string cardId = playerState.Hand[pick];
+                playerState.Hand.RemoveAt(pick);
+                events.Add(new GameEvent { Type = GameEventType.CardDiscarded, Player = player, CardId = cardId });
+                FireDiscardWatchers(state, player, events);
+            }
+        }
+
+        /// <summary>OnOwnerDiscard watchers (Keeper of Debts); burns count as discards too.</summary>
+        private static void FireDiscardWatchers(GameState state, int player, List<GameEvent> events)
+        {
+            foreach (var watcher in state.UnitsOf(player).ToList())
+            {
+                if (!state.Units.Contains(watcher)) continue;
+                foreach (var effect in watcher.AllEffects.Where(e => e.Trigger == Trigger.OnOwnerDiscard))
+                    ResolveEffect(state, effect, watcher, player, watcher.X, watcher.Y, events);
             }
         }
     }

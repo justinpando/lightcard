@@ -83,5 +83,30 @@ namespace LightCard.Core.Agents
             OpponentLife = 2.2f,
             Advancement = 0.15f
         };
+
+        /// <summary>Tower: defensive lines and on-death value; wins slow.</summary>
+        public static AgentPersonality Attrition() => new AgentPersonality
+        {
+            Name = "Attrition",
+            OwnLife = 3.2f,
+            OpponentLife = 2.0f,
+            UnitLife = 1.1f,
+            EnemyMaterial = 1.2f,
+            Advancement = 0.05f,
+            LaneControl = 1.0f,
+            CardInHand = 0.6f
+        };
+
+        /// <summary>Ocean: transformation and sacrifice combos; own material is fuel.</summary>
+        public static AgentPersonality Chaotic() => new AgentPersonality
+        {
+            Name = "Chaotic",
+            UnitLife = 0.5f,
+            UnitPower = 1.3f,
+            OwnLife = 2.0f,
+            OpponentLife = 3.2f,
+            SpaceAlignment = 0.9f,
+            Advancement = 0.4f
+        };
     }
 }

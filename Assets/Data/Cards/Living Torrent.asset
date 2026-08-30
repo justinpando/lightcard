@@ -16,8 +16,8 @@ MonoBehaviour:
   type: 0
   sprite: {fileID: 21300000, guid: afa7fccd8a571d741b9b4e4a101b152c, type: 3}
   name: Living Torrent
-  cost: 4
+  cost: 5
   power: 0
   life: 9
-  description: Flood a space in front of this each turn. For each flooded space,
-    deal 1 damage to a random enemy on a Flooded space each turn.
+  description: Has +1 Attack per Flooded space. Each turn, Flood a random nearby
+    space.

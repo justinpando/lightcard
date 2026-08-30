@@ -180,6 +180,59 @@ its completion pass before any Expedition numbers move. The shared
 **equipment system** (Equip charms) is the biggest missing cross-archetype
 mechanic. Agent sweeps still overstate spreads; human play decides magnitude.
 
+## Full build-out rulings (catalog v3: 113 cards, all six archetypes)
+
+- **Equip charms**: a friendly non-charm entering the charm's space (Shift,
+  call, push, pull) consumes it and gains its OnEquip bestowals — stats,
+  Armor/Pierce/Parry/Resist grants, **Heavy** (immune to Push/Pull), or whole
+  granted abilities (Vinewhip's Strike: Pull). Consumption is removal, not
+  destruction: no OnDestroy triggers.
+- **Guardian**: takes attack damage in place of friendly units beside or
+  behind it (asleep guardians don't; no guardian chains). OnGuard fires after.
+- **Spirit Bind (Heart)**: spirits play onto a friendly unit and occupy no
+  space. The spirit soaks ALL damage (before Evade); at absorbed damage >=
+  its printed life the bond breaks, firing OnBondBreak with the host as
+  source. Rebinding overwrites silently. Hosts gain the spirit's printed
+  Parry/Resist/Rush while bonded. Dead Man Walking's life-drain is modeled
+  as self-poison.
+- **Inferno**: +1/0 to occupants; 1 damage at the end of the occupant
+  owner's turn.
+- **Discard (Tower)**: effect discards are random (deterministic RNG) — a
+  player-choice UI can come later. Overdraw burns count as discards for
+  OnOwnerDiscard watchers. Grotesque Mirror triggers at the opponent's turn
+  start while its lane is unblocked. Seer's Guillotine charges per card drawn.
+  Player healing (Mourner's Altar) is uncapped.
+- **Transforms**: the unit's card identity swaps; damage, bonuses, and
+  statuses persist (Prideful/Guilt-Wracked loop).
+- **Flooded**: non-charms called there roll a random small keyword (+1 Armor,
+  Pierce, Parry, +1/0, or +0/1 — the same table as Flicker/Amalgam rolls).
+  **Desert**: -1/-1 at the occupant owner's turn start (Sand Shark immune);
+  X-bound units die at turn start off their effect. Tidal Wave hits the
+  nearest enemy per lane and floods the impact space. Mirage swaps every
+  Flooded/Desert space. Fractal/Amalgam consume adjacent *friendly* units
+  (random one / all), shedding Flux ("Rush if so").
+- Adaptations recorded: Message in a Bottle simplified to draw + 1 self-damage
+  per friendly death (charge system deferred); Focus Form tutors the first
+  low-cost card (random-selection and hand-keyword variants deferred);
+  Ailing Scholar's life decay floors at 1 (max-life clamp).
+- Deferred cards (need systems not yet built): cost-modifier auras beyond
+  Scholar (Attenuating Rod, Trailblazer, Flagbearer, Geo), Valuable Coin
+  economy, Forge, Dark Mirror/reflection, Crystal Amplifier, Sword of
+  Damocles (delayed effects), War Drum, Covenant of Valor, Superior Tempo,
+  Break Through, Give Your All, Valorous Call, Scorch/Scorched, Frozen,
+  Rugged/Mountaineer, remaining spirit passives (Flying, Heavy-bind,
+  Opportunity, Renewal, Reprisal, Fencer, Caller), Ritual cycle, Shatter,
+  Lose Hope, Bauble Merchant, Reverse Engineer, Percussive Maintenance,
+  Dense Lecture is in; Thunder Rod, Fire Sale, Dispersal, Catalytic Spike,
+  Beached Whale, Enchanted Rose, Sunlamp, Windstriker's original stat note.
+
+## First full round-robin (3 seeds, direction only)
+
+Heart 1/15 (weakest — bond investments need tuning), Tower beats Garden and
+Atelier but folds to Expedition and Ocean, Ocean strong (beats Garden,
+Atelier, Tower; splits Expedition), Expedition still the front-runner. Zero
+illegal AI commands across all new mechanics.
+
 ## Rejected (designer ruling)
 
 - **Standing positional bonuses** (the sheet's "back row Armor 1, front row

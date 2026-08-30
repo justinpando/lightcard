@@ -558,6 +558,71 @@ namespace LightCard.CoreTests
                 AssertEqual(3, victim.Y, "auto-advance works again once unpinned");
             });
 
+            Test("Equip: entering the charm's space consumes and bestows (v3)", () =>
+            {
+                var state = EmptyGame();
+                var lance = PlayUnit(state, 0, "Blood-Tinged Lance", 0, 2);
+                var unit = PlayUnit(state, 0, "Conscript", 0, 1);
+                unit.Flux = false;
+                state.Players[0].Energy = 5;
+                GameEngine.Execute(state, new ShiftCommand { Player = 0, UnitId = unit.Id, Direction = MoveDirection.Forward });
+                AssertTrue(!state.Units.Contains(lance), "equip consumed");
+                AssertEqual(3, state.EffectivePower(unit), "1 base +2 bestowed");
+                AssertEqual(1, unit.BonusPierce, "pierce bestowed");
+            });
+
+            Test("Spirit Bind: soak, break burst, host grants (Heart, v3)", () =>
+            {
+                var state = EmptyGame();
+                var host = PlayUnit(state, 0, "Novice Attuner", 0, 2);
+                PlayAbility(state, 0, "Spirit of Wrath", 0, 2);   //spirit play routes through Play helper
+                AssertEqual("Spirit of Wrath", state.GetUnit(host.Id).BoundSpiritCardId, "bonded");
+                AssertEqual(1, host.BonusLife, "attuner OnBonded proc");
+
+                var enemy = PlayUnit(state, 1, "Conscript", 0, 3);
+                enemy.Flux = false;
+                state.ActivePlayer = 1;
+                GameEngine.Execute(state, new AttackCommand { Player = 1, UnitId = enemy.Id });
+                AssertEqual(0, host.Damage, "spirit soaked the hit");
+                AssertTrue(host.BoundSpiritCardId == null, "1-life spirit broke");
+                AssertEqual(1, enemy.Damage, "Wrath burst hit the lane");
+            });
+
+            Test("Tower attrition: discard watchers and death value (v3)", () =>
+            {
+                var state = EmptyGame();
+                var keeper = PlayUnit(state, 0, "Keeper of Debts", 0, 0);
+                PlayUnit(state, 0, "Mourner's Altar", 1, 0);
+                state.Players[0].Hand.Add("Conscript");
+                state.Players[0].Deck.Add("Conscript");
+                PlayAbility(state, 0, "Forlorn Whisper", 0, 0);
+                AssertEqual(1, keeper.BonusPower, "keeper grew on discard");
+
+                int life = state.Players[0].Life;
+                var fodder = PlayUnit(state, 0, "Wretch", 2, 0);
+                state.ActivePlayer = 1;
+                PlayAbility(state, 1, "Burn", 2, 0);
+                AssertTrue(!state.Units.Contains(fodder), "wretch burned down");
+                AssertEqual(life + 1, state.Players[0].Life, "altar healed on friendly death");
+            });
+
+            Test("Ocean: consume, desert drain, deterministic mutations (v3)", () =>
+            {
+                var state = EmptyGame();
+                var meal = PlayUnit(state, 0, "Chimera", 1, 1);
+                var fractal = PlayUnit(state, 0, "Fractal", 1, 2);
+                AssertTrue(!state.Units.Contains(meal), "fractal consumed its neighbor");
+                AssertEqual(1, fractal.BonusPower, "+1/+1 gained");
+                AssertTrue(!fractal.Flux, "gained Rush");
+
+                var dune = PlayUnit(state, 1, "Dune Beast", 2, 3);
+                AssertEqual(SpaceEffectType.Desert, state.SpaceEffects[2, 3], "deserted on call");
+                GameEngine.Execute(state, new EndTurnCommand { Player = 0 });
+                GameEngine.Execute(state, new EndTurnCommand { Player = 1 });
+                AssertTrue(state.Units.Contains(dune), "bound unit survives on its desert");
+                AssertEqual(-1, dune.BonusPower, "desert drained it");
+            });
+
             Test("Lethal: reducing life to 0 ends the game", () =>
             {
                 var state = EmptyGame();
