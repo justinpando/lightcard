@@ -1,4 +1,4 @@
-# Midjourney Placeholder Prompts — v2 Catalog (34 cards)
+# Midjourney Placeholder Prompts — v2 Catalog (49 cards)
 
 ## Workflow
 
@@ -44,6 +44,12 @@ iron-black).
 | Marching Orders | an unfurling scroll with tiny marching soldiers embossed along its length |
 | Guiding Star | a radiant many-pointed star trailing golden light |
 | Promised Land | a free-standing golden archway of light |
+| Navigator | a keen-eyed scout holding up a brass astrolabe that projects glowing routes |
+| Battering Ram | a stout wheeled ram with a golden ram's-head prow, straining forward |
+| Squad Leader | a barking sergeant mid-gesture, gauntlet raised to rally |
+| Skilled Armorer | a smith fastening a glowing pauldron onto an empty stand of armor |
+| Martial Musician | a drummer in march, drumsticks blurred mid-beat, notes rising as banners |
+| In This Together | six clasped hands of different armors forming a ring |
 
 ## Garden (greens, trickery and cultivation)
 
@@ -61,6 +67,15 @@ iron-black).
 | Reverie | a curled-up sleeping figure wrapped in dream-moths |
 | Pin Down | a thorned vine coiled into a downward-striking lance |
 | Pin Prick | one elegant oversized thorn with a single luminous drop at its tip |
+| Constant Gardener | a weathered gardener in thornproof gloves, shears in hand, wearing brambles like armor |
+| Rose Knight | a knight in rose-petal-layered armor, thorned sword lowered |
+| Magic Fertilizer | a burlap sack spilling glittering emerald dust |
+| Fertile Soil | a heaped mound of rich black loam sprouting tiny glowing shoots |
+| Hedge Maze | a miniature living hedge labyrinth held in two cupped hands |
+| Entangling Vines | a knot of grasping vines coiling around an unseen shape |
+| Duelist | a poised fencer mid-lunge, rose held in the off hand |
+| Dancer | a whirling dancer trailing ribbons of leaves and petals |
+| Windstriker | a lithe warrior mid-leap, twin leaf-blades sweeping an arc of wind |
 
 ## Atelier (blues, patterns and knowledge)
 
