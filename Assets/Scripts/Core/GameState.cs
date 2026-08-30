@@ -80,8 +80,13 @@ namespace LightCard.Core
         }
     }
 
+    /// <summary>The player power a deck brings to the match (rules-v3): Shift OR Clear, not both.</summary>
+    public enum PlayerPower { Shift, Clear }
+
     public class PlayerState
     {
+        /// <summary>Chosen at deck level; usable once per turn.</summary>
+        public PlayerPower Power = PlayerPower.Shift;
         public int Life = GameConfig.StartingLife;
         public int Energy;
         public int MaxEnergy;

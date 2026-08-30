@@ -8,6 +8,8 @@ public class Deck
 {
     public string name = "New Deck";
     public string description;
+    /// <summary>"Shift" or "Clear" — the player power this deck brings (rules-v3).</summary>
+    public string power = "Shift";
 
     public DeckSaveData SaveData
     {
@@ -17,7 +19,7 @@ public class Deck
 
             cards.ForEach(x => cardNames.Add(x.name));
 
-            return new DeckSaveData(name, description, cardNames);
+            return new DeckSaveData(name, description, cardNames, power);
         }
     }
 
@@ -48,6 +50,7 @@ public class Deck
         {
             name = saveData.name;
             description = saveData.description;
+            power = string.IsNullOrEmpty(saveData.power) ? "Shift" : saveData.power;
             
             foreach (var cardName in saveData.cards)
             {

@@ -72,8 +72,9 @@ namespace LightCard.Core.Agents
                 yield return new ActivateCommand { Player = Player, UnitId = unit.Id };
             }
 
-            //Shift
-            if (!playerState.PowerUsedThisTurn && playerState.Energy >= GameConfig.ShiftEnergyCost)
+            //Shift (only if the deck brought it)
+            if (playerState.Power == PlayerPower.Shift &&
+                !playerState.PowerUsedThisTurn && playerState.Energy >= GameConfig.ShiftEnergyCost)
             {
                 foreach (var unit in state.UnitsOf(Player).Where(u => !u.IsCharm && !u.Asleep && !u.Pinned && (!u.AttackedThisTurn || u.Definition.Agile)))
                 {
@@ -84,8 +85,9 @@ namespace LightCard.Core.Agents
                 }
             }
 
-            //Clear (the alternate power action)
-            if (!playerState.PowerUsedThisTurn && playerState.Energy >= GameConfig.ClearEnergyCost)
+            //Clear (only if the deck brought it)
+            if (playerState.Power == PlayerPower.Clear &&
+                !playerState.PowerUsedThisTurn && playerState.Energy >= GameConfig.ClearEnergyCost)
             {
                 for (int x = 0; x < GameConfig.Lanes; x++)
                     for (int y = 0; y < GameConfig.Rows; y++)

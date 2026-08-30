@@ -475,9 +475,10 @@ namespace LightCard.CoreTests
                     "Agile units may move after attacking");
             });
 
-            Test("Clear power: 2 energy, shares the power action with Shift (rules-v3)", () =>
+            Test("Player powers are a loadout: bring Shift OR Clear (rules-v3)", () =>
             {
                 var state = EmptyGame();
+                state.Players[0].Power = PlayerPower.Clear;
                 state.SpaceEffects[1, 3] = SpaceEffectType.Verdant;
                 state.Players[0].Energy = 5;
 
@@ -489,10 +490,15 @@ namespace LightCard.CoreTests
                 var unit = PlayUnit(state, 0, "Conscript", 0, 1);
                 state.Players[0].Energy = 5;
                 AssertTrue(!GameEngine.Execute(state, new ShiftCommand { Player = 0, UnitId = unit.Id, Direction = MoveDirection.Forward }).Success,
-                    "Shift is unavailable after Clearing - one power action per turn");
-
+                    "a Clear deck cannot Shift");
                 AssertTrue(!GameEngine.Execute(state, new ClearCommand { Player = 0, X = 0, Y = 0 }).Success,
-                    "clearing an empty space fails");
+                    "clearing an empty space fails (and the power is spent anyway)");
+
+                state.Players[1].Energy = 5;
+                state.ActivePlayer = 1;
+                state.SpaceEffects[2, 2] = SpaceEffectType.Verdant;
+                AssertTrue(!GameEngine.Execute(state, new ClearCommand { Player = 1, X = 2, Y = 2 }).Success,
+                    "a Shift deck cannot Clear");
             });
 
             Test("Overdraw burns: full hand still depletes the deck (rules-v2)", () =>

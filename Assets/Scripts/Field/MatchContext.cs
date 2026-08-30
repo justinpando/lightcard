@@ -26,6 +26,10 @@ public class MatchContext : MonoBehaviour
     [Tooltip("Which starter deck the opponent pilots when aiDeckSource is Starter.")]
     public int aiStarterDeckIndex = 0;
     public AiStyle aiStyle = AiStyle.Control;
+    [Tooltip("Player power when the chosen deck's save doesn't specify one.")]
+    public PlayerPower playerPowerDefault = PlayerPower.Shift;
+    [Tooltip("The power the AI's deck brings.")]
+    public PlayerPower aiPower = PlayerPower.Shift;
     [Tooltip("0 = random seed each match.")]
     public int seed;
     [Tooltip("Pause between AI actions so its turn is watchable.")]
@@ -51,8 +55,8 @@ public class MatchContext : MonoBehaviour
 
     private void Update()
     {
-        //Right-click a space with an effect: the Clear power (2 energy)
-        if (Input.GetMouseButtonUp(1) && InputAllowed())
+        //Right-click a space with an effect: the Clear power (2 energy), if brought
+        if (Input.GetMouseButtonUp(1) && InputAllowed() && state.Players[LocalPlayer].Power == PlayerPower.Clear)
         {
             var target = RaycastSpace(Input.mousePosition, SpacePreference.Nearest);
             if (target != null && state.SpaceEffects[target.X, target.Y] != SpaceEffectType.None)
@@ -86,8 +90,13 @@ public class MatchContext : MonoBehaviour
         var aiDeck = BuildAiDeck(playerDeck);
         int matchSeed = seed != 0 ? seed : Random.Range(1, int.MaxValue);
 
+        //The deck's saved power wins over the inspector default
+        var playerPower = playerPowerDefault;
+        var chosenSave = save?.decks?.FirstOrDefault(d => d.name == playerDeckName) ?? save?.decks?.FirstOrDefault();
+        if (chosenSave != null && chosenSave.power == "Clear") playerPower = PlayerPower.Clear;
+
         var events = new List<GameEvent>();
-        state = GameEngine.CreateGame(playerDeck, aiDeck, matchSeed, events);
+        state = GameEngine.CreateGame(playerDeck, aiDeck, matchSeed, events, playerPower, aiPower);
         aiAgent = new HeuristicAgent(AiPlayer, PersonalityFor(aiStyle));
         Debug.Log($"Match started: seed {matchSeed}, player deck {playerDeck.Count} cards, AI deck {aiDeck.Count} cards ({aiAgent.Personality.Name}).");
 
@@ -470,7 +479,8 @@ public class MatchContext : MonoBehaviour
         if (activateSelectable && space != null) space.SetHighlight(SpaceView.Highlight.Attack);
 
         shiftTargets.Clear();
-        bool canShift = !unit.IsCharm && !unit.Asleep && !unit.Pinned &&
+        bool canShift = playerState.Power == PlayerPower.Shift &&
+                        !unit.IsCharm && !unit.Asleep && !unit.Pinned &&
                         !playerState.PowerUsedThisTurn && playerState.Energy >= GameConfig.ShiftEnergyCost;
         if (canShift)
         {
@@ -485,9 +495,10 @@ public class MatchContext : MonoBehaviour
             fieldView.HighlightSpaces(shiftTargets, SpaceView.Highlight.ShiftTarget);
         }
 
+        string moveHint = canShift ? " Click a blue space to Shift." : "";
         hud.SetStatus(activateSelectable
-            ? $"{unit.CardId}: click it again to Activate ({unit.Definition.ActivateCost} energy), or a blue space to Shift. Attacks happen automatically at end of turn."
-            : $"{unit.CardId}: click a blue space to Shift. Attacks happen automatically at end of turn.");
+            ? $"{unit.CardId}: click it again to Activate ({unit.Definition.ActivateCost} energy).{moveHint} Attacks happen automatically at end of turn."
+            : $"{unit.CardId}:{(canShift ? moveHint : " no actions available.")} Attacks happen automatically at end of turn.");
     }
 
     private static MoveDirection DirectionTo(UnitState unit, int x, int y)
@@ -541,7 +552,9 @@ public class MatchContext : MonoBehaviour
         handView.SetSelected(-1);
         hud.ShowReplaceTarget(false);
         if (state != null && !state.IsOver) hud.SetStatus(state.ActivePlayer == LocalPlayer
-            ? "Your turn. Right-click a space effect to Clear it (2 energy)."
+            ? (state.Players[LocalPlayer].Power == PlayerPower.Clear
+                ? "Your turn. Right-click a space effect to Clear it (2 energy)."
+                : "Your turn.")
             : "Enemy turn...");
     }
 

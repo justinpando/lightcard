@@ -17,11 +17,14 @@ namespace LightCard.Core
 
         //---- Setup ----
 
-        public static GameState CreateGame(List<string> deck0, List<string> deck1, int seed, List<GameEvent> events)
+        public static GameState CreateGame(List<string> deck0, List<string> deck1, int seed, List<GameEvent> events,
+            PlayerPower power0 = PlayerPower.Shift, PlayerPower power1 = PlayerPower.Shift)
         {
             var state = new GameState { Seed = seed };
             state.Players[0].Deck = new List<string>(deck0);
             state.Players[1].Deck = new List<string>(deck1);
+            state.Players[0].Power = power0;
+            state.Players[1].Power = power1;
 
             Shuffle(state, state.Players[0].Deck);
             Shuffle(state, state.Players[1].Deck);
@@ -452,7 +455,8 @@ namespace LightCard.Core
             if (unit.Asleep) return CommandResult.Fail("That unit is asleep.");
             if (unit.Pinned) return CommandResult.Fail("That unit is pinned.");
             if (unit.AttackedThisTurn && !unit.Definition.Agile) return CommandResult.Fail("That unit has already attacked this turn.");
-            if (playerState.PowerUsedThisTurn) return CommandResult.Fail("Your power action (Shift or Clear) is already spent this turn.");
+            if (playerState.Power != PlayerPower.Shift) return CommandResult.Fail("Your deck brought Clear, not Shift.");
+            if (playerState.PowerUsedThisTurn) return CommandResult.Fail("Your power is already spent this turn.");
 
             int dx = 0, dy = 0;
             switch (command.Direction)
@@ -587,7 +591,8 @@ namespace LightCard.Core
         {
             var playerState = state.Players[command.Player];
 
-            if (playerState.PowerUsedThisTurn) return CommandResult.Fail("Your power action (Shift or Clear) is already spent this turn.");
+            if (playerState.Power != PlayerPower.Clear) return CommandResult.Fail("Your deck brought Shift, not Clear.");
+            if (playerState.PowerUsedThisTurn) return CommandResult.Fail("Your power is already spent this turn.");
             if (playerState.Energy < GameConfig.ClearEnergyCost) return CommandResult.Fail("Not enough energy to Clear.");
             if (!GameState.InBounds(command.X, command.Y)) return CommandResult.Fail("Target space is out of bounds.");
             if (state.SpaceEffects[command.X, command.Y] == SpaceEffectType.None) return CommandResult.Fail("No space effect to Clear.");
