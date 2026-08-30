@@ -21,7 +21,8 @@ namespace LightCard.Core
         AttackResolved,
         SpaceEffectApplied,
         PlayerDamaged,
-        GameEnded
+        GameEnded,
+        FatigueDamage
     }
 
     /// <summary>

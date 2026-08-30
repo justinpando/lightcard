@@ -37,6 +37,8 @@ namespace LightCard.Core
         public Dictionary<Archetype, int> Affinity = new Dictionary<Archetype, int>();
         public bool ReplaceUsedThisTurn;
         public bool ShiftUsedThisTurn;
+        /// <summary>Missed draws from an empty deck so far; each deals its count in damage (rules-v2).</summary>
+        public int Fatigue;
 
         public PlayerState()
         {

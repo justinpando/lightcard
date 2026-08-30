@@ -32,10 +32,14 @@ namespace LightCard.Core.Agents
 
         /// <summary>Value per card in hand (card advantage).</summary>
         public float CardInHand = 0.4f;
-        /// <summary>Value per point of max energy (the Replace ramp economy).</summary>
-        public float EnergyRamp = 0.3f;
-        /// <summary>Value per point of accumulated affinity.</summary>
-        public float Affinity = 0.2f;
+        /// <summary>
+        /// Value per point of max energy. Rules-v2 made Replace the only energy
+        /// source, so ramp must outvalue holding the burned card for any
+        /// personality — otherwise the agent never develops at all.
+        /// </summary>
+        public float EnergyRamp = 0.8f;
+        /// <summary>Value per point of accumulated affinity (also the AL-gating unlock).</summary>
+        public float Affinity = 0.3f;
 
         public static AgentPersonality Balanced() => new AgentPersonality();
 

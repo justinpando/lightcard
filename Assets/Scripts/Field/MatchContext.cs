@@ -197,16 +197,23 @@ public class MatchContext : MonoBehaviour
 
         var cardId = state.Players[LocalPlayer].Hand[handIndex];
         var card = CardCatalogV1.Get(cardId);
-        if (card.Cost > state.Players[LocalPlayer].Energy)
+        var playerState = state.Players[LocalPlayer];
+        bool playable = card.Cost <= playerState.Energy &&
+                        playerState.Affinity[card.Archetype] >= card.AffinityRequirement;
+        if (card.Cost > playerState.Energy)
         {
             hud.SetStatus($"Not enough energy for {cardId} ({card.Cost}). You can still Replace it.");
+        }
+        else if (!playable)
+        {
+            hud.SetStatus($"{cardId} needs {card.Archetype} Affinity {card.AffinityRequirement} (you have {playerState.Affinity[card.Archetype]}). Replace {card.Archetype} cards to attune.");
         }
 
         selectedHandIndex = handIndex;
         handView.SetSelected(handIndex);
-        hud.ShowReplaceTarget(!state.Players[LocalPlayer].ReplaceUsedThisTurn);
+        hud.ShowReplaceTarget(!playerState.ReplaceUsedThisTurn);
 
-        if (card.Cost <= state.Players[LocalPlayer].Energy)
+        if (playable)
         {
             playTargets = EnumeratePlayTargets(card).ToList();
             fieldView.HighlightSpaces(playTargets, SpaceView.Highlight.PlayTarget);

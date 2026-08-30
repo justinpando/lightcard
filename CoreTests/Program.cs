@@ -23,8 +23,8 @@ namespace LightCard.CoreTests
                 var state = GameEngine.CreateGame(SampleDeck(), SampleDeck(), seed: 42, events);
 
                 AssertEqual(GameConfig.StartingHandSize + GameConfig.CardsDrawnPerTurn, state.Players[0].Hand.Count, "p0 hand after turn start");
-                AssertEqual(GameConfig.StartingHandSize, state.Players[1].Hand.Count, "p1 opening hand");
-                AssertEqual(1, state.Players[0].Energy, "p0 starting energy");
+                AssertEqual(GameConfig.StartingHandSize + GameConfig.SecondPlayerBonusCards, state.Players[1].Hand.Count, "p1 opening hand includes going-second bonus");
+                AssertEqual(0, state.Players[0].Energy, "no automatic energy - Replace is the only ramp");
                 AssertEqual(0, state.ActivePlayer, "player 0 starts");
             });
 
@@ -171,8 +171,8 @@ namespace LightCard.CoreTests
 
                 var result = GameEngine.Execute(state, new ReplaceCardCommand { Player = 0, HandIndex = 0 });
                 AssertTrue(result.Success, result.Error);
-                AssertEqual(2, state.Players[0].MaxEnergy, "max energy ramped");
-                AssertEqual(2, state.Players[0].Energy, "current energy ramped");
+                AssertEqual(1, state.Players[0].MaxEnergy, "max energy ramped from 0");
+                AssertEqual(1, state.Players[0].Energy, "current energy ramped from 0");
                 AssertEqual(1, state.Players[0].Affinity[Archetype.Expedition], "affinity gained");
                 AssertTrue(!GameEngine.Execute(state, new ReplaceCardCommand { Player = 0, HandIndex = 0 }).Success,
                     "only one replace per turn");
@@ -326,6 +326,34 @@ namespace LightCard.CoreTests
                 AssertEqual(0, blocked.BonusPower, "blocked unit not buffed");
             });
 
+            Test("Affinity gating: card blocked until AL met (rules-v2)", () =>
+            {
+                var state = EmptyGame();
+                state.Players[0].Hand.Add("Siege Knight");    //cost 4 -> default AL requirement 3
+                state.Players[0].Energy = 4;
+
+                var blocked = GameEngine.Execute(state, new PlayCardCommand { Player = 0, HandIndex = 0, TargetX = 0, TargetY = 0 });
+                AssertTrue(!blocked.Success, "play blocked without affinity");
+
+                state.Players[0].Affinity[Archetype.Expedition] = 3;
+                var allowed = GameEngine.Execute(state, new PlayCardCommand { Player = 0, HandIndex = 0, TargetX = 0, TargetY = 0 });
+                AssertTrue(allowed.Success, allowed.Error);
+            });
+
+            Test("Fatigue: empty-deck draws deal escalating damage (rules-v2)", () =>
+            {
+                var state = EmptyGame();
+                int lifeBefore = state.Players[1].Life;
+
+                GameEngine.Execute(state, new EndTurnCommand { Player = 0 });   //p1 turn start: 2 missed draws
+                AssertEqual(lifeBefore - (1 + 2), state.Players[1].Life, "1 then 2 fatigue damage");
+
+                GameEngine.Execute(state, new EndTurnCommand { Player = 1 });   //p0: 1+2
+                GameEngine.Execute(state, new EndTurnCommand { Player = 0 });   //p1: 3+4
+                AssertEqual(lifeBefore - (1 + 2 + 3 + 4), state.Players[1].Life, "fatigue keeps escalating");
+                AssertTrue(!state.IsOver, "still alive at 10 fatigue damage");
+            });
+
             Test("Lethal: reducing life to 0 ends the game", () =>
             {
                 var state = EmptyGame();
@@ -425,6 +453,7 @@ namespace LightCard.CoreTests
             {
                 var definition = CardCatalogV1.Get(playerState.Hand[handIndex]);
                 if (definition.Cost > playerState.Energy) continue;
+                if (playerState.Affinity[definition.Archetype] < definition.AffinityRequirement) continue;
 
                 var target = FindTarget(state, player, definition);
                 if (target == null) continue;
@@ -441,6 +470,10 @@ namespace LightCard.CoreTests
                 if (probe.Success)
                     return new AttackCommand { Player = player, UnitId = unit.Id };
             }
+
+            //Rules-v2: Replace is the only energy source, so the bot ramps once a turn
+            if (!playerState.ReplaceUsedThisTurn && playerState.Hand.Count > 0)
+                return new ReplaceCardCommand { Player = player, HandIndex = 0 };
 
             return new EndTurnCommand { Player = player };
         }
@@ -497,10 +530,14 @@ namespace LightCard.CoreTests
             return deck;
         }
 
-        /// <summary>A started game with empty decks so tests control every card.</summary>
+        /// <summary>
+        /// A running game with empty decks so tests control every card. Built by
+        /// hand rather than via CreateGame: rules-v2 fatigue would damage both
+        /// players during setup draws from the empty decks.
+        /// </summary>
         private static GameState EmptyGame()
         {
-            return GameEngine.CreateGame(new List<string>(), new List<string>(), 1, new List<GameEvent>());
+            return new GameState { Seed = 1, ActivePlayer = 0, TurnNumber = 1 };
         }
 
         private static PlayCardCommand Play(GameState state, int player, string cardId, int x, int y)
@@ -509,6 +546,8 @@ namespace LightCard.CoreTests
             var definition = CardCatalogV1.Get(cardId);
             if (state.Players[player].Energy < definition.Cost)
                 state.Players[player].Energy = definition.Cost;
+            if (state.Players[player].Affinity[definition.Archetype] < definition.AffinityRequirement)
+                state.Players[player].Affinity[definition.Archetype] = definition.AffinityRequirement;
             return new PlayCardCommand { Player = player, HandIndex = state.Players[player].Hand.Count - 1, TargetX = x, TargetY = y };
         }
 

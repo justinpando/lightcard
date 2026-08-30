@@ -120,6 +120,11 @@ namespace LightCard.Core
         public Archetype Archetype;
         public CardType Type;
         public int Cost;
+        /// <summary>
+        /// Affinity Level in this card's archetype required to play it (rules-v2).
+        /// -1 = use the default (cost - 1, min 0), resolved at catalog build.
+        /// </summary>
+        public int AffinityRequirement = -1;
         public int Power;              //Atk on the sheet
         public int Life;               //Def on the sheet
         public string Text = "";

@@ -25,8 +25,9 @@ namespace LightCard.Core
 
             events.Add(new GameEvent { Type = GameEventType.GameStarted });
 
+            //Rules-v2: the player going second draws an extra opening card
             for (int p = 0; p < 2; p++)
-                DrawCards(state, p, GameConfig.StartingHandSize, events);
+                DrawCards(state, p, GameConfig.StartingHandSize + (p == 1 ? GameConfig.SecondPlayerBonusCards : 0), events);
 
             state.ActivePlayer = 0;
             StartTurn(state, events);
@@ -71,7 +72,7 @@ namespace LightCard.Core
             int player = state.ActivePlayer;
             var playerState = state.Players[player];
 
-            playerState.MaxEnergy += GameConfig.EnergyGainedPerTurn;
+            //Rules-v2: no automatic ramp — refill only; Replace is the sole source of max energy
             playerState.Energy = playerState.MaxEnergy;
             playerState.ReplaceUsedThisTurn = false;
             playerState.ShiftUsedThisTurn = false;
@@ -141,6 +142,9 @@ namespace LightCard.Core
 
             if (playerState.Energy < definition.Cost)
                 return CommandResult.Fail($"Not enough energy for {cardId} (need {definition.Cost}, have {playerState.Energy}).");
+
+            if (playerState.Affinity[definition.Archetype] < definition.AffinityRequirement)
+                return CommandResult.Fail($"{cardId} requires {definition.Archetype} Affinity {definition.AffinityRequirement} (have {playerState.Affinity[definition.Archetype]}).");
 
             string targetError = ValidatePlayTarget(state, command.Player, definition, command.TargetX, command.TargetY);
             if (targetError != null) return CommandResult.Fail(targetError);
@@ -642,7 +646,15 @@ namespace LightCard.Core
 
             for (int n = 0; n < count; n++)
             {
-                if (playerState.Deck.Count == 0) return;
+                if (playerState.Deck.Count == 0)
+                {
+                    //Rules-v2 fatigue: each missed draw deals escalating damage
+                    playerState.Fatigue++;
+                    events.Add(new GameEvent { Type = GameEventType.FatigueDamage, Player = player, Amount = playerState.Fatigue });
+                    DamagePlayer(state, player, playerState.Fatigue, events);
+                    if (state.IsOver) return;
+                    continue;
+                }
                 if (playerState.Hand.Count >= GameConfig.MaxHandSize) return;
 
                 string cardId = playerState.Deck[0];

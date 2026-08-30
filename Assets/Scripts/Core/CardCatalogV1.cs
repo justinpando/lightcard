@@ -242,7 +242,13 @@ namespace LightCard.Core
             };
 
             var dict = new Dictionary<string, CardDefinition>();
-            foreach (var card in list) dict.Add(card.Id, card);
+            foreach (var card in list)
+            {
+                //Rules-v2 default AL requirement: cost - 1, unless the card overrides it
+                if (card.AffinityRequirement < 0)
+                    card.AffinityRequirement = System.Math.Max(0, card.Cost - 1);
+                dict.Add(card.Id, card);
+            }
             return dict;
         }
     }

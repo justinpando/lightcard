@@ -13,10 +13,12 @@ namespace LightCard.Core
 
         public const int StartingLife = 20;
         public const int StartingHandSize = 3;
+        /// <summary>Extra opening cards for the player going second (rules-v2).</summary>
+        public const int SecondPlayerBonusCards = 1;
         public const int CardsDrawnPerTurn = 2;
         public const int MaxHandSize = 10;
 
-        public const int EnergyGainedPerTurn = 1;
+        //Rules-v2: there is no automatic energy gain — Replace is the only ramp.
         public const int ShiftEnergyCost = 1;
 
         public const int DeckCardLimit = 40;
