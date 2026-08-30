@@ -89,6 +89,20 @@ Ability damage is a new pipeline, distinct from attacks:
 - **Master Painter** primes the space of the unit it strikes; attacks that hit
   the player prime nothing.
 
+## Garden offense rulings (Pin Down, Pin Prick)
+
+- **Pinned**: the unit cannot Shift and its Auto-Advance does not fire. Forced
+  movement (Push/Pull) still works. The pin expires when the unit's owner ends
+  their turn — so pinning on your turn denies one full turn of movement.
+- **Poison X**: the unit takes X damage at the start of its owner's turn.
+  Permanent and stacking; no cure exists yet. Poison is status damage: it
+  ignores Armor *and* Resist (it is neither an attack nor a targeted ability).
+- Charms cannot be pinned or poisoned.
+- Balance note (2026-08-29): even with these, Garden went 0/8 vs Expedition and
+  Atelier in seed sweeps — its weakness is structural (low unit power, no
+  finisher), a topic for the joint tuning pass. Agent evaluation now prices
+  pending poison damage and pin tempo into unit value.
+
 ## Rejected (designer ruling)
 
 - **Standing positional bonuses** (the sheet's "back row Armor 1, front row

@@ -87,6 +87,13 @@ namespace LightCard.Core
                 unit.MovedThisTurn = false;
             }
 
+            //Poison ticks at the start of the owner's turn (ignores armor and Resist)
+            foreach (var unit in state.UnitsOf(player).Where(u => u.Poison > 0).ToList())
+            {
+                if (state.Units.Contains(unit))
+                    DamageUnit(state, unit, unit.Poison, events);
+            }
+
             //Verdant: units regen 1 life at the start of their owner's turn
             foreach (var unit in state.UnitsOf(player).ToList())
             {
@@ -96,7 +103,7 @@ namespace LightCard.Core
 
             //Auto-Advance, front-most units first so columns compact forward
             var advancers = state.UnitsOf(player)
-                .Where(u => u.Definition.AutoAdvance && !u.Asleep)
+                .Where(u => u.Definition.AutoAdvance && !u.Asleep && !u.Pinned)
                 .OrderBy(u => player == 0 ? -u.Y : u.Y)
                 .ToList();
             foreach (var unit in advancers)
@@ -116,6 +123,10 @@ namespace LightCard.Core
                 foreach (var effect in unit.Definition.Effects.Where(e => e.Trigger == Trigger.EndOfTurn))
                     ResolveEffect(state, effect, unit, player, unit.X, unit.Y, result.Events);
             }
+
+            //Pins on the ending player's units expire now (rules-v2)
+            foreach (var unit in state.UnitsOf(player))
+                unit.Pinned = false;
 
             result.Events.Add(new GameEvent { Type = GameEventType.TurnEnded, Player = player });
 
@@ -249,6 +260,7 @@ namespace LightCard.Core
             if (unit.Owner != command.Player) return CommandResult.Fail("You don't control that unit.");
             if (unit.IsCharm) return CommandResult.Fail("Charms are immobile.");
             if (unit.Asleep) return CommandResult.Fail("That unit is asleep.");
+            if (unit.Pinned) return CommandResult.Fail("That unit is pinned.");
             if (playerState.ShiftUsedThisTurn) return CommandResult.Fail("Shift has already been used this turn.");
             if (playerState.Energy < GameConfig.ShiftEnergyCost) return CommandResult.Fail("Not enough energy to Shift.");
 
@@ -528,6 +540,26 @@ namespace LightCard.Core
                         if (unit.IsCharm) continue; //charms are immobile
                         if (state.Units.Contains(unit))
                             PushUnit(state, unit, GameState.ForwardDir(owner), events);
+                    }
+                    break;
+                }
+                case EffectAction.Pin:
+                {
+                    foreach (var unit in GatherUnits(state, effect.Scope, source, owner, targetX, targetY))
+                    {
+                        if (unit.IsCharm || !state.Units.Contains(unit)) continue;
+                        unit.Pinned = true;
+                        events.Add(new GameEvent { Type = GameEventType.UnitPinned, UnitId = unit.Id, CardId = unit.CardId });
+                    }
+                    break;
+                }
+                case EffectAction.Poison:
+                {
+                    foreach (var unit in GatherUnits(state, effect.Scope, source, owner, targetX, targetY))
+                    {
+                        if (unit.IsCharm || !state.Units.Contains(unit)) continue;
+                        unit.Poison += effect.Amount;
+                        events.Add(new GameEvent { Type = GameEventType.UnitPoisoned, UnitId = unit.Id, CardId = unit.CardId, Amount = unit.Poison });
                     }
                     break;
                 }

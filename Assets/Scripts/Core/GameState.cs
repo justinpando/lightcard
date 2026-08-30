@@ -17,6 +17,10 @@ namespace LightCard.Core
         public int BonusLife;
         public int BonusPierce;
         public bool Asleep;
+        /// <summary>Pinned units cannot Shift or Auto-Advance; cleared when their owner's turn ends (rules-v2).</summary>
+        public bool Pinned;
+        /// <summary>Damage taken at the start of the owner's turn; permanent until cured (rules-v2).</summary>
+        public int Poison;
         /// <summary>True on the turn a unit is called; units in Flux may not attack.</summary>
         public bool Flux;
         public bool AttackedThisTurn;

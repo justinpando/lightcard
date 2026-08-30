@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using LightCard.Core;
 using LightCard.Core.Agents;
 
@@ -49,6 +50,10 @@ public class MatchContext : MonoBehaviour
 
     private void Start()
     {
+        //Deck chosen in the main menu overrides the inspector default
+        if (!string.IsNullOrEmpty(MatchLaunch.DeckName))
+            playerDeckName = MatchLaunch.DeckName;
+
         var saveManager = new SaveDataManager(library);
         var save = saveManager.Load();
 
@@ -70,6 +75,8 @@ public class MatchContext : MonoBehaviour
         hud = new MatchHudController(uiCanvas.transform);
         hud.OnEndTurnClicked = OnEndTurnClicked;
         hud.OnReplaceClicked = OnReplaceClicked;
+        hud.OnRematchClicked = () => SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        hud.OnMenuClicked = () => SceneManager.LoadScene("Main");
 
         LogEvents(events);
         RefreshAll();
@@ -324,7 +331,7 @@ public class MatchContext : MonoBehaviour
         if (attackSelectable && space != null) space.SetHighlight(SpaceView.Highlight.Attack);
 
         shiftTargets.Clear();
-        bool canShift = !unit.IsCharm && !unit.Asleep &&
+        bool canShift = !unit.IsCharm && !unit.Asleep && !unit.Pinned &&
                         !playerState.ShiftUsedThisTurn && playerState.Energy >= GameConfig.ShiftEnergyCost;
         if (canShift)
         {
@@ -477,11 +484,40 @@ public class MatchContext : MonoBehaviour
         hud.SetStatus(state.Winner == LocalPlayer
             ? "Victory! The enemy's light fades."
             : "Defeat. Your light fades...");
+        hud.ShowEndPanel(state.Winner == LocalPlayer);
     }
 
-    private static void LogEvents(List<GameEvent> events)
+    private void LogEvents(List<GameEvent> events)
     {
         foreach (var gameEvent in events)
+        {
             Debug.Log($"[Match] {gameEvent}");
+            string line = FormatEvent(gameEvent);
+            if (line != null) hud?.AddHistoryLine(line);
+        }
+    }
+
+    /// <summary>Player-facing history line for an event; null for internal noise.</summary>
+    private string FormatEvent(GameEvent e)
+    {
+        string who = e.Player == LocalPlayer ? "You" : "Enemy";
+        switch (e.Type)
+        {
+            case GameEventType.TurnStarted: return $"— Turn {e.Amount}: {(e.Player == LocalPlayer ? "your" : "enemy")} turn —";
+            case GameEventType.CardPlayed: return $"{who} played {e.CardId}.";
+            case GameEventType.CardReplaced: return $"{who} replaced {e.CardId} (+1 energy).";
+            case GameEventType.UnitCalled: return $"{who} called {e.CardId}.";
+            case GameEventType.AttackResolved: return $"{(e.Player == LocalPlayer ? "Your" : "Enemy")} {e.CardId} attacks.";
+            case GameEventType.UnitDamaged: return $"{e.CardId} took {e.Amount} damage.";
+            case GameEventType.UnitDestroyed: return $"{e.CardId} was destroyed.";
+            case GameEventType.UnitHealed: return $"{e.CardId} healed {e.Amount}.";
+            case GameEventType.UnitFellAsleep: return $"{e.CardId} fell asleep.";
+            case GameEventType.UnitPinned: return $"{e.CardId} was pinned.";
+            case GameEventType.UnitPoisoned: return $"{e.CardId} was poisoned ({e.Amount}).";
+            case GameEventType.PlayerDamaged: return $"{(e.Player == LocalPlayer ? "You" : "Enemy")} took {e.Amount} damage.";
+            case GameEventType.FatigueDamage: return $"{who} fatigued: empty deck!";
+            case GameEventType.GameEnded: return e.Player == LocalPlayer ? "Victory!" : "Defeat.";
+            default: return null;
+        }
     }
 }

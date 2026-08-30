@@ -57,9 +57,19 @@ public static class CardAssetSync
             card.life = definition.Life;
             card.description = definition.Text;
 
-            if (card.sprite == null)
+            //Art pipeline: a PNG dropped at CardPlaceholders/<Id>.png always wins
+            //(the Midjourney workflow); otherwise generate procedural art if the
+            //card has none at all.
+            string artPath = $"{PlaceholderFolder}/{definition.Id}.png";
+            if (File.Exists(artPath))
             {
-                card.sprite = CreatePlaceholderSprite(definition);
+                var dropIn = ImportSprite(artPath);
+                if (card.sprite != dropIn) { card.sprite = dropIn; sprites++; }
+            }
+            else if (card.sprite == null)
+            {
+                File.WriteAllBytes(artPath, RenderPlaceholder(definition).EncodeToPNG());
+                card.sprite = ImportSprite(artPath);
                 sprites++;
             }
 
@@ -88,23 +98,19 @@ public static class CardAssetSync
         new Color(0.85f, 0.70f, 0.28f)  //Expedition - yellow
     };
 
-    private static Sprite CreatePlaceholderSprite(CardDefinition definition)
+    /// <summary>Import (or re-import) a PNG with sprite settings and return its Sprite.</summary>
+    private static Sprite ImportSprite(string path)
     {
-        string path = $"{PlaceholderFolder}/{definition.Id}.png";
-
-        var existing = AssetDatabase.LoadAssetAtPath<Sprite>(path);
-        if (existing != null) return existing;
-
-        File.WriteAllBytes(path, RenderPlaceholder(definition).EncodeToPNG());
         AssetDatabase.ImportAsset(path);
-
         var importer = (TextureImporter)AssetImporter.GetAtPath(path);
-        importer.textureType = TextureImporterType.Sprite;
-        importer.spriteImportMode = SpriteImportMode.Single;
-        importer.filterMode = FilterMode.Bilinear;
-        importer.mipmapEnabled = false;
-        importer.SaveAndReimport();
-
+        if (importer.textureType != TextureImporterType.Sprite)
+        {
+            importer.textureType = TextureImporterType.Sprite;
+            importer.spriteImportMode = SpriteImportMode.Single;
+            importer.filterMode = FilterMode.Bilinear;
+            importer.mipmapEnabled = false;
+            importer.SaveAndReimport();
+        }
         return AssetDatabase.LoadAssetAtPath<Sprite>(path);
     }
 

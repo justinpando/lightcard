@@ -74,7 +74,7 @@ namespace LightCard.Core.Agents
             //Shift
             if (!playerState.ShiftUsedThisTurn && playerState.Energy >= GameConfig.ShiftEnergyCost)
             {
-                foreach (var unit in state.UnitsOf(Player).Where(u => !u.IsCharm && !u.Asleep))
+                foreach (var unit in state.UnitsOf(Player).Where(u => !u.IsCharm && !u.Asleep && !u.Pinned))
                 {
                     yield return new ShiftCommand { Player = Player, UnitId = unit.Id, Direction = MoveDirection.Forward };
                     yield return new ShiftCommand { Player = Player, UnitId = unit.Id, Direction = MoveDirection.Back };
@@ -140,6 +140,11 @@ namespace LightCard.Core.Agents
                 float material = state.EffectivePower(unit) * p.UnitPower
                                + state.CurrentLife(unit) * p.UnitLife
                                + state.EffectiveArmor(unit) * 0.5f;
+
+                //Pending poison damage and pin tempo discount a unit's value for
+                //whoever owns it - this is how the agent "sees" DoT and lockdown
+                material -= unit.Poison * 1.2f;
+                if (unit.Pinned) material -= 0.4f;
 
                 if (unit.Owner != me)
                 {

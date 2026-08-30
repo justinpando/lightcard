@@ -151,6 +151,8 @@ public class SpaceView : MonoBehaviour
                 ? $"{state.CurrentLife(unit)}"
                 : $"{state.EffectivePower(unit)}/{state.CurrentLife(unit)}";
             if (unit.Asleep) statsText.text += " z";
+            if (unit.Pinned) statsText.text += " pin";
+            if (unit.Poison > 0) statsText.text += $" psn{unit.Poison}";
             statsText.alpha = color.a;
         }
     }

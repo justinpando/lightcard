@@ -23,8 +23,22 @@ public class MatchHudController
     private GameObject cycleArea;
     private TMP_Text statusText;
 
+    private TMP_Text historyText;
+    private GameObject historyView;
+    private GameObject openHistoryButton;
+    private GameObject closeHistoryButton;
+    private readonly System.Collections.Generic.Queue<string> historyLines = new System.Collections.Generic.Queue<string>();
+    private const int HistoryCapacity = 14;
+
+    private GameObject endPanel;
+    private TMP_Text endTitle;
+    private Button rematchButton;
+    private Button menuButton;
+
     public Action OnEndTurnClicked;
     public Action OnReplaceClicked;
+    public Action OnRematchClicked;
+    public Action OnMenuClicked;
 
     public MatchHudController(Transform uiCanvas)
     {
@@ -82,6 +96,117 @@ public class MatchHudController
         statusRect.anchorMax = new Vector2(0.75f, 1.00f);
         statusRect.offsetMin = Vector2.zero;
         statusRect.offsetMax = Vector2.zero;
+
+        BuildHistoryLog(margin);
+        BuildEndPanel(uiCanvas);
+    }
+
+    //---- Match history log (drives the scene's History Panel art) ----
+
+    private void BuildHistoryLog(Transform margin)
+    {
+        var panel = margin.Find("History Panel");
+        if (panel == null) return;
+
+        var open = panel.Find("Open History Button");
+        var close = panel.Find("Close History Button");
+        var view = panel.Find("History");
+        if (view == null) return;
+
+        historyView = view.gameObject;
+        openHistoryButton = open != null ? open.gameObject : null;
+        closeHistoryButton = close != null ? close.gameObject : null;
+
+        historyText = CreateText(view, "History Text");
+        historyText.alignment = TextAlignmentOptions.TopLeft;
+        historyText.enableAutoSizing = false;
+        historyText.fontSize = 13f;
+        historyText.margin = new Vector4(8, 8, 8, 8);
+        historyText.overflowMode = TextOverflowModes.Truncate;
+
+        if (openHistoryButton != null)
+        {
+            var button = openHistoryButton.GetComponent<Button>();
+            if (button != null) button.onClick.AddListener(() => SetHistoryOpen(true));
+        }
+        if (closeHistoryButton != null)
+        {
+            var button = closeHistoryButton.GetComponent<Button>();
+            if (button != null) button.onClick.AddListener(() => SetHistoryOpen(false));
+        }
+
+        SetHistoryOpen(false);
+    }
+
+    private void SetHistoryOpen(bool openState)
+    {
+        if (historyView != null) historyView.SetActive(openState);
+        if (openHistoryButton != null) openHistoryButton.SetActive(!openState);
+        if (closeHistoryButton != null) closeHistoryButton.SetActive(openState);
+    }
+
+    public void AddHistoryLine(string line)
+    {
+        if (historyText == null) return;
+        historyLines.Enqueue(line);
+        while (historyLines.Count > HistoryCapacity) historyLines.Dequeue();
+        historyText.text = string.Join("\n", historyLines);
+    }
+
+    //---- Match end panel ----
+
+    private void BuildEndPanel(Transform uiCanvas)
+    {
+        endPanel = new GameObject("Match End Panel", typeof(RectTransform), typeof(Image));
+        var rect = (RectTransform)endPanel.transform;
+        rect.SetParent(uiCanvas, false);
+        rect.anchorMin = Vector2.zero;
+        rect.anchorMax = Vector2.one;
+        rect.offsetMin = Vector2.zero;
+        rect.offsetMax = Vector2.zero;
+        var dim = endPanel.GetComponent<Image>();
+        dim.color = new Color(0f, 0f, 0f, 0.72f);
+        dim.raycastTarget = true; //blocks board and hand input underneath
+
+        endTitle = CreateText(endPanel.transform, "End Title");
+        var titleRect = (RectTransform)endTitle.transform;
+        titleRect.anchorMin = new Vector2(0.2f, 0.55f);
+        titleRect.anchorMax = new Vector2(0.8f, 0.80f);
+        titleRect.offsetMin = Vector2.zero;
+        titleRect.offsetMax = Vector2.zero;
+        endTitle.fontSizeMax = 64f;
+
+        rematchButton = CreateButton(endPanel.transform, "Rematch", new Vector2(0.30f, 0.32f), new Vector2(0.48f, 0.42f));
+        rematchButton.onClick.AddListener(() => OnRematchClicked?.Invoke());
+        menuButton = CreateButton(endPanel.transform, "Main Menu", new Vector2(0.52f, 0.32f), new Vector2(0.70f, 0.42f));
+        menuButton.onClick.AddListener(() => OnMenuClicked?.Invoke());
+
+        endPanel.SetActive(false);
+    }
+
+    private static Button CreateButton(Transform parent, string label, Vector2 anchorMin, Vector2 anchorMax)
+    {
+        var go = new GameObject($"{label} Button", typeof(RectTransform), typeof(Image), typeof(Button));
+        var rect = (RectTransform)go.transform;
+        rect.SetParent(parent, false);
+        rect.anchorMin = anchorMin;
+        rect.anchorMax = anchorMax;
+        rect.offsetMin = Vector2.zero;
+        rect.offsetMax = Vector2.zero;
+        go.GetComponent<Image>().color = new Color(0.16f, 0.18f, 0.24f, 0.95f);
+
+        var text = CreateText(go.transform, "Label");
+        text.text = label;
+        text.fontSizeMax = 24f;
+        return go.GetComponent<Button>();
+    }
+
+    public void ShowEndPanel(bool victory)
+    {
+        if (endPanel == null) return;
+        endTitle.text = victory ? "Victory!" : "Defeat";
+        endTitle.color = victory ? new Color(0.95f, 0.85f, 0.35f) : new Color(0.75f, 0.45f, 0.45f);
+        endPanel.SetActive(true);
     }
 
     private static T FindComponent<T>(Transform root, string path) where T : Component

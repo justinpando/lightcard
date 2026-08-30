@@ -57,14 +57,20 @@ first slice of the phantom AI (heuristic agent + personalities + match runner),
 and the first slice of phase 2: `Field.unity` is wired to the engine
 (`MatchContext` + view controllers in `Assets/Scripts/Field/`) and playable
 against `HeuristicAgent` — click-driven play/shift/attack/replace, AI turns,
-HUD. Remaining phase 2 work: animate from the `GameEvent` stream instead of
-full-state refreshes, a history/log panel, match end/restart flow. Decks thin
-out on entry (cards missing from `CardCatalogV1` are skipped, then padded back
-from the catalog) until more of the set is implemented. The catalog is now 32
-cards (10 Expedition, 10 Garden, 12 Atelier — ability damage/Resist/Primed;
-rulings in `Docs/design/rules-v2.md`). `LightCard/Sync Card Assets From
-Catalog` mirrors the catalog into library Card assets and generates
-placeholder sprites — run it after adding catalog cards.
+HUD, history log, and a victory/defeat panel with rematch. The full game loop
+is connected: Main menu "Begin Match" plays the top deck of the collection
+(drag-to-reorder chooses it) and loads `Field.unity`; match end returns to the
+menu or rematches. Remaining phase 2 polish: animate from the `GameEvent`
+stream instead of full-state refreshes. Decks thin out on entry (cards missing
+from `CardCatalogV1` are skipped, then padded back from the catalog) until
+more of the set is implemented. The catalog is 34 cards (10 Expedition, 12
+Garden incl. Pin/Poison, 12 Atelier — ability damage/Resist/Primed; rulings in
+`Docs/design/rules-v2.md`). `LightCard/Sync Card Assets From Catalog` mirrors
+the catalog into library Card assets; a PNG at
+`Assets/Art/CardPlaceholders/<Card Name>.png` overrides all art on sync
+(Midjourney workflow: prompts in `Docs/art/midjourney-placeholders.md`),
+otherwise procedural placeholders are generated. Known balance data: Garden
+0/8 vs Expedition/Atelier in agent sweeps — structural, pending tuning.
 
 ## Caveats
 

@@ -80,7 +80,11 @@ namespace LightCard.Core
         /// <summary>Grant Amount permanent Pierce to units in Scope.</summary>
         GainPierce,
         /// <summary>Push units in Scope one space away from the effect's owner.</summary>
-        PushAway
+        PushAway,
+        /// <summary>Pin units in Scope: no Shift or Auto-Advance until their owner's turn ends (Garden).</summary>
+        Pin,
+        /// <summary>Give units in Scope Amount Poison: they take that much damage at the start of their owner's turn (Garden).</summary>
+        Poison
     }
 
     /// <summary>Which units an effect applies to, relative to its source or its play target.</summary>

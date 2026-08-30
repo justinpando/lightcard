@@ -241,6 +241,31 @@ namespace LightCard.Core
                     }
                 },
 
+                new CardDefinition
+                {
+                    Id = "Pin Down", Archetype = Archetype.Garden, Type = CardType.Ability,
+                    Cost = 1,
+                    Text = "Deal 1 damage to target Unit, then Pin it.",
+                    PlayTarget = PlayTargetKind.AnyUnit,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.OnPlay, Action = EffectAction.DealDamage, Scope = TargetScope.TargetUnit, Amount = 1 },
+                        new EffectDef { Trigger = Trigger.OnPlay, Action = EffectAction.Pin, Scope = TargetScope.TargetUnit }
+                    }
+                },
+                new CardDefinition
+                {
+                    Id = "Pin Prick", Archetype = Archetype.Garden, Type = CardType.Ability,
+                    Cost = 1,
+                    Text = "Deal 1 damage to target Unit, then Poison it.",
+                    PlayTarget = PlayTargetKind.AnyUnit,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.OnPlay, Action = EffectAction.DealDamage, Scope = TargetScope.TargetUnit, Amount = 1 },
+                        new EffectDef { Trigger = Trigger.OnPlay, Action = EffectAction.Poison, Scope = TargetScope.TargetUnit, Amount = 1 }
+                    }
+                },
+
                 //---- Atelier ----
                 new CardDefinition
                 {

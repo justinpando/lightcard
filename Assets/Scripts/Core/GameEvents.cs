@@ -22,7 +22,9 @@ namespace LightCard.Core
         SpaceEffectApplied,
         PlayerDamaged,
         GameEnded,
-        FatigueDamage
+        FatigueDamage,
+        UnitPinned,
+        UnitPoisoned
     }
 
     /// <summary>

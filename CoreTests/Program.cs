@@ -433,6 +433,28 @@ namespace LightCard.CoreTests
                 AssertEqual(0, untouched.Damage, "no effect removed, no damage");
             });
 
+            Test("Pin and Poison: lockdown and DoT (Garden, rules-v2)", () =>
+            {
+                var state = EmptyGame();
+                var victim = PlayUnit(state, 1, "Vanguard", 0, 4);          //Auto-Advance, 5 life
+                PlayAbility(state, 0, "Pin Down", 0, 4);
+                PlayAbility(state, 0, "Pin Prick", 0, 4);
+                AssertTrue(victim.Pinned, "pinned");
+                AssertEqual(1, victim.Poison, "poisoned");
+                AssertEqual(2, victim.Damage, "1+1 immediate damage");
+
+                state.ActivePlayer = 1;
+                state.Players[1].Energy = 5;
+                AssertTrue(!GameEngine.Execute(state, new ShiftCommand { Player = 1, UnitId = victim.Id, Direction = MoveDirection.Forward }).Success,
+                    "pinned units cannot shift");
+
+                GameEngine.Execute(state, new EndTurnCommand { Player = 1 }); //pin expires; p0's turn
+                AssertTrue(!victim.Pinned, "pin expired at owner's turn end");
+                GameEngine.Execute(state, new EndTurnCommand { Player = 0 }); //p1 turn start: poison ticks, auto-advance runs
+                AssertEqual(3, victim.Damage, "poison ticked 1 at owner's turn start");
+                AssertEqual(3, victim.Y, "auto-advance works again once unpinned");
+            });
+
             Test("Lethal: reducing life to 0 ends the game", () =>
             {
                 var state = EmptyGame();
