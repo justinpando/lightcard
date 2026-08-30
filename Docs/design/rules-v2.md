@@ -222,7 +222,14 @@ Every named sheet card is implemented. Where sheet text was ambiguous or
 required per-card-instance state, these adaptations were made (each needs a
 designer yes/no):
 
-- **Scorched** (undefined on the sheet): units standing on it cannot be healed.
+- **Scorched** (undefined on the sheet): units standing on it cannot be
+  healed. **Confirmed by the designer 2026-08-30** (the "dead ground" variant
+  was rejected as too oppressive with lane-wide sources).
+- **Player powers** (designer ruling 2026-08-30): the sheet's Powers table
+  gives players TWO powers — **Shift (1 energy)** and **Clear (2 energy:
+  remove a space effect)** — and they share ONE power action per turn: Shift
+  or Clear, not both. Clear works on any space, both halves. In the match
+  view, right-click a space effect to Clear.
 - **Rugged**: shifting in costs +1 energy; damaged survivors on it are knocked
   one space toward their own backline.
 - **Attenuating Rod**: "reduce a random hand Ability's cost" → "your NEXT

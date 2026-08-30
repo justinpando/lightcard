@@ -51,6 +51,17 @@ public class MatchContext : MonoBehaviour
 
     private void Update()
     {
+        //Right-click a space with an effect: the Clear power (2 energy)
+        if (Input.GetMouseButtonUp(1) && InputAllowed())
+        {
+            var target = RaycastSpace(Input.mousePosition, SpacePreference.Nearest);
+            if (target != null && state.SpaceEffects[target.X, target.Y] != SpaceEffectType.None)
+            {
+                Submit(new ClearCommand { Player = LocalPlayer, X = target.X, Y = target.Y });
+                return;
+            }
+        }
+
         //Central board-click detection: same raycast path as drag-and-drop.
         //Skipped right after a drop (same mouse-up) and when over UI.
         if (!Input.GetMouseButtonUp(0)) return;
@@ -460,7 +471,7 @@ public class MatchContext : MonoBehaviour
 
         shiftTargets.Clear();
         bool canShift = !unit.IsCharm && !unit.Asleep && !unit.Pinned &&
-                        !playerState.ShiftUsedThisTurn && playerState.Energy >= GameConfig.ShiftEnergyCost;
+                        !playerState.PowerUsedThisTurn && playerState.Energy >= GameConfig.ShiftEnergyCost;
         if (canShift)
         {
             foreach (var (dx, dy) in new[] { (0, 1), (0, -1), (-1, 0), (1, 0) })
@@ -529,7 +540,9 @@ public class MatchContext : MonoBehaviour
         fieldView.ClearHighlights();
         handView.SetSelected(-1);
         hud.ShowReplaceTarget(false);
-        if (state != null && !state.IsOver) hud.SetStatus(state.ActivePlayer == LocalPlayer ? "Your turn." : "Enemy turn...");
+        if (state != null && !state.IsOver) hud.SetStatus(state.ActivePlayer == LocalPlayer
+            ? "Your turn. Right-click a space effect to Clear it (2 energy)."
+            : "Enemy turn...");
     }
 
     //---- Command execution ----

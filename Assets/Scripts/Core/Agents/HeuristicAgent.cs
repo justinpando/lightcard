@@ -73,7 +73,7 @@ namespace LightCard.Core.Agents
             }
 
             //Shift
-            if (!playerState.ShiftUsedThisTurn && playerState.Energy >= GameConfig.ShiftEnergyCost)
+            if (!playerState.PowerUsedThisTurn && playerState.Energy >= GameConfig.ShiftEnergyCost)
             {
                 foreach (var unit in state.UnitsOf(Player).Where(u => !u.IsCharm && !u.Asleep && !u.Pinned && (!u.AttackedThisTurn || u.Definition.Agile)))
                 {
@@ -82,6 +82,15 @@ namespace LightCard.Core.Agents
                     yield return new ShiftCommand { Player = Player, UnitId = unit.Id, Direction = MoveDirection.Left };
                     yield return new ShiftCommand { Player = Player, UnitId = unit.Id, Direction = MoveDirection.Right };
                 }
+            }
+
+            //Clear (the alternate power action)
+            if (!playerState.PowerUsedThisTurn && playerState.Energy >= GameConfig.ClearEnergyCost)
+            {
+                for (int x = 0; x < GameConfig.Lanes; x++)
+                    for (int y = 0; y < GameConfig.Rows; y++)
+                        if (state.SpaceEffects[x, y] != SpaceEffectType.None)
+                            yield return new ClearCommand { Player = Player, X = x, Y = y };
             }
 
             //Replace (ramp)

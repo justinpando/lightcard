@@ -19,11 +19,18 @@ namespace LightCard.Core
         public int TargetY;
     }
 
-    /// <summary>The Shift power: once per turn, spend 1 energy to move a unit one space.</summary>
+    /// <summary>The Shift power: spend 1 energy to move a unit one space. Shares the once-per-turn power action with Clear.</summary>
     public class ShiftCommand : Command
     {
         public int UnitId;
         public MoveDirection Direction;
+    }
+
+    /// <summary>The Clear power: spend 2 energy to remove a space effect. Shares the once-per-turn power action with Shift.</summary>
+    public class ClearCommand : Command
+    {
+        public int X;
+        public int Y;
     }
 
     /// <summary>

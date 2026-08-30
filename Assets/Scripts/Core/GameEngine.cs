@@ -60,6 +60,7 @@ namespace LightCard.Core
             {
                 case PlayCardCommand play: return ExecutePlayCard(state, play);
                 case ShiftCommand shift: return ExecuteShift(state, shift);
+                case ClearCommand clear: return ExecuteClear(state, clear);
                 case ActivateCommand activate: return ExecuteActivate(state, activate);
                 case ReplaceCardCommand replace: return ExecuteReplace(state, replace);
                 case EndTurnCommand _: return ExecuteEndTurn(state, command.Player);
@@ -78,7 +79,7 @@ namespace LightCard.Core
             //Rules-v2: no automatic ramp — refill only; Replace is the sole source of max energy
             playerState.Energy = playerState.MaxEnergy;
             playerState.ReplaceUsedThisTurn = false;
-            playerState.ShiftUsedThisTurn = false;
+            playerState.PowerUsedThisTurn = false;
             playerState.AbilitiesPlayedThisTurn = 0;
 
             events.Add(new GameEvent { Type = GameEventType.TurnStarted, Player = player, Amount = state.TurnNumber });
@@ -451,7 +452,7 @@ namespace LightCard.Core
             if (unit.Asleep) return CommandResult.Fail("That unit is asleep.");
             if (unit.Pinned) return CommandResult.Fail("That unit is pinned.");
             if (unit.AttackedThisTurn && !unit.Definition.Agile) return CommandResult.Fail("That unit has already attacked this turn.");
-            if (playerState.ShiftUsedThisTurn) return CommandResult.Fail("Shift has already been used this turn.");
+            if (playerState.PowerUsedThisTurn) return CommandResult.Fail("Your power action (Shift or Clear) is already spent this turn.");
 
             int dx = 0, dy = 0;
             switch (command.Direction)
@@ -476,7 +477,7 @@ namespace LightCard.Core
 
             var result = new CommandResult { Success = true };
             playerState.Energy -= shiftCost;
-            playerState.ShiftUsedThisTurn = true;
+            playerState.PowerUsedThisTurn = true;
             result.Events.Add(new GameEvent { Type = GameEventType.EnergyChanged, Player = command.Player, Amount = playerState.Energy });
 
             if (occupant != null && !ontoEquip)
@@ -578,6 +579,26 @@ namespace LightCard.Core
                 if (pierced != null && pierced.Owner == enemy)
                     StrikeUnit(state, attacker, pierced, power, events, allowRiders: false);
             }
+        }
+
+        //---- Clear (the alternate player power, from the sheet's Powers table) ----
+
+        private static CommandResult ExecuteClear(GameState state, ClearCommand command)
+        {
+            var playerState = state.Players[command.Player];
+
+            if (playerState.PowerUsedThisTurn) return CommandResult.Fail("Your power action (Shift or Clear) is already spent this turn.");
+            if (playerState.Energy < GameConfig.ClearEnergyCost) return CommandResult.Fail("Not enough energy to Clear.");
+            if (!GameState.InBounds(command.X, command.Y)) return CommandResult.Fail("Target space is out of bounds.");
+            if (state.SpaceEffects[command.X, command.Y] == SpaceEffectType.None) return CommandResult.Fail("No space effect to Clear.");
+
+            var result = new CommandResult { Success = true };
+            playerState.Energy -= GameConfig.ClearEnergyCost;
+            playerState.PowerUsedThisTurn = true;
+            state.SpaceEffects[command.X, command.Y] = SpaceEffectType.None;
+            result.Events.Add(new GameEvent { Type = GameEventType.EnergyChanged, Player = command.Player, Amount = playerState.Energy });
+            result.Events.Add(new GameEvent { Type = GameEventType.SpaceEffectApplied, X = command.X, Y = command.Y, SpaceEffect = SpaceEffectType.None });
+            return result;
         }
 
         //---- Activation (rules-v3: the manual per-unit action) ----

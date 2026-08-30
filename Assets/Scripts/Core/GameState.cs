@@ -89,7 +89,8 @@ namespace LightCard.Core
         public List<string> Hand = new List<string>();
         public Dictionary<Archetype, int> Affinity = new Dictionary<Archetype, int>();
         public bool ReplaceUsedThisTurn;
-        public bool ShiftUsedThisTurn;
+        /// <summary>The once-per-turn player power (Shift or Clear) has been spent (rules-v3).</summary>
+        public bool PowerUsedThisTurn;
         public int AbilitiesPlayedThisTurn;
         /// <summary>Missed draws from an empty deck so far; each deals its count in damage (rules-v2).</summary>
         public int Fatigue;

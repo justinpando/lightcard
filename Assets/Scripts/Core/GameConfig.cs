@@ -19,7 +19,9 @@ namespace LightCard.Core
         public const int MaxHandSize = 10;
 
         //Rules-v2: there is no automatic energy gain — Replace is the only ramp.
+        //Shift and Clear share the once-per-turn player power action (rules-v3).
         public const int ShiftEnergyCost = 1;
+        public const int ClearEnergyCost = 2;
 
         public const int DeckCardLimit = 40;
         public const int IndividualCardLimit = 3;

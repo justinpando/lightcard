@@ -210,7 +210,7 @@ namespace LightCard.CoreTests
                 GameEngine.Execute(state, new ShiftCommand { Player = 0, UnitId = unit.Id, Direction = MoveDirection.Forward });
                 AssertEqual(1, unit.Damage, "damaged entering bramble");
 
-                state.Players[0].ShiftUsedThisTurn = false;
+                state.Players[0].PowerUsedThisTurn = false;
                 state.Players[0].Energy = 1;
                 GameEngine.Execute(state, new ShiftCommand { Player = 0, UnitId = unit.Id, Direction = MoveDirection.Back });
                 AssertEqual(2, unit.Damage, "damaged leaving bramble");
@@ -457,7 +457,7 @@ namespace LightCard.CoreTests
                 dancer.Flux = false;
                 plain.Flux = false;
                 state.Players[0].Energy = 5;
-                state.Players[0].ShiftUsedThisTurn = false;
+                state.Players[0].PowerUsedThisTurn = false;
                 GameEngine.Execute(state, new ShiftCommand { Player = 0, UnitId = dancer.Id, Direction = MoveDirection.Forward });
                 plain.MovedThisTurn = true; //simulate having moved without spending the shift
                 GameEngine.ResolveAutoAttacks(state, 0, new List<GameEvent>());
@@ -467,12 +467,32 @@ namespace LightCard.CoreTests
                 //Move/attack exclusivity: a non-Agile unit that attacked cannot Shift; an Agile one can
                 plain.MovedThisTurn = false;
                 plain.AttackedThisTurn = true;
-                state.Players[0].ShiftUsedThisTurn = false;
+                state.Players[0].PowerUsedThisTurn = false;
                 state.Players[0].Energy = 5;
                 AssertTrue(!GameEngine.Execute(state, new ShiftCommand { Player = 0, UnitId = plain.Id, Direction = MoveDirection.Back }).Success,
                     "non-Agile units cannot move after attacking");
                 AssertTrue(GameEngine.Execute(state, new ShiftCommand { Player = 0, UnitId = dancer.Id, Direction = MoveDirection.Back }).Success,
                     "Agile units may move after attacking");
+            });
+
+            Test("Clear power: 2 energy, shares the power action with Shift (rules-v3)", () =>
+            {
+                var state = EmptyGame();
+                state.SpaceEffects[1, 3] = SpaceEffectType.Verdant;
+                state.Players[0].Energy = 5;
+
+                var cleared = GameEngine.Execute(state, new ClearCommand { Player = 0, X = 1, Y = 3 });
+                AssertTrue(cleared.Success, cleared.Error);
+                AssertEqual(SpaceEffectType.None, state.SpaceEffects[1, 3], "effect removed");
+                AssertEqual(3, state.Players[0].Energy, "Clear cost 2");
+
+                var unit = PlayUnit(state, 0, "Conscript", 0, 1);
+                state.Players[0].Energy = 5;
+                AssertTrue(!GameEngine.Execute(state, new ShiftCommand { Player = 0, UnitId = unit.Id, Direction = MoveDirection.Forward }).Success,
+                    "Shift is unavailable after Clearing - one power action per turn");
+
+                AssertTrue(!GameEngine.Execute(state, new ClearCommand { Player = 0, X = 0, Y = 0 }).Success,
+                    "clearing an empty space fails");
             });
 
             Test("Overdraw burns: full hand still depletes the deck (rules-v2)", () =>
