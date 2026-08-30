@@ -16,6 +16,14 @@ namespace LightCard.Core
         public int BonusPower;
         public int BonusLife;
         public int BonusPierce;
+        public int BonusArmor;
+        //Temp grants last until the start of the owner's next turn (rules-v2)
+        public int TempPower;
+        public int TempParry;
+        public int TempEvade;
+        //Per-turn defensive charges consumed as damage is prevented
+        public int ParryUsedThisTurn;
+        public int EvadeUsedThisTurn;
         public bool Asleep;
         /// <summary>Pinned units cannot Shift or Auto-Advance; cleared when their owner's turn ends (rules-v2).</summary>
         public bool Pinned;
@@ -121,8 +129,28 @@ namespace LightCard.Core
 
         public int EffectivePower(UnitState unit)
         {
-            int power = unit.Definition.Power + unit.BonusPower + StaticContribution(unit, EffectAction.StaticStats, statsPower: true);
+            int power = unit.Definition.Power + unit.BonusPower + unit.TempPower + StaticContribution(unit, EffectAction.StaticStats, statsPower: true);
             return Math.Max(0, power);
+        }
+
+        public int EffectiveParry(UnitState unit) =>
+            unit.Definition.Parry + unit.TempParry + StaticContribution(unit, EffectAction.StaticParry, statsPower: false);
+
+        /// <summary>True if any static aura (or the unit's own printed keyword) gives it Auto-Advance.</summary>
+        public bool HasAutoAdvance(UnitState unit)
+        {
+            if (unit.Definition.AutoAdvance) return true;
+            foreach (var source in Units)
+            {
+                foreach (var effect in source.Definition.Effects)
+                {
+                    if (effect.Trigger != Trigger.Static || effect.Action != EffectAction.StaticAutoAdvance) continue;
+                    if (effect.Condition == EffectCondition.Frontline && source.Y != FrontlineRow(source.Owner)) continue;
+                    if (effect.SpaceEffect != SpaceEffectType.None && SpaceEffects[source.X, source.Y] != effect.SpaceEffect) continue;
+                    if (StaticScopeContains(source, effect.Scope, unit)) return true;
+                }
+            }
+            return false;
         }
 
         public int EffectiveMaxLife(UnitState unit)
@@ -134,7 +162,7 @@ namespace LightCard.Core
         public int CurrentLife(UnitState unit) => EffectiveMaxLife(unit) - unit.Damage;
 
         public int EffectiveArmor(UnitState unit) =>
-            unit.Definition.Armor + StaticContribution(unit, EffectAction.StaticArmor, statsPower: false);
+            unit.Definition.Armor + unit.BonusArmor + StaticContribution(unit, EffectAction.StaticArmor, statsPower: false);
 
         private int StaticContribution(UnitState target, EffectAction action, bool statsPower)
         {
@@ -150,7 +178,7 @@ namespace LightCard.Core
                     if (effect.SpaceEffect != SpaceEffectType.None && SpaceEffects[source.X, source.Y] != effect.SpaceEffect) continue;
                     if (!StaticScopeContains(source, effect.Scope, target)) continue;
 
-                    if (action == EffectAction.StaticArmor) total += effect.Amount;
+                    if (action == EffectAction.StaticArmor || action == EffectAction.StaticParry) total += effect.Amount;
                     else total += statsPower ? effect.Power : effect.Life;
                 }
             }
@@ -171,6 +199,10 @@ namespace LightCard.Core
                 case TargetScope.RowInFront:
                     return source.Owner == target.Owner &&
                            target.Y == source.Y + ForwardDir(source.Owner);
+                case TargetScope.Nearby:
+                    //allies in the eight surrounding spaces
+                    return source.Owner == target.Owner && source != target &&
+                           Math.Abs(source.X - target.X) <= 1 && Math.Abs(source.Y - target.Y) <= 1;
                 default:
                     return false;
             }

@@ -10,13 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 157475c9d69ad9844ac0355862f6cf76, type: 3}
-  m_Name: Windstriker
-  m_EditorClassIdentifier: 
-  archetype: 0
+  m_Name: Battering Ram
+  m_EditorClassIdentifier: _LightCard::Card
+  archetype: 5
   type: 0
-  sprite: {fileID: 21300000, guid: e7039164204aa794f89d42c3c5cd16b6, type: 3}
-  name: Windstriker
+  sprite: {fileID: 21300000, guid: f55be667c85d6b744a7351451b513ab4, type: 3}
+  name: Battering Ram
   cost: 3
-  power: 3
-  life: 4
-  description: Agile.
+  power: 0
+  life: 5
+  description: 'On Advance: Push.'

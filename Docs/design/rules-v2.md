@@ -137,21 +137,48 @@ Fertilizer, Fertile Soil, Hedge Maze, Entangling Vines. New machinery rulings:
 - Entangling Vines resolves bramble first, then the pull — so a unit pulled
   off the freshly brambled space is damaged leaving it.
 
-## Balance state (2026-08-29 agent sweeps, 6 seeds per pairing)
+## Overdraw burns (rules-v2)
 
-A rock-paper-scissors triangle has emerged: **Expedition beats Garden (6-0),
-Garden beats Atelier (6-6 → 6-0 with Rose Knight), Atelier splits Expedition
-(3-3)**. The triangle is the right shape for three archetypes; both sharp
-corners are steeper than we'd want. Notes for the human-play pass:
+Drawing with a full hand **burns** the drawn card: it leaves the deck and is
+discarded (`CardBurned` event). Without this, a player who hoards a full hand
+stops depleting their deck and the fatigue clock never arrives — 60-turn
+agent games ended with one side untouched. With burn, every game has a clock,
+and card-draw effects become a real tradeoff: tempo now, fatigue sooner.
 
-- Garden's wins over Expedition come from surviving to fatigue; in losses
-  Expedition finishes at 17-20 life untouched. Armor doesn't answer
-  Spearbearer (Pierce + adjacency aura) — the standout Expedition card.
-- Agent sweeps exaggerate spreads (no mulligan, no adaptation, full-catalog
-  piles); treat these as direction, not magnitude.
-- Likely real fix for Garden vs aggro: its unimplemented movement half
-  (Duelist, Dancer, Windstriker — needs Agile/Parry/Evade and until-next-turn
-  buff infrastructure, which Heart's spirits will want anyway).
+## Movement and defense keywords (rules-v2)
+
+- **Agile**: may move and attack in the same turn, in either order. For
+  everyone else move/attack exclusivity is now enforced both ways (attacking
+  then Shifting was an implementation gap in v1).
+- **Parry X**: prevents combat damage X times per turn (armor is not consumed;
+  riders like Push and Retaliate still apply). Charges refresh at the owner's
+  turn start, so they cover the enemy's whole turn.
+- **Evade X**: prevents any damage instance — combat, ability, poison, bramble
+  — X times per turn. Currently only granted temporarily (Dancer).
+- **Temp grants** ("until the start of your next turn"): expire when the
+  owner's next turn starts.
+- **Shift triggers** (Duelist, Dancer) fire on voluntary Shifts of that unit
+  only — not auto-advance, not forced movement, not the swap partner.
+- Call-watchers (Squad Leader adjacent, Skilled Armorer in-front) fire when
+  the owner calls a unit or charm to a qualifying space, buffing the arrival.
+- **Martial Musician's aura** grants Auto-Advance while adjacent (8-way
+  "Nearby"); auras never affect their own source.
+- **Navigator** draws once per space-effect *card effect*, even if it painted
+  several spaces; conditions like Frontline now apply to triggered effects.
+- **Windstriker** ruling: the sheet's "Base Atk 3" on 1/4 stats is read as
+  printed attack 3 (3/4 Agile).
+
+## Balance state (2026-08-29, burn rule, 40-card decks, 6 seeds per pairing)
+
+With Garden (21 cards), Expedition (16), Atelier (12) kits at their current
+completeness: **Expedition beats Garden 5-1** (close: Expedition finishing at
+10-17 life with fatigue running on both sides), **Garden and Atelier split
+3-3**, **Expedition beats Atelier 6-0**. Expedition is the front-runner at
+11-1 overall — but per the "complete the kits before balancing" principle,
+Atelier (the least complete: no Scholar, Quick Sketch, rods, or equips) gets
+its completion pass before any Expedition numbers move. The shared
+**equipment system** (Equip charms) is the biggest missing cross-archetype
+mechanic. Agent sweeps still overstate spreads; human play decides magnitude.
 
 ## Rejected (designer ruling)
 

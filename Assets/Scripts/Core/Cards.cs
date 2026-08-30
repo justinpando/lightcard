@@ -39,7 +39,15 @@ namespace LightCard.Core
         /// <summary>Fires after the opposing player resolves an Ability card (Atelier).</summary>
         OnEnemyAbilityPlay,
         /// <summary>Fires after this unit attacks another unit (not the player); target coords are the victim's space.</summary>
-        OnAttack
+        OnAttack,
+        /// <summary>Fires after this unit is Shifted (any direction; voluntary moves only).</summary>
+        OnShift,
+        /// <summary>Fires when the owner calls a unit or charm to a space adjacent to this; target coords are the called unit's space.</summary>
+        OnAllyCallAdjacent,
+        /// <summary>Fires when the owner calls a unit or charm to the space directly in front of this; target coords are the called unit's space.</summary>
+        OnAllyCallInFront,
+        /// <summary>Fires when the owner applies a space effect (Navigator).</summary>
+        OnOwnerSpaceEffect
     }
 
     /// <summary>What an effect does. Magnitudes live in EffectDef.Power/Life/Amount.</summary>
@@ -92,7 +100,19 @@ namespace LightCard.Core
         /// </summary>
         CallUnit,
         /// <summary>Forced movement of units in Scope one space toward the effect's owner; collisions as Push (Garden).</summary>
-        Pull
+        Pull,
+        /// <summary>Grant Power temp attack until the start of the unit's owner's next turn.</summary>
+        GainTempPower,
+        /// <summary>Grant Amount temp Parry (prevents combat damage) until the start of the unit's owner's next turn.</summary>
+        GainTempParry,
+        /// <summary>Grant Amount temp Evade (prevents any damage) until the start of the unit's owner's next turn.</summary>
+        GainTempEvade,
+        /// <summary>Grant Amount permanent Armor to units in Scope.</summary>
+        GainArmor,
+        /// <summary>Static: grant Parry Amount while the condition holds (Trigger.Static only).</summary>
+        StaticParry,
+        /// <summary>Static: units in Scope have Auto-Advance while the condition holds (Trigger.Static only).</summary>
+        StaticAutoAdvance
     }
 
     /// <summary>Which units an effect applies to, relative to its source or its play target.</summary>
@@ -115,7 +135,11 @@ namespace LightCard.Core
         /// <summary>Friendly units with no enemy unit or charm in their lane.</summary>
         UnblockedFriendlyUnits,
         /// <summary>The nearest enemy unit or charm in the source's lane, scanning from the enemy frontline back.</summary>
-        NearestEnemyInLane
+        NearestEnemyInLane,
+        /// <summary>Friendly units in the eight spaces around the source (glossary "Nearby").</summary>
+        Nearby,
+        /// <summary>Friendly non-charm units that have at least one adjacent friendly unit or charm.</summary>
+        FriendlyUnitsWithAdjacentAlly
     }
 
     /// <summary>Extra requirement for static effects.</summary>
@@ -179,6 +203,10 @@ namespace LightCard.Core
         public bool AutoAdvance;
         public bool Ranged;
         public bool Rush;
+        /// <summary>May move and attack in the same turn.</summary>
+        public bool Agile;
+        /// <summary>Prevents combat damage this many times per turn.</summary>
+        public int Parry;
 
         public PlayTargetKind PlayTarget = PlayTargetKind.None;
 

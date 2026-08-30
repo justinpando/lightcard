@@ -66,7 +66,8 @@ namespace LightCard.Core.Agents
             //Attacks
             foreach (var unit in state.UnitsOf(Player))
             {
-                if (unit.IsCharm || unit.Flux || unit.Asleep || unit.AttackedThisTurn || unit.MovedThisTurn) continue;
+                if (unit.IsCharm || unit.Flux || unit.Asleep || unit.AttackedThisTurn) continue;
+                if (unit.MovedThisTurn && !unit.Definition.Agile) continue;
                 if (state.EffectivePower(unit) <= 0) continue;
                 yield return new AttackCommand { Player = Player, UnitId = unit.Id };
             }
@@ -74,7 +75,7 @@ namespace LightCard.Core.Agents
             //Shift
             if (!playerState.ShiftUsedThisTurn && playerState.Energy >= GameConfig.ShiftEnergyCost)
             {
-                foreach (var unit in state.UnitsOf(Player).Where(u => !u.IsCharm && !u.Asleep && !u.Pinned))
+                foreach (var unit in state.UnitsOf(Player).Where(u => !u.IsCharm && !u.Asleep && !u.Pinned && (!u.AttackedThisTurn || u.Definition.Agile)))
                 {
                     yield return new ShiftCommand { Player = Player, UnitId = unit.Id, Direction = MoveDirection.Forward };
                     yield return new ShiftCommand { Player = Player, UnitId = unit.Id, Direction = MoveDirection.Back };

@@ -85,6 +85,12 @@ namespace LightCard.Core
                 unit.Flux = false;
                 unit.AttackedThisTurn = false;
                 unit.MovedThisTurn = false;
+                //"Until the start of your next turn" grants expire now; defensive charges refresh
+                unit.TempPower = 0;
+                unit.TempParry = 0;
+                unit.TempEvade = 0;
+                unit.ParryUsedThisTurn = 0;
+                unit.EvadeUsedThisTurn = 0;
             }
 
             //Poison ticks at the start of the owner's turn (ignores armor and Resist)
@@ -101,9 +107,9 @@ namespace LightCard.Core
                     HealUnit(state, unit, 1, events);
             }
 
-            //Auto-Advance, front-most units first so columns compact forward
+            //Auto-Advance (printed or aura-granted), front-most units first so columns compact forward
             var advancers = state.UnitsOf(player)
-                .Where(u => u.Definition.AutoAdvance && !u.Asleep && !u.Pinned)
+                .Where(u => !u.IsCharm && state.HasAutoAdvance(u) && !u.Asleep && !u.Pinned)
                 .OrderBy(u => player == 0 ? -u.Y : u.Y)
                 .ToList();
             foreach (var unit in advancers)
@@ -250,6 +256,20 @@ namespace LightCard.Core
             foreach (var effect in definition.Effects.Where(e => e.Trigger == Trigger.OnCall))
                 ResolveEffect(state, effect, unit, player, x, y, events);
 
+            //Friendly call-watchers (Squad Leader, Skilled Armorer): target coords are the called unit's space
+            foreach (var watcher in state.UnitsOf(player).ToList())
+            {
+                if (watcher == unit || !state.Units.Contains(watcher)) continue;
+                bool adjacent = Math.Abs(watcher.X - x) + Math.Abs(watcher.Y - y) == 1;
+                bool inFront = x == watcher.X && y == watcher.Y + GameState.ForwardDir(player);
+                foreach (var effect in watcher.Definition.Effects)
+                {
+                    if ((effect.Trigger == Trigger.OnAllyCallAdjacent && adjacent) ||
+                        (effect.Trigger == Trigger.OnAllyCallInFront && inFront))
+                        ResolveEffect(state, effect, watcher, player, x, y, events);
+                }
+            }
+
             //Opposing triggers (e.g. Guest Registry) fire when a Unit is summoned
             if (definition.Type == CardType.Unit)
             {
@@ -274,6 +294,7 @@ namespace LightCard.Core
             if (unit.IsCharm) return CommandResult.Fail("Charms are immobile.");
             if (unit.Asleep) return CommandResult.Fail("That unit is asleep.");
             if (unit.Pinned) return CommandResult.Fail("That unit is pinned.");
+            if (unit.AttackedThisTurn && !unit.Definition.Agile) return CommandResult.Fail("That unit has already attacked this turn.");
             if (playerState.ShiftUsedThisTurn) return CommandResult.Fail("Shift has already been used this turn.");
             if (playerState.Energy < GameConfig.ShiftEnergyCost) return CommandResult.Fail("Not enough energy to Shift.");
 
@@ -308,6 +329,13 @@ namespace LightCard.Core
             MoveUnitTo(state, unit, destX, destY, result.Events);
             unit.MovedThisTurn = true;
 
+            //Shift triggers (Duelist, Dancer) fire for the commanded unit only
+            if (state.Units.Contains(unit))
+            {
+                foreach (var effect in unit.Definition.Effects.Where(e => e.Trigger == Trigger.OnShift))
+                    ResolveEffect(state, effect, unit, unit.Owner, unit.X, unit.Y, result.Events);
+            }
+
             return result;
         }
 
@@ -323,7 +351,7 @@ namespace LightCard.Core
             if (attacker.Asleep) return CommandResult.Fail("That unit is asleep.");
             if (attacker.Flux) return CommandResult.Fail("That unit was called this turn.");
             if (attacker.AttackedThisTurn) return CommandResult.Fail("That unit has already attacked this turn.");
-            if (attacker.MovedThisTurn) return CommandResult.Fail("That unit has already moved this turn.");
+            if (attacker.MovedThisTurn && !attacker.Definition.Agile) return CommandResult.Fail("That unit has already moved this turn.");
             if (state.EffectivePower(attacker) <= 0) return CommandResult.Fail("Units with 0 Attack do not attack.");
             if (!attacker.Definition.Ranged && HasFriendlyUnitInFront(state, attacker))
                 return CommandResult.Fail("Melee units must be in front of all other friendly units in their lane.");
@@ -377,6 +405,15 @@ namespace LightCard.Core
         private static void StrikeUnit(GameState state, UnitState attacker, UnitState target, int power, List<GameEvent> events, bool allowRiders = true)
         {
             int damage = Math.Max(0, power - state.EffectiveArmor(target));
+
+            //Parry: prevent combat damage, consuming one charge (riders still apply)
+            if (damage > 0 && state.EffectiveParry(target) - target.ParryUsedThisTurn > 0)
+            {
+                target.ParryUsedThisTurn++;
+                damage = 0;
+                events.Add(new GameEvent { Type = GameEventType.AttackParried, UnitId = target.Id, CardId = target.CardId });
+            }
+
             if (damage > 0) DamageUnit(state, target, damage, events);
 
             bool targetAlive = state.Units.Contains(target);
@@ -431,6 +468,10 @@ namespace LightCard.Core
 
         private static void ResolveEffect(GameState state, EffectDef effect, UnitState source, int owner, int targetX, int targetY, List<GameEvent> events)
         {
+            //Conditions apply to triggered effects too (static effects re-check in GameState)
+            if (effect.Condition == EffectCondition.Frontline &&
+                (source == null || source.Y != GameState.FrontlineRow(owner))) return;
+
             switch (effect.Action)
             {
                 case EffectAction.GainStats:
@@ -455,10 +496,23 @@ namespace LightCard.Core
                 }
                 case EffectAction.ApplySpaceEffect:
                 {
+                    bool appliedAny = false;
                     foreach (var (x, y) in GatherSpaces(effect.Scope, source, targetX, targetY))
                     {
                         state.SpaceEffects[x, y] = effect.SpaceEffect;
                         events.Add(new GameEvent { Type = GameEventType.SpaceEffectApplied, X = x, Y = y, SpaceEffect = effect.SpaceEffect });
+                        appliedAny = true;
+                    }
+
+                    //Space-effect watchers (Navigator) fire once per application effect
+                    if (appliedAny)
+                    {
+                        foreach (var watcher in state.UnitsOf(owner).ToList())
+                        {
+                            if (!state.Units.Contains(watcher)) continue;
+                            foreach (var watcherEffect in watcher.Definition.Effects.Where(e => e.Trigger == Trigger.OnOwnerSpaceEffect))
+                                ResolveEffect(state, watcherEffect, watcher, owner, watcher.X, watcher.Y, events);
+                        }
                     }
                     break;
                 }
@@ -615,6 +669,29 @@ namespace LightCard.Core
                     }
                     break;
                 }
+                case EffectAction.GainTempPower:
+                case EffectAction.GainTempParry:
+                case EffectAction.GainTempEvade:
+                {
+                    foreach (var unit in GatherUnits(state, effect.Scope, source, owner, targetX, targetY))
+                    {
+                        if (unit.IsCharm) continue;
+                        if (effect.Action == EffectAction.GainTempPower) unit.TempPower += effect.Power;
+                        else if (effect.Action == EffectAction.GainTempParry) unit.TempParry += effect.Amount;
+                        else unit.TempEvade += effect.Amount;
+                        events.Add(new GameEvent { Type = GameEventType.UnitStatsChanged, UnitId = unit.Id, CardId = unit.CardId, Amount = effect.Power + effect.Amount });
+                    }
+                    break;
+                }
+                case EffectAction.GainArmor:
+                {
+                    foreach (var unit in GatherUnits(state, effect.Scope, source, owner, targetX, targetY))
+                    {
+                        unit.BonusArmor += effect.Amount;
+                        events.Add(new GameEvent { Type = GameEventType.UnitStatsChanged, UnitId = unit.Id, CardId = unit.CardId, Amount = effect.Amount });
+                    }
+                    break;
+                }
             }
         }
 
@@ -666,6 +743,13 @@ namespace LightCard.Core
                     }
                     return new List<UnitState>();
                 }
+                case TargetScope.Nearby:
+                    return source == null ? new List<UnitState>() :
+                        state.UnitsOf(owner).Where(u => u != source &&
+                            Math.Abs(u.X - source.X) <= 1 && Math.Abs(u.Y - source.Y) <= 1).ToList();
+                case TargetScope.FriendlyUnitsWithAdjacentAlly:
+                    return state.UnitsOf(owner).Where(u => !u.IsCharm &&
+                        state.UnitsOf(owner).Any(o => o != u && Math.Abs(o.X - u.X) + Math.Abs(o.Y - u.Y) == 1)).ToList();
                 default:
                     return new List<UnitState>();
             }
@@ -775,6 +859,14 @@ namespace LightCard.Core
         {
             if (amount <= 0 || !state.Units.Contains(unit)) return;
 
+            //Evade: prevent any damage instance, consuming one charge
+            if (unit.TempEvade - unit.EvadeUsedThisTurn > 0)
+            {
+                unit.EvadeUsedThisTurn++;
+                events.Add(new GameEvent { Type = GameEventType.DamageEvaded, UnitId = unit.Id, CardId = unit.CardId });
+                return;
+            }
+
             unit.Damage += amount;
             events.Add(new GameEvent { Type = GameEventType.UnitDamaged, UnitId = unit.Id, CardId = unit.CardId, Amount = amount });
 
@@ -837,10 +929,17 @@ namespace LightCard.Core
                     if (state.IsOver) return;
                     continue;
                 }
-                if (playerState.Hand.Count >= GameConfig.MaxHandSize) return;
-
                 string cardId = playerState.Deck[0];
                 playerState.Deck.RemoveAt(0);
+
+                //Rules-v2: drawing with a full hand burns the card - the deck
+                //still depletes, so hoarding cannot stall the fatigue clock
+                if (playerState.Hand.Count >= GameConfig.MaxHandSize)
+                {
+                    events.Add(new GameEvent { Type = GameEventType.CardBurned, Player = player, CardId = cardId });
+                    continue;
+                }
+
                 playerState.Hand.Add(cardId);
                 events.Add(new GameEvent { Type = GameEventType.CardDrawn, Player = player, CardId = cardId });
             }

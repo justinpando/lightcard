@@ -433,6 +433,56 @@ namespace LightCard.CoreTests
                 AssertEqual(0, untouched.Damage, "no effect removed, no damage");
             });
 
+            Test("Movement keywords: Agile, Parry, Evade, temp buffs (rules-v2)", () =>
+            {
+                var state = EmptyGame();
+                var duelist = PlayUnit(state, 0, "Duelist", 0, 1);
+                duelist.Flux = false;
+                state.Players[0].Energy = 5;
+                GameEngine.Execute(state, new ShiftCommand { Player = 0, UnitId = duelist.Id, Direction = MoveDirection.Forward });
+                AssertEqual(4, state.EffectivePower(duelist), "shift granted +2/0");
+                AssertEqual(1, state.EffectiveParry(duelist), "shift granted Parry");
+
+                var attacker = PlayUnit(state, 1, "Spearbearer", 0, 3);
+                attacker.Flux = false;
+                state.ActivePlayer = 1;
+                GameEngine.Execute(state, new AttackCommand { Player = 1, UnitId = attacker.Id });
+                AssertEqual(0, duelist.Damage, "combat damage parried");
+
+                GameEngine.Execute(state, new EndTurnCommand { Player = 1 });   //p0 turn start: temp grants expire
+                AssertEqual(2, state.EffectivePower(duelist), "temp power expired");
+                AssertEqual(0, state.EffectiveParry(duelist), "temp parry expired");
+
+                var dancer = PlayUnit(state, 0, "Dancer", 2, 1);
+                dancer.Flux = false;
+                state.Players[0].Energy = 5;
+                state.Players[0].ShiftUsedThisTurn = false;
+                GameEngine.Execute(state, new ShiftCommand { Player = 0, UnitId = dancer.Id, Direction = MoveDirection.Forward });
+                AssertTrue(GameEngine.Execute(state, new AttackCommand { Player = 0, UnitId = dancer.Id }).Success,
+                    "Agile units attack after moving");
+
+                var plain = PlayUnit(state, 0, "Conscript", 1, 2);
+                plain.Flux = false;
+                GameEngine.Execute(state, new AttackCommand { Player = 0, UnitId = plain.Id });
+                state.Players[0].ShiftUsedThisTurn = false;
+                state.Players[0].Energy = 5;
+                AssertTrue(!GameEngine.Execute(state, new ShiftCommand { Player = 0, UnitId = plain.Id, Direction = MoveDirection.Back }).Success,
+                    "non-Agile units cannot move after attacking");
+            });
+
+            Test("Overdraw burns: full hand still depletes the deck (rules-v2)", () =>
+            {
+                var state = EmptyGame();
+                for (int n = 0; n < GameConfig.MaxHandSize; n++) state.Players[1].Hand.Add("Conscript");
+                state.Players[1].Deck.Add("Conscript");
+                state.Players[1].Deck.Add("Conscript");
+
+                GameEngine.Execute(state, new EndTurnCommand { Player = 0 });   //p1 turn start: draws 2 into a full hand
+                AssertEqual(GameConfig.MaxHandSize, state.Players[1].Hand.Count, "hand stays at cap");
+                AssertEqual(0, state.Players[1].Deck.Count, "both drawn cards burned from the deck");
+                AssertEqual(0, state.Players[1].Fatigue, "no fatigue while the deck lasts");
+            });
+
             Test("Garden terrain package: tokens, pull, static space condition (rules-v2)", () =>
             {
                 var state = EmptyGame();

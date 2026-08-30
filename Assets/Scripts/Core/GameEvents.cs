@@ -24,7 +24,10 @@ namespace LightCard.Core
         GameEnded,
         FatigueDamage,
         UnitPinned,
-        UnitPoisoned
+        UnitPoisoned,
+        AttackParried,
+        DamageEvaded,
+        CardBurned
     }
 
     /// <summary>

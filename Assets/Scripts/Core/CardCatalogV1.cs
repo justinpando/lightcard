@@ -85,6 +85,72 @@ namespace LightCard.Core
                 },
                 new CardDefinition
                 {
+                    Id = "Navigator", Archetype = Archetype.Expedition, Type = CardType.Unit,
+                    Cost = 2, Power = 1, Life = 3,
+                    Text = "Frontline: When you apply a Space Effect, draw a card.",
+                    PlayTarget = PlayTargetKind.FriendlyEmptySpace,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.OnOwnerSpaceEffect, Action = EffectAction.Draw, Condition = EffectCondition.Frontline, Amount = 1 }
+                    }
+                },
+                new CardDefinition
+                {
+                    Id = "Battering Ram", Archetype = Archetype.Expedition, Type = CardType.Unit,
+                    Cost = 3, Power = 0, Life = 5,
+                    Text = "On Advance: Push.",
+                    PlayTarget = PlayTargetKind.FriendlyEmptySpace,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.OnAdvance, Action = EffectAction.PushAway, Scope = TargetScope.NearestEnemyInLane }
+                    }
+                },
+                new CardDefinition
+                {
+                    Id = "Squad Leader", Archetype = Archetype.Expedition, Type = CardType.Unit,
+                    Cost = 3, Power = 1, Life = 4,
+                    Text = "Units called to adjacent spaces gain +1/+1.",
+                    PlayTarget = PlayTargetKind.FriendlyEmptySpace,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.OnAllyCallAdjacent, Action = EffectAction.GainStats, Scope = TargetScope.TargetUnit, Power = 1, Life = 1 }
+                    }
+                },
+                new CardDefinition
+                {
+                    Id = "Skilled Armorer", Archetype = Archetype.Expedition, Type = CardType.Unit,
+                    Cost = 3, Power = 1, Life = 4,
+                    Text = "Units called in front of this gain Armor 1.",
+                    PlayTarget = PlayTargetKind.FriendlyEmptySpace,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.OnAllyCallInFront, Action = EffectAction.GainArmor, Scope = TargetScope.TargetUnit, Amount = 1 }
+                    }
+                },
+                new CardDefinition
+                {
+                    Id = "Martial Musician", Archetype = Archetype.Expedition, Type = CardType.Unit,
+                    Cost = 2, Power = 1, Life = 3,
+                    Text = "Nearby allies have Auto-Advance.",
+                    PlayTarget = PlayTargetKind.FriendlyEmptySpace,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.Static, Action = EffectAction.StaticAutoAdvance, Scope = TargetScope.Nearby }
+                    }
+                },
+                new CardDefinition
+                {
+                    Id = "In This Together", Archetype = Archetype.Expedition, Type = CardType.Ability,
+                    Cost = 6,
+                    Text = "Your units that are adjacent to friendly units gain +1/+1.",
+                    PlayTarget = PlayTargetKind.None,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.OnPlay, Action = EffectAction.GainStats, Scope = TargetScope.FriendlyUnitsWithAdjacentAlly, Power = 1, Life = 1 }
+                    }
+                },
+                new CardDefinition
+                {
                     Id = "Battle Banner", Archetype = Archetype.Expedition, Type = CardType.Charm,
                     Cost = 1, Power = 0, Life = 2,
                     Text = "Units in the next row have +1/0.",
@@ -243,11 +309,47 @@ namespace LightCard.Core
 
                 new CardDefinition
                 {
-                    //Sheet also gives it "Parry 1 on a Bramble space" - deferred until Parry exists
                     Id = "Rose Knight", Archetype = Archetype.Garden, Type = CardType.Unit,
                     Cost = 3, Power = 2, Life = 4,
-                    Text = "Armor 1.",
+                    Text = "Armor 1. Has Parry 1 while on a Brambled space.",
                     Armor = 1,
+                    PlayTarget = PlayTargetKind.FriendlyEmptySpace,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.Static, Action = EffectAction.StaticParry, Scope = TargetScope.Self, SpaceEffect = SpaceEffectType.Brambled, Amount = 1 }
+                    }
+                },
+                new CardDefinition
+                {
+                    Id = "Duelist", Archetype = Archetype.Garden, Type = CardType.Unit,
+                    Cost = 3, Power = 2, Life = 4,
+                    Text = "Shift: Gain +2/0 and Parry until start of next turn.",
+                    PlayTarget = PlayTargetKind.FriendlyEmptySpace,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.OnShift, Action = EffectAction.GainTempPower, Scope = TargetScope.Self, Power = 2 },
+                        new EffectDef { Trigger = Trigger.OnShift, Action = EffectAction.GainTempParry, Scope = TargetScope.Self, Amount = 1 }
+                    }
+                },
+                new CardDefinition
+                {
+                    Id = "Dancer", Archetype = Archetype.Garden, Type = CardType.Unit,
+                    Cost = 3, Power = 2, Life = 3,
+                    Text = "Agile. Shift: Gain Evade 1 until start of next turn.",
+                    Agile = true,
+                    PlayTarget = PlayTargetKind.FriendlyEmptySpace,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.OnShift, Action = EffectAction.GainTempEvade, Scope = TargetScope.Self, Amount = 1 }
+                    }
+                },
+                new CardDefinition
+                {
+                    //Sheet prints 1/4 with "Base Atk 3"; ruled as attack stat 3
+                    Id = "Windstriker", Archetype = Archetype.Garden, Type = CardType.Unit,
+                    Cost = 3, Power = 3, Life = 4,
+                    Text = "Agile.",
+                    Agile = true,
                     PlayTarget = PlayTargetKind.FriendlyEmptySpace
                 },
                 new CardDefinition
