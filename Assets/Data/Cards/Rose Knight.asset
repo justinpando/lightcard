@@ -19,4 +19,4 @@ MonoBehaviour:
   cost: 3
   power: 2
   life: 4
-  description: 'Armor 1. Has Parry 1 if on a Bramble space. '
+  description: Armor 1.

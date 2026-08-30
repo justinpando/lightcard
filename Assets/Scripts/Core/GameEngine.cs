@@ -576,6 +576,45 @@ namespace LightCard.Core
                     }
                     break;
                 }
+                case EffectAction.CallUnit:
+                {
+                    //Candidates: empty spaces on the owner's half, filtered by SpaceEffect
+                    var candidates = new List<(int x, int y)>();
+                    for (int x = 0; x < GameConfig.Lanes; x++)
+                        for (int y = 0; y < GameConfig.Rows; y++)
+                            if (GameState.SideOfRow(y) == owner && state.GetUnitAt(x, y) == null &&
+                                (effect.SpaceEffect == SpaceEffectType.None || state.SpaceEffects[x, y] == effect.SpaceEffect))
+                                candidates.Add((x, y));
+
+                    if (effect.Amount > 0)
+                    {
+                        //Random picks, deterministic through the seeded RNG
+                        for (int n = 0; n < effect.Amount && candidates.Count > 0; n++)
+                        {
+                            int pick = state.NextRandom(candidates.Count);
+                            var (x, y) = candidates[pick];
+                            candidates.RemoveAt(pick);
+                            CallUnit(state, owner, effect.CalledCardId, x, y, events);
+                        }
+                    }
+                    else
+                    {
+                        foreach (var (x, y) in candidates)
+                            CallUnit(state, owner, effect.CalledCardId, x, y, events);
+                    }
+                    break;
+                }
+                case EffectAction.Pull:
+                {
+                    //One step toward the effect's owner; same collision rules as Push
+                    foreach (var unit in GatherUnits(state, effect.Scope, source, owner, targetX, targetY).ToList())
+                    {
+                        if (unit.IsCharm) continue; //charms are immobile
+                        if (state.Units.Contains(unit))
+                            PushUnit(state, unit, -GameState.ForwardDir(owner), events);
+                    }
+                    break;
+                }
             }
         }
 

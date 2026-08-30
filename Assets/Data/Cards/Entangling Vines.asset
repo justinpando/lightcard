@@ -19,4 +19,5 @@ MonoBehaviour:
   cost: 2
   power: 0
   life: 0
-  description: Bramble target space, then pull all units in its lane.
+  description: Bramble target space, then pull all units in its row one space toward
+    you.

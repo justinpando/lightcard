@@ -433,6 +433,43 @@ namespace LightCard.CoreTests
                 AssertEqual(0, untouched.Damage, "no effect removed, no damage");
             });
 
+            Test("Garden terrain package: tokens, pull, static space condition (rules-v2)", () =>
+            {
+                var state = EmptyGame();
+
+                //CallUnit: Hedge Maze places three hedges on the owner's half, deterministically
+                PlayAbility(state, 0, "Hedge Maze", 0, 0);
+                AssertEqual(3, state.Units.Count, "three hedges called");
+                AssertTrue(state.Units.All(u => GameState.SideOfRow(u.Y) == 0), "tokens stay on the owner's half");
+
+                //Fertile Soil fills only empty own-half Verdant spaces
+                state.SpaceEffects[0, 5] = SpaceEffectType.Verdant;      //enemy half: ignored
+                for (int x = 0; x < GameConfig.Lanes; x++)               //first empty own-half space
+                {
+                    bool done = false;
+                    for (int y = 0; y < GameConfig.RowsPerSide && !done; y++)
+                        if (state.GetUnitAt(x, y) == null) { state.SpaceEffects[x, y] = SpaceEffectType.Verdant; done = true; }
+                    if (done) break;
+                }
+                int before = state.Units.Count;
+                PlayAbility(state, 0, "Fertile Soil", 0, 0);
+                AssertEqual(before + 1, state.Units.Count, "one flower on the one empty own-half Verdant space");
+
+                //Static space condition: Constant Gardener only buffed while on Bramble
+                var state2 = EmptyGame();
+                var gardener = PlayUnit(state2, 0, "Constant Gardener", 0, 1);
+                AssertEqual(2, state2.EffectivePower(gardener), "base power off bramble");
+                state2.SpaceEffects[0, 1] = SpaceEffectType.Brambled;
+                AssertEqual(3, state2.EffectivePower(gardener), "+1 while standing on bramble");
+
+                //Entangling Vines: bramble first, then pull the row toward the caster
+                var state3 = EmptyGame();
+                var victim = PlayUnit(state3, 1, "Conscript", 1, 4);
+                PlayAbility(state3, 0, "Entangling Vines", 1, 4);
+                AssertEqual(3, victim.Y, "pulled one space toward the caster");
+                AssertEqual(1, victim.Damage, "damaged leaving the freshly brambled space");
+            });
+
             Test("Auto-attack: eligible units attack when their owner ends the turn (rules-v2)", () =>
             {
                 var state = EmptyGame();

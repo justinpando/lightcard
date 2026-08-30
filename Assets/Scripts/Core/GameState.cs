@@ -146,6 +146,8 @@ namespace LightCard.Core
                 {
                     if (effect.Trigger != Trigger.Static || effect.Action != action) continue;
                     if (effect.Condition == EffectCondition.Frontline && source.Y != FrontlineRow(source.Owner)) continue;
+                    //SpaceEffect doubles as a standing-on condition for static buffs (rules-v2)
+                    if (effect.SpaceEffect != SpaceEffectType.None && SpaceEffects[source.X, source.Y] != effect.SpaceEffect) continue;
                     if (!StaticScopeContains(source, effect.Scope, target)) continue;
 
                     if (action == EffectAction.StaticArmor) total += effect.Amount;

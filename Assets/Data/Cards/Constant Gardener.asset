@@ -19,5 +19,4 @@ MonoBehaviour:
   cost: 2
   power: 2
   life: 3
-  description: Has +1/0 if on a Brambled space. Has Pierce if target is on a Brambled
-    space.
+  description: Has +1/0 while on a Brambled space.

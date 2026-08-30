@@ -243,6 +243,71 @@ namespace LightCard.Core
 
                 new CardDefinition
                 {
+                    //Sheet also gives it "Parry 1 on a Bramble space" - deferred until Parry exists
+                    Id = "Rose Knight", Archetype = Archetype.Garden, Type = CardType.Unit,
+                    Cost = 3, Power = 2, Life = 4,
+                    Text = "Armor 1.",
+                    Armor = 1,
+                    PlayTarget = PlayTargetKind.FriendlyEmptySpace
+                },
+                new CardDefinition
+                {
+                    Id = "Constant Gardener", Archetype = Archetype.Garden, Type = CardType.Unit,
+                    Cost = 2, Power = 2, Life = 3,
+                    Text = "Has +1/0 while on a Brambled space.",
+                    PlayTarget = PlayTargetKind.FriendlyEmptySpace,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.Static, Action = EffectAction.StaticStats, Scope = TargetScope.Self, SpaceEffect = SpaceEffectType.Brambled, Power = 1 }
+                    }
+                },
+                new CardDefinition
+                {
+                    Id = "Magic Fertilizer", Archetype = Archetype.Garden, Type = CardType.Charm,
+                    Cost = 1, Power = 0, Life = 2,
+                    Text = "Destroyed: This space becomes Verdant.",
+                    PlayTarget = PlayTargetKind.FriendlyEmptySpace,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.OnDestroy, Action = EffectAction.ApplySpaceEffect, Scope = TargetScope.Self, SpaceEffect = SpaceEffectType.Verdant }
+                    }
+                },
+                new CardDefinition
+                {
+                    Id = "Fertile Soil", Archetype = Archetype.Garden, Type = CardType.Ability,
+                    Cost = 3,
+                    Text = "Call a Cosmic Flower to each empty Verdant space on your half.",
+                    PlayTarget = PlayTargetKind.None,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.OnPlay, Action = EffectAction.CallUnit, CalledCardId = "Cosmic Flower", SpaceEffect = SpaceEffectType.Verdant }
+                    }
+                },
+                new CardDefinition
+                {
+                    Id = "Hedge Maze", Archetype = Archetype.Garden, Type = CardType.Ability,
+                    Cost = 2,
+                    Text = "Call a Thorny Hedge to three random empty spaces on your half.",
+                    PlayTarget = PlayTargetKind.None,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.OnPlay, Action = EffectAction.CallUnit, CalledCardId = "Thorny Hedge", Amount = 3 }
+                    }
+                },
+                new CardDefinition
+                {
+                    Id = "Entangling Vines", Archetype = Archetype.Garden, Type = CardType.Ability,
+                    Cost = 2,
+                    Text = "Bramble target space, then pull all units in its row one space toward you.",
+                    PlayTarget = PlayTargetKind.AnySpace,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.OnPlay, Action = EffectAction.ApplySpaceEffect, Scope = TargetScope.TargetSpace, SpaceEffect = SpaceEffectType.Brambled },
+                        new EffectDef { Trigger = Trigger.OnPlay, Action = EffectAction.Pull, Scope = TargetScope.TargetRow }
+                    }
+                },
+                new CardDefinition
+                {
                     Id = "Pin Down", Archetype = Archetype.Garden, Type = CardType.Ability,
                     Cost = 1,
                     Text = "Deal 1 damage to target Unit, then Pin it.",

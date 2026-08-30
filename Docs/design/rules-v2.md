@@ -116,10 +116,42 @@ drop area) to Attune it.
   Permanent and stacking; no cure exists yet. Poison is status damage: it
   ignores Armor *and* Resist (it is neither an attack nor a targeted ability).
 - Charms cannot be pinned or poisoned.
-- Balance note (2026-08-29): even with these, Garden went 0/8 vs Expedition and
-  Atelier in seed sweeps — its weakness is structural (low unit power, no
-  finisher), a topic for the joint tuning pass. Agent evaluation now prices
-  pending poison damage and pin tempo into unit value.
+- Agent evaluation prices pending poison damage and pin tempo into unit value.
+
+## Garden terrain-offense package (v2 catalog: +6 cards, Garden = 18)
+
+Implemented from the sheet: Constant Gardener (bramble-Pierce clause deferred),
+Rose Knight (bramble-Parry clause deferred until Parry exists), Magic
+Fertilizer, Fertile Soil, Hedge Maze, Entangling Vines. New machinery rulings:
+
+- **CallUnit** (tokens): summoned to empty spaces on the owner's half only.
+  "Each Verdant space" means each empty own-half Verdant space; "random spaces"
+  draw through the seeded RNG (deterministic). Tokens arrive in Flux as usual.
+- **Pull** moves a unit **one space** toward the effect's owner; collisions and
+  half-boundary blocking exactly as Push. Pulling a row moves every non-charm
+  unit in it, friend or foe — pulled units entering or leaving Brambled spaces
+  take the usual damage (this is Garden's armor-ignoring offense).
+- **Static buffs can require a space effect**: an EffectDef with
+  Trigger.Static and a SpaceEffect applies only while its source stands on
+  that effect (Constant Gardener's +1/0 on Bramble).
+- Entangling Vines resolves bramble first, then the pull — so a unit pulled
+  off the freshly brambled space is damaged leaving it.
+
+## Balance state (2026-08-29 agent sweeps, 6 seeds per pairing)
+
+A rock-paper-scissors triangle has emerged: **Expedition beats Garden (6-0),
+Garden beats Atelier (6-6 → 6-0 with Rose Knight), Atelier splits Expedition
+(3-3)**. The triangle is the right shape for three archetypes; both sharp
+corners are steeper than we'd want. Notes for the human-play pass:
+
+- Garden's wins over Expedition come from surviving to fatigue; in losses
+  Expedition finishes at 17-20 life untouched. Armor doesn't answer
+  Spearbearer (Pierce + adjacency aura) — the standout Expedition card.
+- Agent sweeps exaggerate spreads (no mulligan, no adaptation, full-catalog
+  piles); treat these as direction, not magnitude.
+- Likely real fix for Garden vs aggro: its unimplemented movement half
+  (Duelist, Dancer, Windstriker — needs Agile/Parry/Evade and until-next-turn
+  buff infrastructure, which Heart's spirits will want anyway).
 
 ## Rejected (designer ruling)
 

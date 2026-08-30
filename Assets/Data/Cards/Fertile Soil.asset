@@ -18,5 +18,5 @@ MonoBehaviour:
   name: Fertile Soil
   cost: 3
   power: 0
-  life: 3
-  description: Call a Cosmic Flower to each Verdant space.
+  life: 0
+  description: Call a Cosmic Flower to each empty Verdant space on your half.

@@ -84,7 +84,15 @@ namespace LightCard.Core
         /// <summary>Pin units in Scope: no Shift or Auto-Advance until their owner's turn ends (Garden).</summary>
         Pin,
         /// <summary>Give units in Scope Amount Poison: they take that much damage at the start of their owner's turn (Garden).</summary>
-        Poison
+        Poison,
+        /// <summary>
+        /// Call CalledCardId to empty spaces on the owner's half. SpaceEffect
+        /// filters candidate spaces (None = any); Amount &gt; 0 picks that many at
+        /// random (deterministic RNG), Amount 0 fills every match (Garden tokens).
+        /// </summary>
+        CallUnit,
+        /// <summary>Forced movement of units in Scope one space toward the effect's owner; collisions as Push (Garden).</summary>
+        Pull
     }
 
     /// <summary>Which units an effect applies to, relative to its source or its play target.</summary>
@@ -142,6 +150,8 @@ namespace LightCard.Core
         public int Life;
         public int Amount;
         public SpaceEffectType SpaceEffect = SpaceEffectType.None;
+        /// <summary>Catalog id of the card summoned by CallUnit.</summary>
+        public string CalledCardId;
     }
 
     /// <summary>Immutable definition of a card. Instances on the board are UnitState.</summary>
