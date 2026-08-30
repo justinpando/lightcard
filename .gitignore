@@ -74,3 +74,7 @@ CoreTests/obj/
 GSTU_Config.asset
 GSTU_Config.asset.meta
 /[Aa]ssets/StreamingAssets/Key/
+
+# Editor screenshot captures (manage_camera output)
+/[Aa]ssets/Screenshots/
+/[Aa]ssets/Screenshots.meta
