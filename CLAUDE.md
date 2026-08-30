@@ -14,7 +14,7 @@ an Affinity/energy ramp economy driven by replacing cards.
 | `Assets/Scripts/Core/Agents/` | Heuristic AI: `HeuristicAgent` (simulate-and-score over cloned states), `AgentPersonality` (archetype weight presets), `MatchRunner` (headless agent-vs-agent matches). |
 | `Assets/Scripts/Library/` | The working deck-builder UI (collection, filters, deck editor, save/load). Entry point: `MainContext.cs` in `Main.unity`. |
 | `Assets/Scripts/Data/` | JSON save system + `CardDataImporter` (editor-only Google Sheets → ScriptableObject importer; currently unconfigured, see caveats). |
-| `Assets/Scripts/Field/` | Mostly-empty stubs for the match view; `Field.unity` is art layout with no logic yet. |
+| `Assets/Scripts/Field/` | The match view: `MatchContext` (scene entry, input, AI turns) + field/hand/HUD controllers. `Field.unity` is the playable match scene. |
 | `CoreTests/` | Standalone .NET test runner for the engine — no Unity needed. |
 | `Packages/com.unity.uiextensions/` | Unity UI Extensions v3.0.0, **embedded and locally patched** (Unity 6.3 EntityId guards) — upstream doesn't compile on 6000.3+, so keep the embedded copy rather than a manifest URL. |
 | `Docs/design/` | Design docs: roadmap (`README.md`), roguelike mode, multiplayer, phantom AI, and **`rules-v1.md`** (engine rulings — read before changing rules code). |
@@ -56,7 +56,7 @@ deck-builder bugs fixed), phase 1 (engine + 20-card Expedition/Garden set), the
 first slice of the phantom AI (heuristic agent + personalities + match runner),
 and the first slice of phase 2: `Field.unity` is wired to the engine
 (`MatchContext` + view controllers in `Assets/Scripts/Field/`) and playable
-against `HeuristicAgent` — click-driven play/shift/attack/replace, AI turns,
+against `HeuristicAgent` — click/drag play, Shift, Activate, Attune, automatic combat, AI turns,
 HUD, history log, and a victory/defeat panel with rematch. The full game loop
 is connected: Main menu "Begin Match" plays the top deck of the collection
 (drag-to-reorder chooses it) and loads `Field.unity`; match end returns to the
@@ -70,7 +70,7 @@ there too). `LightCard/Sync Card Assets From Catalog` mirrors
 the catalog into library Card assets; a PNG at
 `Assets/Art/CardPlaceholders/<Card Name>.png` overrides all art on sync
 (Midjourney workflow: prompts in `Docs/art/midjourney-placeholders.md`),
-otherwise procedural placeholders are generated. Known balance data: Garden
+otherwise procedural placeholders are generated. Balance table in rules-v2. Legacy note: Garden
 0/8 vs Expedition/Atelier in agent sweeps — structural, pending tuning.
 
 ## Caveats
