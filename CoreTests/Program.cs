@@ -46,7 +46,8 @@ namespace LightCard.CoreTests
 
                 AssertEqual(0, state.Players[0].Energy, "energy spent");
                 AssertTrue(unit.Flux, "freshly called unit is in Flux");
-                AssertTrue(!GameEngine.Execute(state, new AttackCommand { Player = 0, UnitId = unit.Id }).Success, "cannot attack while in Flux");
+                GameEngine.ResolveAutoAttacks(state, 0, new List<GameEvent>());
+                AssertTrue(!unit.AttackedThisTurn, "units in Flux do not auto-attack");
 
                 var offSide = GameEngine.Execute(state, Play(state, 0, "Conscript", 0, 3));
                 AssertTrue(!offSide.Success, "cannot call onto the enemy half");
@@ -58,10 +59,10 @@ namespace LightCard.CoreTests
                 var unit = PlayUnit(state, 0, "Conscript", 0, 2);
                 unit.Flux = false;
 
-                var result = GameEngine.Execute(state, new AttackCommand { Player = 0, UnitId = unit.Id });
-                AssertTrue(result.Success, result.Error);
+                GameEngine.ResolveAutoAttacks(state, 0, new List<GameEvent>());
                 AssertEqual(GameConfig.StartingLife - 1, state.Players[1].Life, "opponent took 1 damage");
-                AssertTrue(!GameEngine.Execute(state, new AttackCommand { Player = 0, UnitId = unit.Id }).Success, "one attack per turn");
+                GameEngine.ResolveAutoAttacks(state, 0, new List<GameEvent>());
+                AssertEqual(GameConfig.StartingLife - 1, state.Players[1].Life, "one attack per turn");
             });
 
             Test("Attack: blocked lane hits the front-most enemy, armor applies", () =>
@@ -72,8 +73,7 @@ namespace LightCard.CoreTests
                 var front = PlayUnit(state, 1, "Shieldbearer", 1, 3);   //Armor 1, 4 life
                 var back = PlayUnit(state, 1, "Conscript", 1, 4);       //2 life
 
-                var result = GameEngine.Execute(state, new AttackCommand { Player = 0, UnitId = attacker.Id });
-                AssertTrue(result.Success, result.Error);
+                GameEngine.ResolveAutoAttacks(state, 0, new List<GameEvent>());
                 AssertEqual(1, front.Damage, "armor reduced 2 damage to 1");
                 //the Conscript is adjacent to Shieldbearer, so its aura grants it Armor 1 too
                 AssertEqual(1, back.Damage, "pierce damage, reduced by aura armor");
@@ -87,8 +87,8 @@ namespace LightCard.CoreTests
                 PlayUnit(state, 0, "Conscript", 2, 2);
                 behind.Flux = false;
 
-                AssertTrue(!GameEngine.Execute(state, new AttackCommand { Player = 0, UnitId = behind.Id }).Success,
-                    "unit behind a friendly cannot attack");
+                GameEngine.ResolveAutoAttacks(state, 0, new List<GameEvent>());
+                AssertTrue(!behind.AttackedThisTurn, "unit behind a friendly does not auto-attack");
             });
 
             Test("Shieldbearer aura: adjacent allies gain Armor 1", () =>
@@ -120,8 +120,7 @@ namespace LightCard.CoreTests
                 attacker.Flux = false;
                 PlayUnit(state, 1, "Thorny Hedge", 0, 3);
 
-                var result = GameEngine.Execute(state, new AttackCommand { Player = 0, UnitId = attacker.Id });
-                AssertTrue(result.Success, result.Error);
+                GameEngine.ResolveAutoAttacks(state, 0, new List<GameEvent>());
                 AssertEqual(1, attacker.Damage, "attacker took retaliation damage");
             });
 
@@ -132,7 +131,7 @@ namespace LightCard.CoreTests
                 knight.Flux = false;
                 var target = PlayUnit(state, 1, "Shieldbearer", 0, 3);
 
-                GameEngine.Execute(state, new AttackCommand { Player = 0, UnitId = knight.Id });
+                GameEngine.ResolveAutoAttacks(state, 0, new List<GameEvent>());
                 AssertEqual(4, target.Y, "surviving target pushed back a row");
 
                 knight.AttackedThisTurn = false;
@@ -141,7 +140,7 @@ namespace LightCard.CoreTests
                 blocker.Y = 4;
                 int targetDamageBefore = target.Damage;
 
-                GameEngine.Execute(state, new AttackCommand { Player = 0, UnitId = knight.Id });
+                GameEngine.ResolveAutoAttacks(state, 0, new List<GameEvent>());
                 AssertEqual(3, target.Y, "blocked push does not move the target");
                 AssertEqual(targetDamageBefore + 1 + 1, target.Damage, "attack damage plus collision damage");
                 AssertEqual(1, blocker.Damage, "collision damages the blocker too");
@@ -244,12 +243,12 @@ namespace LightCard.CoreTests
                 state.ActivePlayer = 0;
 
                 AssertTrue(unit.Asleep, "unit fell asleep");
-                AssertTrue(!GameEngine.Execute(state, new AttackCommand { Player = 0, UnitId = unit.Id }).Success, "asleep units cannot attack");
+                GameEngine.ResolveAutoAttacks(state, 0, new List<GameEvent>());
+                AssertTrue(!unit.AttackedThisTurn, "asleep units do not auto-attack");
 
                 var enemy = PlayUnit(state, 1, "Conscript", 0, 3);
                 enemy.Flux = false;
-                state.ActivePlayer = 1;
-                GameEngine.Execute(state, new AttackCommand { Player = 1, UnitId = enemy.Id });
+                GameEngine.ResolveAutoAttacks(state, 1, new List<GameEvent>());
                 AssertTrue(!unit.Asleep, "damage wakes the unit");
             });
 
@@ -285,7 +284,7 @@ namespace LightCard.CoreTests
                 var attacker = PlayUnit(state, 0, "Siege Knight", 1, 2);
                 attacker.Flux = false;
                 lover.Damage = 2; //one hit from death
-                GameEngine.Execute(state, new AttackCommand { Player = 0, UnitId = attacker.Id });
+                GameEngine.ResolveAutoAttacks(state, 0, new List<GameEvent>());
 
                 AssertTrue(!state.Units.Contains(lover), "lover destroyed");
                 AssertEqual(SpaceEffectType.Brambled, state.SpaceEffects[2, 3], "row turned Brambled on death");
@@ -300,7 +299,7 @@ namespace LightCard.CoreTests
                 flower.Damage = 1; //2 life, one hit from death
 
                 int energyBefore = state.Players[1].Energy;
-                GameEngine.Execute(state, new AttackCommand { Player = 0, UnitId = attacker.Id });
+                GameEngine.ResolveAutoAttacks(state, 0, new List<GameEvent>());
                 AssertTrue(!state.Units.Contains(flower), "flower destroyed");
                 AssertEqual(energyBefore + 1, state.Players[1].Energy, "owner gained 1 energy");
             });
@@ -412,7 +411,7 @@ namespace LightCard.CoreTests
 
                 var front = PlayUnit(state, 1, "Workshop Guardian", 1, 3);  //Armor 1, 6 life
                 var back = PlayUnit(state, 1, "Automaton", 1, 4);
-                GameEngine.Execute(state, new AttackCommand { Player = 0, UnitId = painter.Id });
+                GameEngine.ResolveAutoAttacks(state, 0, new List<GameEvent>());
                 AssertEqual(3, front.Damage, "4 power - 1 armor");
                 AssertEqual(SpaceEffectType.Primed, state.SpaceEffects[1, 3], "struck space primed");
                 AssertTrue(!state.Units.Contains(back), "granted Pierce carried the attack through");
@@ -446,7 +445,7 @@ namespace LightCard.CoreTests
                 var attacker = PlayUnit(state, 1, "Spearbearer", 0, 3);
                 attacker.Flux = false;
                 state.ActivePlayer = 1;
-                GameEngine.Execute(state, new AttackCommand { Player = 1, UnitId = attacker.Id });
+                GameEngine.ResolveAutoAttacks(state, 1, new List<GameEvent>());
                 AssertEqual(0, duelist.Damage, "combat damage parried");
 
                 GameEngine.Execute(state, new EndTurnCommand { Player = 1 });   //p0 turn start: temp grants expire
@@ -454,20 +453,26 @@ namespace LightCard.CoreTests
                 AssertEqual(0, state.EffectiveParry(duelist), "temp parry expired");
 
                 var dancer = PlayUnit(state, 0, "Dancer", 2, 1);
+                var plain = PlayUnit(state, 0, "Conscript", 1, 1);
                 dancer.Flux = false;
+                plain.Flux = false;
                 state.Players[0].Energy = 5;
                 state.Players[0].ShiftUsedThisTurn = false;
                 GameEngine.Execute(state, new ShiftCommand { Player = 0, UnitId = dancer.Id, Direction = MoveDirection.Forward });
-                AssertTrue(GameEngine.Execute(state, new AttackCommand { Player = 0, UnitId = dancer.Id }).Success,
-                    "Agile units attack after moving");
+                plain.MovedThisTurn = true; //simulate having moved without spending the shift
+                GameEngine.ResolveAutoAttacks(state, 0, new List<GameEvent>());
+                AssertTrue(dancer.AttackedThisTurn, "Agile units auto-attack after moving");
+                AssertTrue(!plain.AttackedThisTurn, "moved non-Agile units sit the attack out");
 
-                var plain = PlayUnit(state, 0, "Conscript", 1, 2);
-                plain.Flux = false;
-                GameEngine.Execute(state, new AttackCommand { Player = 0, UnitId = plain.Id });
+                //Move/attack exclusivity: a non-Agile unit that attacked cannot Shift; an Agile one can
+                plain.MovedThisTurn = false;
+                plain.AttackedThisTurn = true;
                 state.Players[0].ShiftUsedThisTurn = false;
                 state.Players[0].Energy = 5;
                 AssertTrue(!GameEngine.Execute(state, new ShiftCommand { Player = 0, UnitId = plain.Id, Direction = MoveDirection.Back }).Success,
                     "non-Agile units cannot move after attacking");
+                AssertTrue(GameEngine.Execute(state, new ShiftCommand { Player = 0, UnitId = dancer.Id, Direction = MoveDirection.Back }).Success,
+                    "Agile units may move after attacking");
             });
 
             Test("Overdraw burns: full hand still depletes the deck (rules-v2)", () =>
@@ -581,8 +586,7 @@ namespace LightCard.CoreTests
 
                 var enemy = PlayUnit(state, 1, "Conscript", 0, 3);
                 enemy.Flux = false;
-                state.ActivePlayer = 1;
-                GameEngine.Execute(state, new AttackCommand { Player = 1, UnitId = enemy.Id });
+                GameEngine.ResolveAutoAttacks(state, 1, new List<GameEvent>());
                 AssertEqual(0, host.Damage, "spirit soaked the hit");
                 AssertTrue(host.BoundSpiritCardId == null, "1-life spirit broke");
                 AssertEqual(1, enemy.Damage, "Wrath burst hit the lane");
@@ -630,7 +634,7 @@ namespace LightCard.CoreTests
                 unit.Flux = false;
                 state.Players[1].Life = 2;
 
-                GameEngine.Execute(state, new AttackCommand { Player = 0, UnitId = unit.Id });
+                GameEngine.ResolveAutoAttacks(state, 0, new List<GameEvent>());
                 AssertEqual(0, state.Winner, "player 0 wins");
                 AssertTrue(!GameEngine.Execute(state, new EndTurnCommand { Player = 0 }).Success, "no commands after game end");
             });
@@ -652,9 +656,10 @@ namespace LightCard.CoreTests
 
                 var agent = new HeuristicAgent(0, AgentPersonality.Balanced());
                 var command = agent.ChooseCommand(state);
+                var executed = GameEngine.Execute(state, command);
 
-                AssertTrue(command is AttackCommand attack && attack.UnitId == knight.Id,
-                    $"expected lethal attack, got {command.GetType().Name}");
+                AssertTrue(executed.Success && state.Winner == 0,
+                    $"agent should reach lethal via auto-attack (chose {command.GetType().Name})");
             });
 
             Test("Agent: develops instead of passing on turn one", () =>
@@ -730,15 +735,7 @@ namespace LightCard.CoreTests
                 return new PlayCardCommand { Player = player, HandIndex = handIndex, TargetX = target.Value.x, TargetY = target.Value.y };
             }
 
-            //Attack with the first legal attacker
-            foreach (var unit in state.UnitsOf(player))
-            {
-                if (unit.IsCharm || unit.Flux || unit.Asleep || unit.AttackedThisTurn || unit.MovedThisTurn) continue;
-                if (state.EffectivePower(unit) <= 0) continue;
-                var probe = GameEngine.Execute(state.Clone(), new AttackCommand { Player = player, UnitId = unit.Id });
-                if (probe.Success)
-                    return new AttackCommand { Player = player, UnitId = unit.Id };
-            }
+            //Rules-v3: no manual attacks - combat happens on end turn automatically
 
             //Rules-v2: Replace is the only energy source, so the bot ramps once a turn
             if (!playerState.ReplaceUsedThisTurn && playerState.Hand.Count > 0)

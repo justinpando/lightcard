@@ -63,13 +63,13 @@ namespace LightCard.Core.Agents
                     yield return new PlayCardCommand { Player = Player, HandIndex = handIndex, TargetX = x, TargetY = y };
             }
 
-            //Attacks
+            //Activations (rules-v3: attacks are automatic; this is the manual unit action)
             foreach (var unit in state.UnitsOf(Player))
             {
-                if (unit.IsCharm || unit.Flux || unit.Asleep || unit.AttackedThisTurn) continue;
-                if (unit.MovedThisTurn && !unit.Definition.Agile) continue;
-                if (state.EffectivePower(unit) <= 0) continue;
-                yield return new AttackCommand { Player = Player, UnitId = unit.Id };
+                if (unit.Definition.ActivateCost < 0 || unit.ActivatedThisTurn) continue;
+                if (unit.Flux || unit.Asleep) continue;
+                if (unit.Definition.ActivateCost > playerState.Energy) continue;
+                yield return new ActivateCommand { Player = Player, UnitId = unit.Id };
             }
 
             //Shift

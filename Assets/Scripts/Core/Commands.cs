@@ -26,7 +26,11 @@ namespace LightCard.Core
         public MoveDirection Direction;
     }
 
-    public class AttackCommand : Command
+    /// <summary>
+    /// Activate a unit's or charm's activatable ability (rules-v3: attacks are
+    /// automatic at end of turn; activations are the manual per-unit action).
+    /// </summary>
+    public class ActivateCommand : Command
     {
         public int UnitId;
     }

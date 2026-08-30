@@ -89,15 +89,20 @@ Ability damage is a new pipeline, distinct from attacks:
 - **Master Painter** primes the space of the unit it strikes; attacks that hit
   the player prime nothing.
 
-## Auto-attack at end of turn (designer ruling)
+## Combat is fully automatic; Activations are the manual unit action (rules-v3, designer ruling)
 
-When a player ends their turn, every one of their units that can still legally
-attack does so automatically, front-most first (the same legality as a manual
-attack: melee blocking, Flux, sleep, moved/attacked flags, 0-power all apply).
-Manual attacks earlier in the turn remain possible — attacking early lets you
-resolve combat before playing more cards — and any unit that already attacked
-or moved is skipped by the sweep. Auto-attacks resolve before end-of-turn
-triggers.
+There are **no manual attacks**. All combat resolves in the end-of-turn sweep:
+every eligible unit attacks, front-most first (melee blocking, Flux, sleep,
+moved-non-Agile, 0-power all apply), before end-of-turn triggers. The
+`AttackCommand` no longer exists; `GameEngine.ResolveAutoAttacks` is the one
+combat entry point (public for tests).
+
+The manual per-unit action is **Activate**: cards may carry an
+`ActivateCost` — pay it once per turn (not while Asleep or in Flux; charms can
+activate the turn they arrive since they have no Flux) to fire their
+OnActivate effects. First activatable: Dinner Bell ("Activate (1): Call a
+Snarling Hound to a random nearby space", from its sheet note). In the match
+view, clicking a selected unit again Activates it.
 
 ## "Attune" — the in-world term for Replace
 

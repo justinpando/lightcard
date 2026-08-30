@@ -45,7 +45,7 @@ public class MatchContext : MonoBehaviour
     private int selectedUnitId = -1;
     private List<(int x, int y)> playTargets = new List<(int x, int y)>();
     private List<(int x, int y)> shiftTargets = new List<(int x, int y)>();
-    private bool attackSelectable;
+    private bool activateSelectable;
     private bool aiRunning;
     private int suppressClickFrame = -1;
 
@@ -404,8 +404,8 @@ public class MatchContext : MonoBehaviour
             var selected = state.GetUnit(selectedUnitId);
             if (selected != null && space.X == selected.X && space.Y == selected.Y)
             {
-                if (attackSelectable)
-                    Submit(new AttackCommand { Player = LocalPlayer, UnitId = selectedUnitId });
+                if (activateSelectable)
+                    Submit(new ActivateCommand { Player = LocalPlayer, UnitId = selectedUnitId });
                 else
                     ClearSelection();
                 return;
@@ -452,12 +452,11 @@ public class MatchContext : MonoBehaviour
         var space = fieldView.GetSpace(unit.X, unit.Y);
         if (space != null) space.SetHighlight(SpaceView.Highlight.Selected);
 
-        //Mirror of the engine's attack legality, so the affordance is honest
-        attackSelectable = !unit.IsCharm && !unit.Asleep && !unit.Flux &&
-                           !unit.AttackedThisTurn && !unit.MovedThisTurn &&
-                           state.EffectivePower(unit) > 0 &&
-                           (unit.Definition.Ranged || !HasFriendlyUnitInFront(unit));
-        if (attackSelectable && space != null) space.SetHighlight(SpaceView.Highlight.Attack);
+        //Rules-v3: no manual attacks - the per-unit action is Activate
+        activateSelectable = unit.Definition.ActivateCost >= 0 && !unit.ActivatedThisTurn &&
+                             !unit.Asleep && !unit.Flux &&
+                             playerState.Energy >= unit.Definition.ActivateCost;
+        if (activateSelectable && space != null) space.SetHighlight(SpaceView.Highlight.Attack);
 
         shiftTargets.Clear();
         bool canShift = !unit.IsCharm && !unit.Asleep && !unit.Pinned &&
@@ -475,20 +474,9 @@ public class MatchContext : MonoBehaviour
             fieldView.HighlightSpaces(shiftTargets, SpaceView.Highlight.ShiftTarget);
         }
 
-        hud.SetStatus(attackSelectable
-            ? $"{unit.CardId} attacks automatically at end of turn — click it again to attack now, or a blue space to Shift."
-            : $"{unit.CardId}: click a blue space to Shift.");
-    }
-
-    private bool HasFriendlyUnitInFront(UnitState unit)
-    {
-        int forward = GameState.ForwardDir(unit.Owner);
-        for (int y = unit.Y + forward; GameState.InBounds(unit.X, y) && GameState.SideOfRow(y) == unit.Owner; y += forward)
-        {
-            var other = state.GetUnitAt(unit.X, y);
-            if (other != null && other.Owner == unit.Owner) return true;
-        }
-        return false;
+        hud.SetStatus(activateSelectable
+            ? $"{unit.CardId}: click it again to Activate ({unit.Definition.ActivateCost} energy), or a blue space to Shift. Attacks happen automatically at end of turn."
+            : $"{unit.CardId}: click a blue space to Shift. Attacks happen automatically at end of turn.");
     }
 
     private static MoveDirection DirectionTo(UnitState unit, int x, int y)
@@ -535,7 +523,7 @@ public class MatchContext : MonoBehaviour
     {
         selectedHandIndex = -1;
         selectedUnitId = -1;
-        attackSelectable = false;
+        activateSelectable = false;
         playTargets.Clear();
         shiftTargets.Clear();
         fieldView.ClearHighlights();

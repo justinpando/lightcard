@@ -57,7 +57,7 @@ namespace LightCard.Core
             {
                 case PlayCardCommand play: return ExecutePlayCard(state, play);
                 case ShiftCommand shift: return ExecuteShift(state, shift);
-                case AttackCommand attack: return ExecuteAttack(state, attack);
+                case ActivateCommand activate: return ExecuteActivate(state, activate);
                 case ReplaceCardCommand replace: return ExecuteReplace(state, replace);
                 case EndTurnCommand _: return ExecuteEndTurn(state, command.Player);
                 default: return CommandResult.Fail("Unknown command.");
@@ -86,6 +86,7 @@ namespace LightCard.Core
                 unit.Flux = false;
                 unit.AttackedThisTurn = false;
                 unit.MovedThisTurn = false;
+                unit.ActivatedThisTurn = false;
                 //"Until the start of your next turn" grants expire now; defensive charges refresh
                 unit.TempPower = 0;
                 unit.TempParry = 0;
@@ -157,16 +158,9 @@ namespace LightCard.Core
         {
             var result = new CommandResult { Success = true };
 
-            //Rules-v2: every unit that can still legally attack does so
-            //automatically at end of turn, front-most first. Manual attacks
-            //earlier in the turn remain possible (they mark AttackedThisTurn).
-            foreach (var unit in state.UnitsOf(player).OrderBy(u => player == 0 ? -u.Y : u.Y).ToList())
-            {
-                if (state.IsOver) break;
-                if (!state.Units.Contains(unit)) continue;
-                var attack = ExecuteAttack(state, new AttackCommand { Player = player, UnitId = unit.Id });
-                if (attack.Success) result.Events.AddRange(attack.Events);
-            }
+            //Rules-v3: ALL combat happens here - every eligible unit attacks
+            //automatically, front-most first. There are no manual attacks.
+            ResolveAutoAttacks(state, player, result.Events);
 
             if (state.IsOver) return result;
 
@@ -429,23 +423,32 @@ namespace LightCard.Core
 
         //---- Attack ----
 
-        private static CommandResult ExecuteAttack(GameState state, AttackCommand command)
+        /// <summary>
+        /// The end-of-turn combat step (rules-v3: the ONLY combat step): every
+        /// eligible unit of the given player attacks, front-most first. Public
+        /// so tests and tools can resolve combat without ending a turn.
+        /// </summary>
+        public static void ResolveAutoAttacks(GameState state, int player, List<GameEvent> events)
         {
-            var attacker = state.GetUnit(command.UnitId);
+            foreach (var unit in state.UnitsOf(player).OrderBy(u => player == 0 ? -u.Y : u.Y).ToList())
+            {
+                if (state.IsOver) break;
+                if (!state.Units.Contains(unit)) continue;
+                TryUnitAttack(state, unit, events);
+            }
+        }
 
-            if (attacker == null) return CommandResult.Fail("No such unit.");
-            if (attacker.Owner != command.Player) return CommandResult.Fail("You don't control that unit.");
-            if (attacker.IsCharm) return CommandResult.Fail("Charms cannot attack.");
-            if (attacker.Asleep) return CommandResult.Fail("That unit is asleep.");
+        /// <summary>One unit's auto-attack; silently skips ineligible units.</summary>
+        private static void TryUnitAttack(GameState state, UnitState attacker, List<GameEvent> events)
+        {
+            if (attacker.IsCharm || attacker.Asleep) return;
             bool hasRush = attacker.Definition.Rush || (attacker.BoundSpirit != null && attacker.BoundSpirit.Rush);
-            if (attacker.Flux && !hasRush) return CommandResult.Fail("That unit was called this turn.");
-            if (attacker.AttackedThisTurn) return CommandResult.Fail("That unit has already attacked this turn.");
-            if (attacker.MovedThisTurn && !attacker.Definition.Agile) return CommandResult.Fail("That unit has already moved this turn.");
-            if (state.EffectivePower(attacker) <= 0) return CommandResult.Fail("Units with 0 Attack do not attack.");
-            if (!attacker.Definition.Ranged && HasFriendlyUnitInFront(state, attacker))
-                return CommandResult.Fail("Melee units must be in front of all other friendly units in their lane.");
+            if (attacker.Flux && !hasRush) return;
+            if (attacker.AttackedThisTurn) return;
+            if (attacker.MovedThisTurn && !attacker.Definition.Agile) return;
+            if (state.EffectivePower(attacker) <= 0) return;
+            if (!attacker.Definition.Ranged && HasFriendlyUnitInFront(state, attacker)) return;
 
-            var result = new CommandResult { Success = true };
             attacker.AttackedThisTurn = true;
 
             int power = state.EffectivePower(attacker);
@@ -459,23 +462,23 @@ namespace LightCard.Core
                 if (state.GetUnitAt(attacker.X, y) != null) { firstTargetY = y; break; }
             }
 
-            result.Events.Add(new GameEvent { Type = GameEventType.AttackResolved, Player = attacker.Owner, UnitId = attacker.Id, CardId = attacker.CardId, X = attacker.X, Y = attacker.Y });
+            events.Add(new GameEvent { Type = GameEventType.AttackResolved, Player = attacker.Owner, UnitId = attacker.Id, CardId = attacker.CardId, X = attacker.X, Y = attacker.Y });
 
             if (firstTargetY < 0)
             {
                 //Unblocked lane: hit the opposing player directly
-                DamagePlayer(state, enemy, power, result.Events);
-                return result;
+                DamagePlayer(state, enemy, power, events);
+                return;
             }
 
             var target = state.GetUnitAt(attacker.X, firstTargetY);
-            StrikeUnit(state, attacker, target, power, result.Events);
+            StrikeUnit(state, attacker, target, power, events);
 
             //OnAttack triggers (e.g. Master Painter) aim at the struck unit's space
             if (state.Units.Contains(attacker))
             {
                 foreach (var effect in attacker.AllEffects.Where(e => e.Trigger == Trigger.OnAttack))
-                    ResolveEffect(state, effect, attacker, attacker.Owner, attacker.X, firstTargetY, result.Events);
+                    ResolveEffect(state, effect, attacker, attacker.Owner, attacker.X, firstTargetY, events);
             }
 
             //Pierce: the attack also travels X spaces beyond the target
@@ -485,7 +488,34 @@ namespace LightCard.Core
                 if (!GameState.InBounds(attacker.X, y)) break;
                 var pierced = state.GetUnitAt(attacker.X, y);
                 if (pierced != null && pierced.Owner == enemy)
-                    StrikeUnit(state, attacker, pierced, power, result.Events, allowRiders: false);
+                    StrikeUnit(state, attacker, pierced, power, events, allowRiders: false);
+            }
+        }
+
+        //---- Activation (rules-v3: the manual per-unit action) ----
+
+        private static CommandResult ExecuteActivate(GameState state, ActivateCommand command)
+        {
+            var unit = state.GetUnit(command.UnitId);
+            var playerState = state.Players[command.Player];
+
+            if (unit == null) return CommandResult.Fail("No such unit.");
+            if (unit.Owner != command.Player) return CommandResult.Fail("You don't control that unit.");
+            if (unit.Definition.ActivateCost < 0) return CommandResult.Fail("That unit has no activatable ability.");
+            if (unit.Asleep) return CommandResult.Fail("That unit is asleep.");
+            if (unit.Flux) return CommandResult.Fail("That unit was called this turn.");
+            if (unit.ActivatedThisTurn) return CommandResult.Fail("Already activated this turn.");
+            if (playerState.Energy < unit.Definition.ActivateCost) return CommandResult.Fail("Not enough energy to activate.");
+
+            var result = new CommandResult { Success = true };
+            playerState.Energy -= unit.Definition.ActivateCost;
+            unit.ActivatedThisTurn = true;
+            result.Events.Add(new GameEvent { Type = GameEventType.EnergyChanged, Player = command.Player, Amount = playerState.Energy });
+
+            foreach (var effect in unit.AllEffects.Where(e => e.Trigger == Trigger.OnActivate).ToList())
+            {
+                if (!state.Units.Contains(unit)) break;
+                ResolveEffect(state, effect, unit, unit.Owner, unit.X, unit.Y, result.Events);
             }
 
             return result;
@@ -927,6 +957,22 @@ namespace LightCard.Core
                 {
                     state.Players[owner].Life += effect.Amount;
                     events.Add(new GameEvent { Type = GameEventType.PlayerHealed, Player = owner, Amount = effect.Amount });
+                    break;
+                }
+                case EffectAction.CallUnitNearby:
+                {
+                    if (source == null || string.IsNullOrEmpty(effect.CalledCardId)) break;
+                    var nearby = new List<(int x, int y)>();
+                    for (int dx = -1; dx <= 1; dx++)
+                        for (int dy = -1; dy <= 1; dy++)
+                            if ((dx != 0 || dy != 0) && GameState.InBounds(source.X + dx, source.Y + dy) &&
+                                GameState.SideOfRow(source.Y + dy) == owner && state.GetUnitAt(source.X + dx, source.Y + dy) == null)
+                                nearby.Add((source.X + dx, source.Y + dy));
+                    if (nearby.Count > 0)
+                    {
+                        var (nx, ny) = nearby[state.NextRandom(nearby.Count)];
+                        CallUnit(state, owner, effect.CalledCardId, nx, ny, events);
+                    }
                     break;
                 }
                 case EffectAction.CallUnitAtTarget:

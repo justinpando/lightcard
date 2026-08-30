@@ -869,12 +869,14 @@ namespace LightCard.Core
                 {
                     Id = "Dinner Bell", Archetype = Archetype.Tower, Type = CardType.Charm,
                     Cost = 3, Power = 0, Life = 3,
-                    Text = "When a nearby friendly unit is defeated, call a Snarling Hound to its space and this takes 1 damage.",
+                    Text = "When a nearby friendly unit is defeated, call a Snarling Hound to its space and this takes 1 damage. Activate (1): Call a Snarling Hound to a random nearby space.",
+                    ActivateCost = 1,
                     PlayTarget = PlayTargetKind.FriendlyEmptySpace,
                     Effects =
                     {
                         new EffectDef { Trigger = Trigger.OnFriendlyDestroyedNearby, Action = EffectAction.CallUnitAtTarget, CalledCardId = "Snarling Hound" },
-                        new EffectDef { Trigger = Trigger.OnFriendlyDestroyedNearby, Action = EffectAction.DealDamage, Scope = TargetScope.Self, Amount = 1 }
+                        new EffectDef { Trigger = Trigger.OnFriendlyDestroyedNearby, Action = EffectAction.DealDamage, Scope = TargetScope.Self, Amount = 1 },
+                        new EffectDef { Trigger = Trigger.OnActivate, Action = EffectAction.CallUnitNearby, CalledCardId = "Snarling Hound" }
                     }
                 },
                 new CardDefinition

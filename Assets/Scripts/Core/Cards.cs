@@ -77,7 +77,9 @@ namespace LightCard.Core
         /// <summary>Fires when a friendly unit or charm is destroyed in the eight surrounding spaces; target coords are its space (Dinner Bell).</summary>
         OnFriendlyDestroyedNearby,
         /// <summary>Fires whenever either player draws a card (Seer's Guillotine).</summary>
-        OnAnyDraw
+        OnAnyDraw,
+        /// <summary>Fires when the owner pays this card's ActivateCost (rules-v3 activations).</summary>
+        OnActivate
     }
 
     /// <summary>What an effect does. Magnitudes live in EffectDef.Power/Life/Amount.</summary>
@@ -190,7 +192,9 @@ namespace LightCard.Core
         /// <summary>Every Flooded space becomes Desert and vice versa (Mirage).</summary>
         SwapFloodDesert,
         /// <summary>Static: the source has +Power attack per board space bearing SpaceEffect (Living Torrent).</summary>
-        StaticPowerPerSpace
+        StaticPowerPerSpace,
+        /// <summary>Call CalledCardId to a random empty space adjacent (8-way) to the source, on the owner's half (Dinner Bell's activation).</summary>
+        CallUnitNearby
     }
 
     /// <summary>Which units an effect applies to, relative to its source or its play target.</summary>
@@ -317,6 +321,8 @@ namespace LightCard.Core
         /// the host as source) when it is destroyed.
         /// </summary>
         public bool IsSpirit;
+        /// <summary>Energy cost of this card's activatable ability; -1 = none (rules-v3).</summary>
+        public int ActivateCost = -1;
         /// <summary>X-bound (Ocean): destroyed at its owner's turn start unless standing on this effect.</summary>
         public SpaceEffectType BoundTo = SpaceEffectType.None;
         /// <summary>Immune to the Desert drain (Sand Shark).</summary>

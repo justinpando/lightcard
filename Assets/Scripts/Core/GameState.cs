@@ -38,6 +38,7 @@ namespace LightCard.Core
         public bool Flux;
         public bool AttackedThisTurn;
         public bool MovedThisTurn;
+        public bool ActivatedThisTurn;
         /// <summary>Bound spirit's card id (Heart), or null; the spirit soaks all damage.</summary>
         public string BoundSpiritCardId;
         /// <summary>Damage the bound spirit has absorbed so far.</summary>
