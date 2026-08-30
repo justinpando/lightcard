@@ -15,6 +15,7 @@ namespace LightCard.Core
         public int Damage;
         public int BonusPower;
         public int BonusLife;
+        public int BonusPierce;
         public bool Asleep;
         /// <summary>True on the turn a unit is called; units in Flux may not attack.</summary>
         public bool Flux;

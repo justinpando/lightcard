@@ -19,4 +19,4 @@ MonoBehaviour:
   cost: 4
   power: 1
   life: 3
-  description: 'Summon: This row becomes Verdant. Destroyed: This lane becomes Brambled'
+  description: 'Summon: This row becomes Verdant. Destroyed: This row becomes Brambled.'

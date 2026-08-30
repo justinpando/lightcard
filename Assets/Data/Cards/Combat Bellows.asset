@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Combat Bellows
   m_EditorClassIdentifier: 
   archetype: 1
-  type: 0
+  type: 1
   sprite: {fileID: 21300000, guid: 744c8547a0f0f854fa3ced2213d0f483, type: 3}
   name: Combat Bellows
   cost: 2

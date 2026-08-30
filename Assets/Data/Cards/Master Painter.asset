@@ -19,4 +19,4 @@ MonoBehaviour:
   cost: 3
   power: 2
   life: 4
-  description: 'Summon, Move: Space becomes Painted.'
+  description: Attacks apply space effect Primed.

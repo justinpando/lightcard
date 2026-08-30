@@ -72,5 +72,16 @@ namespace LightCard.Core.Agents
             Advancement = 0.5f,
             LaneControl = 2.2f
         };
+
+        /// <summary>Atelier: card advantage and trades; values removal over racing.</summary>
+        public static AgentPersonality Control() => new AgentPersonality
+        {
+            Name = "Control",
+            CardInHand = 0.7f,
+            EnemyMaterial = 1.4f,
+            OwnLife = 2.8f,
+            OpponentLife = 2.2f,
+            Advancement = 0.15f
+        };
     }
 }

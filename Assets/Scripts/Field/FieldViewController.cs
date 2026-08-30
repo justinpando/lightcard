@@ -14,9 +14,11 @@ using LightCard.Core;
 public class FieldViewController
 {
     private readonly SpaceView[,] spaces = new SpaceView[GameConfig.Lanes, GameConfig.Rows];
+    private readonly Func<string, Sprite> artResolver;
 
-    public FieldViewController(Action<SpaceView> onSpaceClicked)
+    public FieldViewController(Action<SpaceView> onSpaceClicked, Func<string, Sprite> artResolver = null)
     {
+        this.artResolver = artResolver;
         var all = UnityEngine.Object.FindObjectsByType<SpaceView>(FindObjectsSortMode.None);
         if (all.Length != GameConfig.Lanes * GameConfig.Rows)
             Debug.LogWarning($"FieldViewController: expected {GameConfig.Lanes * GameConfig.Rows} SpaceViews, found {all.Length}.");
@@ -75,7 +77,7 @@ public class FieldViewController
                 if (space == null) continue;
 
                 var unit = state.GetUnitAt(x, y);
-                if (unit != null) space.ShowUnit(state, unit, localPlayer);
+                if (unit != null) space.ShowUnit(state, unit, localPlayer, artResolver?.Invoke(unit.CardId));
                 else space.ClearUnit();
 
                 space.SetSpaceEffect(state.SpaceEffects[x, y]);

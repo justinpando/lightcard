@@ -19,4 +19,4 @@ MonoBehaviour:
   cost: 2
   power: 1
   life: 3
-  description: Gains +1/1 each time it regains life.
+  description: Gains +1/1 at end of turn if on a Verdant space.

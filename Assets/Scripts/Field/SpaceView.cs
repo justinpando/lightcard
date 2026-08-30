@@ -26,6 +26,7 @@ public class SpaceView : MonoBehaviour
 
     private Canvas unitCanvas;
     private Image unitImage;
+    private Image ownerFrame;
     private Image effectImage;
     private Image highlightImage;
     private TMP_Text statsText;
@@ -47,9 +48,21 @@ public class SpaceView : MonoBehaviour
 
         var imageTransform = unitCanvas.transform.Find("Image");
         unitImage = imageTransform != null ? imageTransform.GetComponent<Image>() : null;
+        if (unitImage != null)
+        {
+            //Inset the art so the owner frame reads as a border around it
+            var rect = (RectTransform)unitImage.transform;
+            rect.anchorMin = new Vector2(0.08f, 0.08f);
+            rect.anchorMax = new Vector2(0.92f, 0.92f);
+            rect.offsetMin = Vector2.zero;
+            rect.offsetMax = Vector2.zero;
+        }
 
         effectImage = CreateOverlay("Effect Overlay");
         effectImage.transform.SetAsFirstSibling();
+
+        ownerFrame = CreateOverlay("Owner Frame");
+        ownerFrame.transform.SetSiblingIndex(1);
 
         highlightImage = CreateOverlay("Highlight Overlay");
 
@@ -100,7 +113,7 @@ public class SpaceView : MonoBehaviour
         Y = y;
     }
 
-    public void ShowUnit(GameState state, UnitState unit, int localPlayer)
+    public void ShowUnit(GameState state, UnitState unit, int localPlayer, Sprite art = null)
     {
         UnitId = unit.Id;
 
@@ -110,10 +123,20 @@ public class SpaceView : MonoBehaviour
         bool dimmed = unit.Asleep || unit.Flux || unit.AttackedThisTurn || unit.MovedThisTurn;
         color.a = dimmed ? 0.45f : 1f;
 
+        if (ownerFrame != null) ownerFrame.color = color;
+
         if (unitImage != null)
         {
             unitImage.enabled = true;
-            unitImage.color = color;
+            if (art != null)
+            {
+                unitImage.sprite = art;
+                unitImage.color = new Color(1f, 1f, 1f, color.a);
+            }
+            else
+            {
+                unitImage.color = color;
+            }
         }
 
         if (nameText != null)
@@ -136,6 +159,7 @@ public class SpaceView : MonoBehaviour
     {
         UnitId = -1;
         if (unitImage != null) unitImage.enabled = false;
+        if (ownerFrame != null) ownerFrame.color = Color.clear;
         if (nameText != null) nameText.text = "";
         if (statsText != null) statsText.text = "";
     }

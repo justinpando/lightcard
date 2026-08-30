@@ -19,4 +19,4 @@ MonoBehaviour:
   cost: 1
   power: 0
   life: 0
-  description: 'Heal 3, then Bramble target space. '
+  description: Heal 3, then Bramble target space.

@@ -16,7 +16,7 @@ MonoBehaviour:
   type: 0
   sprite: {fileID: 21300000, guid: 92d92e6ff9a2d81499610fa68e192fac, type: 3}
   name: Spearbearer
-  cost: 3
-  power: 1
+  cost: 2
+  power: 2
   life: 3
-  description: Friendly units in front of this gain Pierce 1.
+  description: Pierce 1. Adjacent allies gain +1/0.

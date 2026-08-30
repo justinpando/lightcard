@@ -354,6 +354,85 @@ namespace LightCard.CoreTests
                 AssertTrue(!state.IsOver, "still alive at 10 fatigue damage");
             });
 
+            Test("Lances: sweep decays/grows per unit hit, friend or foe (Atelier)", () =>
+            {
+                var state = EmptyGame();
+                var mine = PlayUnit(state, 0, "Automaton", 0, 1);          //1/1, friendly fire
+                var frontEnemy = PlayUnit(state, 1, "Workshop Guardian", 0, 3); //Resist 1, 6 life
+                var backEnemy = PlayUnit(state, 1, "Automaton", 0, 5);     //1/1
+
+                PlayAbility(state, 0, "Diminishing Lance", 0, 0);           //3 dmg, -1 per hit
+                AssertTrue(!state.Units.Contains(mine), "own unit hit first for 3 and died");
+                AssertEqual(1, frontEnemy.Damage, "second hit: 2 damage minus Resist 1");
+                AssertTrue(!state.Units.Contains(backEnemy), "third hit: 1 damage killed it");
+
+                var a = PlayUnit(state, 1, "Art Critic", 1, 3);             //Resist 1, 4 life
+                var b = PlayUnit(state, 1, "Automaton", 1, 4);              //1/1
+                PlayAbility(state, 0, "Magnifying Lance", 1, 0);            //1 dmg, +1 per hit
+                AssertEqual(0, a.Damage, "first hit: 1 damage fully resisted (still counts)");
+                AssertTrue(!state.Units.Contains(b), "second hit: 2 damage killed it");
+            });
+
+            Test("Primed: +2 ability damage, consumed (Atelier)", () =>
+            {
+                var state = EmptyGame();
+                PlayAbility(state, 0, "Splash of Primer", 0, 3);
+                AssertEqual(SpaceEffectType.Primed, state.SpaceEffects[2, 3], "whole row primed");
+
+                var victim = PlayUnit(state, 1, "Workshop Guardian", 0, 3); //Resist 1
+                PlayAbility(state, 0, "Magnifying Lance", 0, 0);            //1 +2 primed -1 resist = 2
+                AssertEqual(2, victim.Damage, "primed boost applied through resist");
+                AssertEqual(SpaceEffectType.None, state.SpaceEffects[0, 3], "primed consumed");
+                AssertEqual(SpaceEffectType.Primed, state.SpaceEffects[1, 3], "untouched spaces stay primed");
+            });
+
+            Test("Ability-play triggers: Diligent Student and Lightning Rod (Atelier)", () =>
+            {
+                var state = EmptyGame();
+                var student = PlayUnit(state, 0, "Diligent Student", 2, 0);
+                var rod = PlayUnit(state, 1, "Lightning Rod", 0, 3);        //enemy charm watching us
+                var ourFront = PlayUnit(state, 0, "Automaton", 0, 2);       //nearest to the rod in its lane
+
+                PlayAbility(state, 0, "Splash of Primer", 2, 5);
+                AssertEqual(1, student.BonusLife, "student grew on our ability");
+                AssertEqual(1, ourFront.Damage, "rod zapped our nearest unit in its lane");
+                AssertEqual(0, rod.Damage, "rod untouched");
+
+                PlayUnit(state, 0, "Automaton", 1, 0);
+                AssertEqual(1, student.BonusLife, "unit plays do not trigger ability watchers");
+            });
+
+            Test("Sharpen Edge grants Pierce; Master Painter primes what it strikes (Atelier)", () =>
+            {
+                var state = EmptyGame();
+                var painter = PlayUnit(state, 0, "Master Painter", 1, 2);
+                painter.Flux = false;
+                PlayAbility(state, 0, "Sharpen Edge", 1, 2);
+                AssertEqual(4, state.EffectivePower(painter), "2 base +2 sharpened");
+
+                var front = PlayUnit(state, 1, "Workshop Guardian", 1, 3);  //Armor 1, 6 life
+                var back = PlayUnit(state, 1, "Automaton", 1, 4);
+                GameEngine.Execute(state, new AttackCommand { Player = 0, UnitId = painter.Id });
+                AssertEqual(3, front.Damage, "4 power - 1 armor");
+                AssertEqual(SpaceEffectType.Primed, state.SpaceEffects[1, 3], "struck space primed");
+                AssertTrue(!state.Units.Contains(back), "granted Pierce carried the attack through");
+            });
+
+            Test("Erasure: clears first, then damages - no Primed bonus on itself (Atelier)", () =>
+            {
+                var state = EmptyGame();
+                var victim = PlayUnit(state, 1, "Art Critic", 2, 3);        //Resist 1, 4 life
+                state.SpaceEffects[2, 3] = SpaceEffectType.Primed;
+
+                PlayAbility(state, 0, "Erasure", 2, 3);
+                AssertEqual(SpaceEffectType.None, state.SpaceEffects[2, 3], "effect removed");
+                AssertEqual(2, victim.Damage, "3 - resist 1, no primed bonus");
+
+                var untouched = PlayUnit(state, 1, "Automaton", 0, 3);
+                PlayAbility(state, 0, "Erasure", 0, 3);
+                AssertEqual(0, untouched.Damage, "no effect removed, no damage");
+            });
+
             Test("Lethal: reducing life to 0 ends the game", () =>
             {
                 var state = EmptyGame();

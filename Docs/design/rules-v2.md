@@ -64,6 +64,31 @@ the design space — deckbuilding breadth is a goal. Implementation is staged:
 ship the keywords the current card slice needs, keep the rest in the back
 pocket, and introduce them as their archetypes come online. Nothing is cut.
 
+## Atelier slice rulings (v2 catalog: 12 cards)
+
+Ability damage is a new pipeline, distinct from attacks:
+
+- **Ability damage ignores Armor** (consistent with the v1 Retaliate ruling
+  that effect damage bypasses armor). **Resist X** reduces ability damage only,
+  never attack damage.
+- **Primed** (space effect): ability damage dealt to a unit standing on a
+  Primed space is +2, and the boost consumes the effect (the space clears).
+  Priming an empty space keeps the charge until someone stands there.
+- **Lances** (`LaneDamage`) sweep the target lane starting from the caster's
+  backline, hitting **every unit in the path — friend or foe** (keep your
+  spellwork lanes clear). The traveling damage changes per unit hit
+  (Diminishing 3/−1, Magnifying 1/+1) and the sweep stops when it reaches 0.
+  A hit a victim fully Resists still counts toward the change. Lane sweeps
+  never hit players.
+- **Erasure** removes the space effect first, then deals its damage — so
+  erasing a Primed space does not get the Primed bonus.
+- **"The enemy lane"** (Lightning Rod, Combat Bellows) = the nearest enemy
+  unit or charm in the charm's own lane, scanning from the enemy frontline
+  back — the same targeting as an attack. Combat Bellows cannot push charms
+  (immobile).
+- **Master Painter** primes the space of the unit it strikes; attacks that hit
+  the player prime nothing.
+
 ## Rejected (designer ruling)
 
 - **Standing positional bonuses** (the sheet's "back row Armor 1, front row

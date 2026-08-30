@@ -19,4 +19,4 @@ MonoBehaviour:
   cost: 1
   power: 0
   life: 0
-  description: Target lane becomes Primed.
+  description: Target row becomes Primed.

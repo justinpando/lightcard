@@ -13,15 +13,18 @@ using LightCard.Core.Agents;
 /// </summary>
 public class MatchContext : MonoBehaviour
 {
-    public enum AiStyle { Balanced, Formation, Patient, Relentless }
+    public enum AiStyle { Balanced, Formation, Patient, Relentless, Control }
+    public enum AiDeckSource { Starter, CatalogExpedition, CatalogGarden, CatalogAtelier }
 
     public CardLibrary library;
 
     [Tooltip("Saved deck to play with; blank = first saved deck, falling back to a starter deck.")]
     public string playerDeckName = "";
-    [Tooltip("Which starter deck the opponent pilots.")]
+    [Tooltip("Where the opponent's deck comes from: a starter deck asset, or built from the engine catalog.")]
+    public AiDeckSource aiDeckSource = AiDeckSource.CatalogAtelier;
+    [Tooltip("Which starter deck the opponent pilots when aiDeckSource is Starter.")]
     public int aiStarterDeckIndex = 0;
-    public AiStyle aiStyle = AiStyle.Balanced;
+    public AiStyle aiStyle = AiStyle.Control;
     [Tooltip("0 = random seed each match.")]
     public int seed;
     [Tooltip("Pause between AI actions so its turn is watchable.")]
@@ -58,7 +61,7 @@ public class MatchContext : MonoBehaviour
         aiAgent = new HeuristicAgent(AiPlayer, PersonalityFor(aiStyle));
         Debug.Log($"Match started: seed {matchSeed}, player deck {playerDeck.Count} cards, AI deck {aiDeck.Count} cards ({aiAgent.Personality.Name}).");
 
-        fieldView = new FieldViewController(OnSpaceClicked);
+        fieldView = new FieldViewController(OnSpaceClicked, ResolveCardArt);
 
         var uiCanvas = GameObject.Find("UI Canvas");
         handView = new HandViewController(library, uiCanvas.transform.Find("Margin/Hand"));
@@ -95,6 +98,19 @@ public class MatchContext : MonoBehaviour
 
     private List<string> BuildAiDeck(List<string> playerDeck)
     {
+        if (aiDeckSource != AiDeckSource.Starter)
+        {
+            var archetype = aiDeckSource == AiDeckSource.CatalogExpedition ? Archetype.Expedition
+                          : aiDeckSource == AiDeckSource.CatalogGarden ? Archetype.Garden
+                          : Archetype.Atelier;
+            var catalogDeck = new List<string>();
+            foreach (var card in CardCatalogV1.Cards.Values)
+                if (card.Archetype == archetype)
+                    for (int copies = 0; copies < GameConfig.IndividualCardLimit; copies++)
+                        catalogDeck.Add(card.Id);
+            return catalogDeck;
+        }
+
         var deck = StarterDeck(aiStarterDeckIndex);
         if (deck.Count == 0) return new List<string>(playerDeck);
         return PadFromCatalog(deck, "AI starter");
@@ -161,6 +177,12 @@ public class MatchContext : MonoBehaviour
         return deck;
     }
 
+    private Sprite ResolveCardArt(string cardId)
+    {
+        var card = library.cardCollection.cards.FirstOrDefault(c => c != null && c.name == cardId);
+        return card != null ? card.sprite : null;
+    }
+
     private static AgentPersonality PersonalityFor(AiStyle style)
     {
         switch (style)
@@ -168,6 +190,7 @@ public class MatchContext : MonoBehaviour
             case AiStyle.Formation: return AgentPersonality.Formation();
             case AiStyle.Patient: return AgentPersonality.Patient();
             case AiStyle.Relentless: return AgentPersonality.Relentless();
+            case AiStyle.Control: return AgentPersonality.Control();
             default: return AgentPersonality.Balanced();
         }
     }

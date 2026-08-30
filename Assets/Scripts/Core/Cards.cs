@@ -6,7 +6,12 @@ namespace LightCard.Core
 
     public enum CardType { Unit, Charm, Ability }
 
-    public enum SpaceEffectType { None, Verdant, Brambled, Vista }
+    public enum SpaceEffectType
+    {
+        None, Verdant, Brambled, Vista,
+        /// <summary>Ability damage to a unit on this space is +2; consumed by that boost (Atelier).</summary>
+        Primed
+    }
 
     /// <summary>When an effect fires.</summary>
     public enum Trigger
@@ -28,7 +33,13 @@ namespace LightCard.Core
         /// <summary>Fires when the opposing player calls a unit.</summary>
         OnEnemyCall,
         /// <summary>Continuous effect, recomputed on demand (auras and conditional stats).</summary>
-        Static
+        Static,
+        /// <summary>Fires after the owner resolves an Ability card (Atelier).</summary>
+        OnOwnerAbilityPlay,
+        /// <summary>Fires after the opposing player resolves an Ability card (Atelier).</summary>
+        OnEnemyAbilityPlay,
+        /// <summary>Fires after this unit attacks another unit (not the player); target coords are the victim's space.</summary>
+        OnAttack
     }
 
     /// <summary>What an effect does. Magnitudes live in EffectDef.Power/Life/Amount.</summary>
@@ -55,7 +66,21 @@ namespace LightCard.Core
         /// <summary>Permanently gain Power per board space with EffectDef.SpaceEffect applied.</summary>
         GainPowerPerSpaceEffect,
         /// <summary>Permanently gain Life per board space with EffectDef.SpaceEffect applied.</summary>
-        GainLifePerSpaceEffect
+        GainLifePerSpaceEffect,
+        /// <summary>Ability damage: Amount to each unit in Scope (ignores armor; Resist and Primed apply).</summary>
+        DealDamage,
+        /// <summary>
+        /// Ability damage swept along the target lane from the caster's side:
+        /// starts at Power, changes by Amount after each unit hit, stops at 0.
+        /// Hits every unit in the path, friend or foe.
+        /// </summary>
+        LaneDamage,
+        /// <summary>Remove the target space's effect; if one was removed and Amount &gt; 0, deal Amount ability damage to its occupant.</summary>
+        ClearSpaceEffect,
+        /// <summary>Grant Amount permanent Pierce to units in Scope.</summary>
+        GainPierce,
+        /// <summary>Push units in Scope one space away from the effect's owner.</summary>
+        PushAway
     }
 
     /// <summary>Which units an effect applies to, relative to its source or its play target.</summary>
@@ -76,7 +101,9 @@ namespace LightCard.Core
         RowInFront,
         AllFriendlyUnits,
         /// <summary>Friendly units with no enemy unit or charm in their lane.</summary>
-        UnblockedFriendlyUnits
+        UnblockedFriendlyUnits,
+        /// <summary>The nearest enemy unit or charm in the source's lane, scanning from the enemy frontline back.</summary>
+        NearestEnemyInLane
     }
 
     /// <summary>Extra requirement for static effects.</summary>
@@ -132,6 +159,7 @@ namespace LightCard.Core
         //Keywords
         public int Armor;
         public int Pierce;
+        public int Resist;             //reduces ability damage (never attack damage)
         public int Retaliate;          //deal N damage to attackers
         public bool PushOnAttack;
         public bool AutoAdvance;

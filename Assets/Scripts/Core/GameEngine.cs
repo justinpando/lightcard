@@ -160,6 +160,15 @@ namespace LightCard.Core
             {
                 foreach (var effect in definition.Effects.Where(e => e.Trigger == Trigger.OnPlay))
                     ResolveEffect(state, effect, null, command.Player, command.TargetX, command.TargetY, result.Events);
+
+                //Ability-play watchers (Diligent Student, Lightning Rod, Combat Bellows)
+                foreach (var watcher in state.Units.ToList())
+                {
+                    if (!state.Units.Contains(watcher)) continue;
+                    var trigger = watcher.Owner == command.Player ? Trigger.OnOwnerAbilityPlay : Trigger.OnEnemyAbilityPlay;
+                    foreach (var effect in watcher.Definition.Effects.Where(e => e.Trigger == trigger))
+                        ResolveEffect(state, effect, watcher, watcher.Owner, watcher.X, watcher.Y, result.Events);
+                }
             }
             else
             {
@@ -320,8 +329,15 @@ namespace LightCard.Core
             var target = state.GetUnitAt(attacker.X, firstTargetY);
             StrikeUnit(state, attacker, target, power, result.Events);
 
+            //OnAttack triggers (e.g. Master Painter) aim at the struck unit's space
+            if (state.Units.Contains(attacker))
+            {
+                foreach (var effect in attacker.Definition.Effects.Where(e => e.Trigger == Trigger.OnAttack))
+                    ResolveEffect(state, effect, attacker, attacker.Owner, attacker.X, firstTargetY, result.Events);
+            }
+
             //Pierce: the attack also travels X spaces beyond the target
-            for (int n = 1; n <= attacker.Definition.Pierce; n++)
+            for (int n = 1; n <= attacker.Definition.Pierce + attacker.BonusPierce; n++)
             {
                 int y = firstTargetY + forward * n;
                 if (!GameState.InBounds(attacker.X, y)) break;
@@ -462,7 +478,77 @@ namespace LightCard.Core
                     events.Add(new GameEvent { Type = GameEventType.UnitStatsChanged, UnitId = source.Id, CardId = source.CardId, Amount = count });
                     break;
                 }
+                case EffectAction.DealDamage:
+                {
+                    foreach (var unit in GatherUnits(state, effect.Scope, source, owner, targetX, targetY))
+                        DealAbilityDamage(state, unit, effect.Amount, events);
+                    break;
+                }
+                case EffectAction.LaneDamage:
+                {
+                    //Sweep the target lane from the caster's side; the traveling damage
+                    //changes by Amount per unit hit and the sweep stops when it reaches 0.
+                    int damage = effect.Power;
+                    int startY = GameState.BacklineRow(owner);
+                    int direction = GameState.ForwardDir(owner);
+                    for (int y = startY; GameState.InBounds(targetX, y); y += direction)
+                    {
+                        if (damage <= 0) break;
+                        var victim = state.GetUnitAt(targetX, y);
+                        if (victim == null) continue;
+                        DealAbilityDamage(state, victim, damage, events);
+                        damage += effect.Amount;
+                    }
+                    break;
+                }
+                case EffectAction.ClearSpaceEffect:
+                {
+                    if (state.SpaceEffects[targetX, targetY] == SpaceEffectType.None) break;
+                    state.SpaceEffects[targetX, targetY] = SpaceEffectType.None;
+                    events.Add(new GameEvent { Type = GameEventType.SpaceEffectApplied, X = targetX, Y = targetY, SpaceEffect = SpaceEffectType.None });
+
+                    var occupant = state.GetUnitAt(targetX, targetY);
+                    if (occupant != null && effect.Amount > 0)
+                        DealAbilityDamage(state, occupant, effect.Amount, events);
+                    break;
+                }
+                case EffectAction.GainPierce:
+                {
+                    foreach (var unit in GatherUnits(state, effect.Scope, source, owner, targetX, targetY))
+                    {
+                        unit.BonusPierce += effect.Amount;
+                        events.Add(new GameEvent { Type = GameEventType.UnitStatsChanged, UnitId = unit.Id, CardId = unit.CardId, Amount = effect.Amount });
+                    }
+                    break;
+                }
+                case EffectAction.PushAway:
+                {
+                    foreach (var unit in GatherUnits(state, effect.Scope, source, owner, targetX, targetY).ToList())
+                    {
+                        if (unit.IsCharm) continue; //charms are immobile
+                        if (state.Units.Contains(unit))
+                            PushUnit(state, unit, GameState.ForwardDir(owner), events);
+                    }
+                    break;
+                }
             }
+        }
+
+        /// <summary>
+        /// Ability (non-attack) damage: ignores Armor; reduced by the victim's
+        /// Resist; +2 if the victim stands on a Primed space, consuming it.
+        /// </summary>
+        private static void DealAbilityDamage(GameState state, UnitState unit, int amount, List<GameEvent> events)
+        {
+            if (state.SpaceEffects[unit.X, unit.Y] == SpaceEffectType.Primed)
+            {
+                amount += 2;
+                state.SpaceEffects[unit.X, unit.Y] = SpaceEffectType.None;
+                events.Add(new GameEvent { Type = GameEventType.SpaceEffectApplied, X = unit.X, Y = unit.Y, SpaceEffect = SpaceEffectType.None });
+            }
+
+            amount -= unit.Definition.Resist;
+            DamageUnit(state, unit, amount, events);
         }
 
         private static List<UnitState> GatherUnits(GameState state, TargetScope scope, UnitState source, int owner, int targetX, int targetY)
@@ -484,6 +570,18 @@ namespace LightCard.Core
                     return state.UnitsOf(owner).Where(u => !u.IsCharm).ToList();
                 case TargetScope.UnblockedFriendlyUnits:
                     return state.UnitsOf(owner).Where(u => !u.IsCharm && state.LaneUnblockedFor(owner, u.X)).ToList();
+                case TargetScope.NearestEnemyInLane:
+                {
+                    if (source == null) return new List<UnitState>();
+                    int enemy = 1 - owner;
+                    int forward = GameState.ForwardDir(owner);
+                    for (int y = GameState.FrontlineRow(enemy); GameState.InBounds(source.X, y) && GameState.SideOfRow(y) == enemy; y += forward)
+                    {
+                        var unit = state.GetUnitAt(source.X, y);
+                        if (unit != null) return new List<UnitState> { unit };
+                    }
+                    return new List<UnitState>();
+                }
                 default:
                     return new List<UnitState>();
             }

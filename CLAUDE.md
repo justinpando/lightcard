@@ -58,10 +58,13 @@ and the first slice of phase 2: `Field.unity` is wired to the engine
 (`MatchContext` + view controllers in `Assets/Scripts/Field/`) and playable
 against `HeuristicAgent` — click-driven play/shift/attack/replace, AI turns,
 HUD. Remaining phase 2 work: animate from the `GameEvent` stream instead of
-full-state refreshes, a history/log panel, match end/restart flow, and richer
-unit visuals. Decks thin out on entry (cards missing from `CardCatalogV1` are
-skipped, then padded back from the catalog) until more of the set is
-implemented.
+full-state refreshes, a history/log panel, match end/restart flow. Decks thin
+out on entry (cards missing from `CardCatalogV1` are skipped, then padded back
+from the catalog) until more of the set is implemented. The catalog is now 32
+cards (10 Expedition, 10 Garden, 12 Atelier — ability damage/Resist/Primed;
+rulings in `Docs/design/rules-v2.md`). `LightCard/Sync Card Assets From
+Catalog` mirrors the catalog into library Card assets and generates
+placeholder sprites — run it after adding catalog cards.
 
 ## Caveats
 

@@ -3,10 +3,11 @@ using System.Collections.Generic;
 namespace LightCard.Core
 {
     /// <summary>
-    /// The v1 playable set: 10 Expedition + 10 Garden cards from the design sheet,
-    /// chosen because their printed text is implementable verbatim with the
-    /// current trigger/effect grammar. Long-term this catalog is imported from the
-    /// same spreadsheet that feeds CardDataImporter.
+    /// The playable set: 10 Expedition + 10 Garden (v1) + 12 Atelier (v2, the
+    /// ability-damage slice) from the design sheet, chosen because their printed
+    /// text is implementable with the current trigger/effect grammar. Long-term
+    /// this catalog is imported from the same spreadsheet that feeds
+    /// CardDataImporter; until then CardAssetSync mirrors it into Card assets.
     /// </summary>
     public static class CardCatalogV1
     {
@@ -237,6 +238,130 @@ namespace LightCard.Core
                     Effects =
                     {
                         new EffectDef { Trigger = Trigger.OnPlay, Action = EffectAction.SetAsleep, Scope = TargetScope.TargetUnit }
+                    }
+                },
+
+                //---- Atelier ----
+                new CardDefinition
+                {
+                    Id = "Automaton", Archetype = Archetype.Atelier, Type = CardType.Unit,
+                    Cost = 1, Power = 1, Life = 1,
+                    PlayTarget = PlayTargetKind.FriendlyEmptySpace
+                },
+                new CardDefinition
+                {
+                    Id = "Diligent Student", Archetype = Archetype.Atelier, Type = CardType.Unit,
+                    Cost = 1, Power = 1, Life = 1,
+                    Text = "Gains +0/1 when you play an Ability.",
+                    PlayTarget = PlayTargetKind.FriendlyEmptySpace,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.OnOwnerAbilityPlay, Action = EffectAction.GainStats, Scope = TargetScope.Self, Life = 1 }
+                    }
+                },
+                new CardDefinition
+                {
+                    Id = "Art Critic", Archetype = Archetype.Atelier, Type = CardType.Unit,
+                    Cost = 2, Power = 1, Life = 4,
+                    Text = "Ability Resist 1.",
+                    Resist = 1,
+                    PlayTarget = PlayTargetKind.FriendlyEmptySpace
+                },
+                new CardDefinition
+                {
+                    Id = "Master Painter", Archetype = Archetype.Atelier, Type = CardType.Unit,
+                    Cost = 3, Power = 2, Life = 4,
+                    Text = "Attacks apply space effect Primed.",
+                    PlayTarget = PlayTargetKind.FriendlyEmptySpace,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.OnAttack, Action = EffectAction.ApplySpaceEffect, Scope = TargetScope.TargetSpace, SpaceEffect = SpaceEffectType.Primed }
+                    }
+                },
+                new CardDefinition
+                {
+                    Id = "Workshop Guardian", Archetype = Archetype.Atelier, Type = CardType.Unit,
+                    Cost = 4, Power = 3, Life = 6,
+                    Text = "Armor 1. Resist 1.",
+                    Armor = 1, Resist = 1,
+                    PlayTarget = PlayTargetKind.FriendlyEmptySpace
+                },
+                new CardDefinition
+                {
+                    Id = "Splash of Primer", Archetype = Archetype.Atelier, Type = CardType.Ability,
+                    Cost = 1,
+                    Text = "Target row becomes Primed.",
+                    PlayTarget = PlayTargetKind.AnySpace,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.OnPlay, Action = EffectAction.ApplySpaceEffect, Scope = TargetScope.TargetRow, SpaceEffect = SpaceEffectType.Primed }
+                    }
+                },
+                new CardDefinition
+                {
+                    Id = "Magnifying Lance", Archetype = Archetype.Atelier, Type = CardType.Ability,
+                    Cost = 2,
+                    Text = "Deal 1 damage in a lane. Deal 1 more damage per unit hit.",
+                    PlayTarget = PlayTargetKind.AnySpace,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.OnPlay, Action = EffectAction.LaneDamage, Power = 1, Amount = 1 }
+                    }
+                },
+                new CardDefinition
+                {
+                    Id = "Diminishing Lance", Archetype = Archetype.Atelier, Type = CardType.Ability,
+                    Cost = 2,
+                    Text = "Deal 3 damage in a lane. Deal 1 less damage per unit hit.",
+                    PlayTarget = PlayTargetKind.AnySpace,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.OnPlay, Action = EffectAction.LaneDamage, Power = 3, Amount = -1 }
+                    }
+                },
+                new CardDefinition
+                {
+                    Id = "Sharpen Edge", Archetype = Archetype.Atelier, Type = CardType.Ability,
+                    Cost = 2,
+                    Text = "Target unit gains +2/0 and Pierce.",
+                    PlayTarget = PlayTargetKind.AnyUnit,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.OnPlay, Action = EffectAction.GainStats, Scope = TargetScope.TargetUnit, Power = 2 },
+                        new EffectDef { Trigger = Trigger.OnPlay, Action = EffectAction.GainPierce, Scope = TargetScope.TargetUnit, Amount = 1 }
+                    }
+                },
+                new CardDefinition
+                {
+                    Id = "Erasure", Archetype = Archetype.Atelier, Type = CardType.Ability,
+                    Cost = 3,
+                    Text = "Remove effect from target space. If an effect was removed, deal 3 damage to that space.",
+                    PlayTarget = PlayTargetKind.AnySpace,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.OnPlay, Action = EffectAction.ClearSpaceEffect, Scope = TargetScope.TargetSpace, Amount = 3 }
+                    }
+                },
+                new CardDefinition
+                {
+                    Id = "Lightning Rod", Archetype = Archetype.Atelier, Type = CardType.Charm,
+                    Cost = 1, Power = 0, Life = 3,
+                    Text = "Whenever your opponent plays an Ability, deal 1 damage to the enemy lane.",
+                    PlayTarget = PlayTargetKind.FriendlyEmptySpace,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.OnEnemyAbilityPlay, Action = EffectAction.DealDamage, Scope = TargetScope.NearestEnemyInLane, Amount = 1 }
+                    }
+                },
+                new CardDefinition
+                {
+                    Id = "Combat Bellows", Archetype = Archetype.Atelier, Type = CardType.Charm,
+                    Cost = 2, Power = 0, Life = 5,
+                    Text = "Whenever you play an Ability, Push opposing Unit.",
+                    PlayTarget = PlayTargetKind.FriendlyEmptySpace,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.OnOwnerAbilityPlay, Action = EffectAction.PushAway, Scope = TargetScope.NearestEnemyInLane }
                     }
                 }
             };
