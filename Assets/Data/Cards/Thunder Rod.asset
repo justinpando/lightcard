@@ -19,4 +19,5 @@ MonoBehaviour:
   cost: 6
   power: 0
   life: 6
-  description: Whenever an Ability is played, deal 1 damage to all other targets.
+  description: Whenever your opponent plays an Ability, deal 1 damage to every enemy
+    unit.

@@ -19,4 +19,4 @@ MonoBehaviour:
   cost: 1
   power: 0
   life: 3
-  description: Whenever your opponent discards a card, draw a card
+  description: Whenever your opponent discards a card, draw a card.

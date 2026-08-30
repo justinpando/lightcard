@@ -18,5 +18,5 @@ MonoBehaviour:
   name: Sunlamp
   cost: 2
   power: 0
-  life: 0
+  life: 1
   description: Verdant and Bramble effects are more powerful.

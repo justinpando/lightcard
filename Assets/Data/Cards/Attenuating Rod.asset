@@ -19,5 +19,5 @@ MonoBehaviour:
   cost: 1
   power: 0
   life: 3
-  description: Whenever your opponent plays an Ability, reduce the cost of a random
-    Ability in your hand by 1.
+  description: Whenever your opponent plays an Ability, your next Ability costs 1
+    less.

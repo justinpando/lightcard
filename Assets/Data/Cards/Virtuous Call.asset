@@ -16,7 +16,7 @@ MonoBehaviour:
   type: 2
   sprite: {fileID: 21300000, guid: c083fb643ce45e34680fe31d59437567, type: 3}
   name: Virtuous Call
-  cost: 1
+  cost: 0
   power: 0
   life: 0
-  description: Advance target unit, then bestow +1/+1.
+  description: The next Unit you Call costs 1 less and gains +1/+1.

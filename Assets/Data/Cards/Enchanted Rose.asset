@@ -18,6 +18,5 @@ MonoBehaviour:
   name: Enchanted Rose
   cost: 2
   power: 0
-  life: 0
-  description: Units in this row have Regen 2. The third time a unit in this row
-    dies, Bramble this row.
+  life: 1
+  description: Nearby units have Regen 2. When this breaks, Bramble this row.

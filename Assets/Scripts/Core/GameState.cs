@@ -26,6 +26,10 @@ namespace LightCard.Core
         public int TempPower;
         public int TempParry;
         public int TempEvade;
+        public bool TempOverpower;
+        public bool TempPushOnAttack;
+        /// <summary>Destroyed at the end of its owner's turn (Give Your All).</summary>
+        public bool TempDoomed;
         //Per-turn defensive charges consumed as damage is prevented
         public int ParryUsedThisTurn;
         public int EvadeUsedThisTurn;
@@ -48,11 +52,25 @@ namespace LightCard.Core
 
         public CardDefinition Definition => CardCatalogV1.Get(CardId);
         public bool IsCharm => Definition.Type == CardType.Charm;
-        public bool IsHeavy => Definition.Heavy || GrantedHeavy;
+        public bool IsHeavy => Definition.Heavy || GrantedHeavy || Definition.Immobile ||
+                               (BoundSpirit != null && BoundSpirit.Heavy);
 
-        /// <summary>Printed effects plus any runtime-granted abilities.</summary>
-        public IEnumerable<EffectDef> AllEffects =>
-            GrantedEffects == null ? Definition.Effects : Definition.Effects.Concat(GrantedEffects);
+        /// <summary>
+        /// Printed effects, runtime-granted abilities, and the bound spirit's
+        /// non-break effects (so "Bond: ..." passives like Renewal and Ferocity
+        /// live on the host while bonded).
+        /// </summary>
+        public IEnumerable<EffectDef> AllEffects
+        {
+            get
+            {
+                IEnumerable<EffectDef> effects = Definition.Effects;
+                if (GrantedEffects != null) effects = effects.Concat(GrantedEffects);
+                if (BoundSpirit != null)
+                    effects = effects.Concat(BoundSpirit.Effects.Where(e => e.Trigger != Trigger.OnBondBreak));
+                return effects;
+            }
+        }
 
         public UnitState Clone()
         {
@@ -75,6 +93,13 @@ namespace LightCard.Core
         public int AbilitiesPlayedThisTurn;
         /// <summary>Missed draws from an empty deck so far; each deals its count in damage (rules-v2).</summary>
         public int Fatigue;
+        /// <summary>Stacked discount consumed by the next Ability played (Attenuating Rod, adapted).</summary>
+        public int NextAbilityDiscount;
+        //Next-call riders (Virtuous Call, Valorous Call): consumed by the next Unit card played
+        public int NextCallDiscount;
+        public int NextCallPower;
+        public int NextCallLife;
+        public EffectDef NextCallGranted;
 
         public PlayerState()
         {
@@ -92,10 +117,23 @@ namespace LightCard.Core
         }
     }
 
+    /// <summary>A queued future effect (Sword of Damocles, Spirit Caller). Struct: cloned by value.</summary>
+    public struct PendingAction
+    {
+        public int Player;
+        public int TurnsLeft;
+        public int X;
+        public int Y;
+        public int UnitId;
+        public string CardId;
+        public bool IsRebind; //false = destroy occupant of (X,Y)
+    }
+
     public class GameState
     {
         public PlayerState[] Players = { new PlayerState(), new PlayerState() };
         public List<UnitState> Units = new List<UnitState>();
+        public List<PendingAction> Pending = new List<PendingAction>();
         public SpaceEffectType[,] SpaceEffects = new SpaceEffectType[GameConfig.Lanes, GameConfig.Rows];
         public int ActivePlayer;
         public int TurnNumber;
@@ -104,6 +142,10 @@ namespace LightCard.Core
         public int RngCalls;
         /// <summary>Id of the most recently resolved card play (Trace).</summary>
         public string LastCardPlayed;
+        /// <summary>Unit id of the most recent combat attacker (Spirit of Reprisal); -1 outside combat.</summary>
+        public int LastCombatAttackerId = -1;
+        /// <summary>Card id of the most recently broken spirit (Soulcatcher).</summary>
+        public string LastBrokenSpiritId;
         /// <summary>-1 while the game is running.</summary>
         public int Winner = -1;
 
@@ -179,18 +221,50 @@ namespace LightCard.Core
         public int EffectiveResist(UnitState unit) =>
             unit.Definition.Resist + unit.BonusResist + (unit.BoundSpirit != null ? unit.BoundSpirit.Resist : 0);
 
-        /// <summary>Card cost after static discounts (Scholar's first-ability rebate).</summary>
+        public int EffectiveAmplify(UnitState unit) =>
+            unit.Definition.Amplify + (unit.BoundSpirit != null ? unit.BoundSpirit.Amplify : 0);
+
+        public int EffectiveRegen(UnitState unit) =>
+            StaticContribution(unit, EffectAction.StaticRegen, statsPower: false);
+
+        /// <summary>True while any unit with the Sunlamp flag is on the board (Verdant/Bramble doubled).</summary>
+        public bool GardenEffectsBoosted => Units.Any(u => u.Definition.BoostsGardenEffects);
+
+        /// <summary>Card cost after discounts (Scholar, Attenuating Rod, next-call riders, Geo).</summary>
         public int EffectiveCost(int player, CardDefinition definition)
         {
             int cost = definition.Cost;
-            if (definition.Type == CardType.Ability && Players[player].AbilitiesPlayedThisTurn == 0)
+            if (definition.Type == CardType.Ability)
             {
-                foreach (var source in UnitsOf(player))
-                    foreach (var effect in source.AllEffects)
-                        if (effect.Trigger == Trigger.Static && effect.Action == EffectAction.StaticAbilityDiscount)
-                            cost -= effect.Amount;
+                if (Players[player].AbilitiesPlayedThisTurn == 0)
+                {
+                    foreach (var source in UnitsOf(player))
+                        foreach (var effect in source.AllEffects)
+                            if (effect.Trigger == Trigger.Static && effect.Action == EffectAction.StaticAbilityDiscount)
+                                cost -= effect.Amount;
+                }
+                cost -= Players[player].NextAbilityDiscount;
+            }
+            if (definition.Type == CardType.Unit) cost -= Players[player].NextCallDiscount;
+            if (definition.CostPerOwnSpaceEffect)
+            {
+                for (int x = 0; x < GameConfig.Lanes; x++)
+                    for (int y = 0; y < GameConfig.Rows; y++)
+                        if (SideOfRow(y) == player && SpaceEffects[x, y] != SpaceEffectType.None) cost -= 1;
             }
             return Math.Max(0, cost);
+        }
+
+        /// <summary>Extra discount for calling to a specific space (Trailblazer/Flagbearer auras).</summary>
+        public int CallDiscountAt(int player, int x, int y)
+        {
+            int discount = 0;
+            foreach (var source in UnitsOf(player))
+                foreach (var effect in source.AllEffects)
+                    if (effect.Trigger == Trigger.Static && effect.Action == EffectAction.StaticCallDiscountBehind &&
+                        x == source.X && y == source.Y - ForwardDir(player))
+                        discount += effect.Amount;
+            return discount;
         }
 
         /// <summary>True if any static aura (or the unit's own printed keyword) gives it Auto-Advance.</summary>
@@ -231,11 +305,12 @@ namespace LightCard.Core
                 {
                     if (effect.Trigger != Trigger.Static || effect.Action != action) continue;
                     if (effect.Condition == EffectCondition.Frontline && source.Y != FrontlineRow(source.Owner)) continue;
+                    if (effect.Condition == EffectCondition.WhileBonded && source.BoundSpiritCardId == null) continue;
                     //SpaceEffect doubles as a standing-on condition for static buffs (rules-v2)
                     if (effect.SpaceEffect != SpaceEffectType.None && SpaceEffects[source.X, source.Y] != effect.SpaceEffect) continue;
                     if (!StaticScopeContains(source, effect.Scope, target)) continue;
 
-                    if (action == EffectAction.StaticArmor || action == EffectAction.StaticParry) total += effect.Amount;
+                    if (action == EffectAction.StaticArmor || action == EffectAction.StaticParry || action == EffectAction.StaticRegen) total += effect.Amount;
                     else total += statsPower ? effect.Power : effect.Life;
                 }
             }
@@ -271,13 +346,17 @@ namespace LightCard.Core
             {
                 Players = new[] { Players[0].Clone(), Players[1].Clone() },
                 Units = Units.ConvertAll(u => u.Clone()),
+                Pending = new List<PendingAction>(Pending),
                 SpaceEffects = (SpaceEffectType[,])SpaceEffects.Clone(),
                 ActivePlayer = ActivePlayer,
                 TurnNumber = TurnNumber,
                 NextUnitId = NextUnitId,
                 Seed = Seed,
                 RngCalls = RngCalls,
-                Winner = Winner
+                Winner = Winner,
+                LastCardPlayed = LastCardPlayed,
+                LastCombatAttackerId = LastCombatAttackerId,
+                LastBrokenSpiritId = LastBrokenSpiritId
             };
             return copy;
         }

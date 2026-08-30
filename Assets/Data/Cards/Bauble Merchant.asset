@@ -19,4 +19,4 @@ MonoBehaviour:
   cost: 2
   power: 1
   life: 4
-  description: Adjacent Charms cost 1 less.
+  description: When this equips a Charm, gain a random Charm that costs 2 or less.

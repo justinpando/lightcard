@@ -19,5 +19,4 @@ MonoBehaviour:
   cost: 2
   power: 0
   life: 3
-  description: Whenever a friendly unit is defeated, units behind it automatically
-    Advance.
+  description: Whenever a friendly unit is defeated, units behind it Advance.

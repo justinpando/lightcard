@@ -19,4 +19,4 @@ MonoBehaviour:
   cost: 2
   power: 2
   life: 1
-  description: Auto-Advance. Summon cost behind this unit is reduced by 1.
+  description: Auto-Advance. Call cost behind this unit is reduced by 1.

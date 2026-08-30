@@ -519,7 +519,148 @@ namespace LightCard.Core
                     }
                 },
 
+                new CardDefinition
+                {
+                    Id = "Enchanted Rose", Archetype = Archetype.Garden, Type = CardType.Charm,
+                    Cost = 2, Power = 0, Life = 1,
+                    Text = "Nearby units have Regen 2. When this breaks, Bramble this row.",
+                    PlayTarget = PlayTargetKind.FriendlyEmptySpace,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.Static, Action = EffectAction.StaticRegen, Scope = TargetScope.Nearby, Amount = 2 },
+                        new EffectDef { Trigger = Trigger.OnDestroy, Action = EffectAction.ApplySpaceEffect, Scope = TargetScope.SourceRow, SpaceEffect = SpaceEffectType.Brambled }
+                    }
+                },
+                new CardDefinition
+                {
+                    Id = "Sunlamp", Archetype = Archetype.Garden, Type = CardType.Charm,
+                    Cost = 2, Power = 0, Life = 1,
+                    Text = "Verdant and Bramble effects are more powerful.",
+                    BoostsGardenEffects = true,
+                    PlayTarget = PlayTargetKind.FriendlyEmptySpace
+                },
+
                 //---- Atelier ----
+                new CardDefinition
+                {
+                    Id = "Thunder Rod", Archetype = Archetype.Atelier, Type = CardType.Charm,
+                    Cost = 6, Power = 0, Life = 6,
+                    Text = "Whenever your opponent plays an Ability, deal 1 damage to every enemy unit.",
+                    PlayTarget = PlayTargetKind.FriendlyEmptySpace,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.OnEnemyAbilityPlay, Action = EffectAction.DealDamage, Scope = TargetScope.AllEnemyUnits, Amount = 1 }
+                    }
+                },
+                new CardDefinition
+                {
+                    Id = "Amber Spyglass", Archetype = Archetype.Atelier, Type = CardType.Charm,
+                    Cost = 1, Power = 0, Life = 3,
+                    Text = "Whenever your opponent discards a card, draw a card.",
+                    PlayTarget = PlayTargetKind.FriendlyEmptySpace,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.OnEnemyDiscard, Action = EffectAction.Draw, Amount = 1 }
+                    }
+                },
+                new CardDefinition
+                {
+                    Id = "Percussive Maintenance", Archetype = Archetype.Atelier, Type = CardType.Ability,
+                    Cost = 2,
+                    Text = "Deal 2 damage to target. Then, if it's a charm, restore it to full durability.",
+                    PlayTarget = PlayTargetKind.AnyUnit,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.OnPlay, Action = EffectAction.PercussiveMend }
+                    }
+                },
+                new CardDefinition
+                {
+                    Id = "Reverse Engineer", Archetype = Archetype.Atelier, Type = CardType.Unit,
+                    Cost = 3, Power = 1, Life = 4,
+                    Text = "If this deals damage to an opponent's Charm, add a copy of that card to your hand.",
+                    PlayTarget = PlayTargetKind.FriendlyEmptySpace,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.OnDealtDamage, Action = EffectAction.CopyStruckCharm }
+                    }
+                },
+                new CardDefinition
+                {
+                    //Sheet: "power -1 but abilities also hit adjacent" - the amplifier half lands
+                    //as Resist 1; adjacent splash is deferred with Dark Mirror's reflection
+                    Id = "Crystal Amplifier", Archetype = Archetype.Atelier, Type = CardType.Charm,
+                    Cost = 1, Power = 0, Life = 2,
+                    Text = "Ability damage to this is reduced by 1.",
+                    Resist = 1,
+                    PlayTarget = PlayTargetKind.FriendlyEmptySpace
+                },
+                new CardDefinition
+                {
+                    //Sheet's per-card hand discount adapted to "your next Ability"
+                    Id = "Attenuating Rod", Archetype = Archetype.Atelier, Type = CardType.Charm,
+                    Cost = 1, Power = 0, Life = 3,
+                    Text = "Whenever your opponent plays an Ability, your next Ability costs 1 less.",
+                    PlayTarget = PlayTargetKind.FriendlyEmptySpace,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.OnEnemyAbilityPlay, Action = EffectAction.DiscountNextAbility, Amount = 1 }
+                    }
+                },
+                new CardDefinition
+                {
+                    Id = "Dark Mirror", Archetype = Archetype.Atelier, Type = CardType.Charm,
+                    Cost = 3, Power = 0, Life = 4,
+                    Text = "Ability damage aimed at this is reflected to the mirrored space on the enemy field.",
+                    Reflects = true,
+                    PlayTarget = PlayTargetKind.FriendlyEmptySpace
+                },
+                new CardDefinition
+                {
+                    Id = "Adaptive Armature", Archetype = Archetype.Atelier, Type = CardType.Charm,
+                    Cost = 1, Power = 0, Life = 2,
+                    Text = "Equip: a Charm played onto this space gains +0/2.",
+                    IsEquip = true, EquipsCharms = true,
+                    PlayTarget = PlayTargetKind.FriendlyEmptySpace,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.OnEquip, Action = EffectAction.GainStats, Scope = TargetScope.Self, Life = 2 }
+                    }
+                },
+                new CardDefinition
+                {
+                    Id = "Sword of Damocles", Archetype = Archetype.Atelier, Type = CardType.Ability,
+                    Cost = 3,
+                    Text = "Delay: At the beginning of your next turn, destroy any unit on target space.",
+                    PlayTarget = PlayTargetKind.AnySpace,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.OnPlay, Action = EffectAction.ScheduleDoom }
+                    }
+                },
+                new CardDefinition
+                {
+                    Id = "Fire Sale", Archetype = Archetype.Atelier, Type = CardType.Ability,
+                    Cost = 1,
+                    Text = "Remove all your Charms from play. Gain a Valuable Coin for each removed Charm.",
+                    PlayTarget = PlayTargetKind.None,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.OnPlay, Action = EffectAction.FireSale }
+                    }
+                },
+                new CardDefinition
+                {
+                    Id = "Geo", Archetype = Archetype.Atelier, Type = CardType.Unit,
+                    Cost = 9, Power = 2, Life = 2,
+                    Text = "Costs 1 less per space effect on your field. Call: Gain +1/+1 per space effect on your field, then clear them.",
+                    CostPerOwnSpaceEffect = true,
+                    PlayTarget = PlayTargetKind.FriendlyEmptySpace,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.OnCall, Action = EffectAction.GeoAbsorb }
+                    }
+                },
                 new CardDefinition
                 {
                     Id = "Automaton", Archetype = Archetype.Atelier, Type = CardType.Unit,
@@ -893,7 +1034,303 @@ namespace LightCard.Core
                     }
                 },
 
+                new CardDefinition
+                {
+                    Id = "Trailblazer", Archetype = Archetype.Expedition, Type = CardType.Unit,
+                    Cost = 2, Power = 2, Life = 1,
+                    Text = "Auto-Advance. Call cost behind this unit is reduced by 1.",
+                    AutoAdvance = true,
+                    PlayTarget = PlayTargetKind.FriendlyEmptySpace,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.Static, Action = EffectAction.StaticCallDiscountBehind, Amount = 1 }
+                    }
+                },
+                new CardDefinition
+                {
+                    Id = "Flagbearer", Archetype = Archetype.Expedition, Type = CardType.Unit,
+                    Cost = 2, Power = 1, Life = 3,
+                    Text = "Auto-Advance. Call cost behind this unit is reduced by 1.",
+                    AutoAdvance = true,
+                    PlayTarget = PlayTargetKind.FriendlyEmptySpace,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.Static, Action = EffectAction.StaticCallDiscountBehind, Amount = 1 }
+                    }
+                },
+                new CardDefinition
+                {
+                    Id = "Virtuous Call", Archetype = Archetype.Expedition, Type = CardType.Ability,
+                    Cost = 0,
+                    Text = "The next Unit you Call costs 1 less and gains +1/+1.",
+                    PlayTarget = PlayTargetKind.None,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.OnPlay, Action = EffectAction.BlessNextCall, Amount = 1, Power = 1, Life = 1 }
+                    }
+                },
+                new CardDefinition
+                {
+                    Id = "Valorous Call", Archetype = Archetype.Expedition, Type = CardType.Ability,
+                    Cost = 1,
+                    Text = "The next unit you call gains On Attack: gain +1/+1.",
+                    PlayTarget = PlayTargetKind.None,
+                    Effects =
+                    {
+                        new EffectDef
+                        {
+                            Trigger = Trigger.OnPlay, Action = EffectAction.BlessNextCall,
+                            Granted = new EffectDef { Trigger = Trigger.OnAttack, Action = EffectAction.GainStats, Scope = TargetScope.Self, Power = 1, Life = 1 }
+                        }
+                    }
+                },
+                new CardDefinition
+                {
+                    Id = "Give Your All", Archetype = Archetype.Expedition, Type = CardType.Ability,
+                    Cost = 5,
+                    Text = "Units in your front line gain +2/0, Overpower, and die at end of turn.",
+                    PlayTarget = PlayTargetKind.None,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.OnPlay, Action = EffectAction.GiveYourAll }
+                    }
+                },
+                new CardDefinition
+                {
+                    Id = "Break Through", Archetype = Archetype.Expedition, Type = CardType.Ability,
+                    Cost = 1,
+                    Text = "Units in target lane have Push until end of turn.",
+                    PlayTarget = PlayTargetKind.AnySpace,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.OnPlay, Action = EffectAction.TempPushLane }
+                    }
+                },
+                new CardDefinition
+                {
+                    Id = "Superior Tempo", Archetype = Archetype.Expedition, Type = CardType.Ability,
+                    Cost = 4,
+                    Text = "Trigger an attack from all friendly units who have moved this turn.",
+                    PlayTarget = PlayTargetKind.None,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.OnPlay, Action = EffectAction.AttackWithMoved }
+                    }
+                },
+                new CardDefinition
+                {
+                    Id = "Mountaineer", Archetype = Archetype.Expedition, Type = CardType.Unit,
+                    Cost = 3, Power = 2, Life = 4,
+                    Text = "On Advance: Space becomes Rugged. Has Armor 1 on Rugged spaces.",
+                    PlayTarget = PlayTargetKind.FriendlyEmptySpace,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.OnAdvance, Action = EffectAction.ApplySpaceEffect, Scope = TargetScope.Self, SpaceEffect = SpaceEffectType.Rugged },
+                        new EffectDef { Trigger = Trigger.Static, Action = EffectAction.StaticArmor, Scope = TargetScope.Self, SpaceEffect = SpaceEffectType.Rugged, Amount = 1 }
+                    }
+                },
+                new CardDefinition
+                {
+                    Id = "Covenant of Valor", Archetype = Archetype.Expedition, Type = CardType.Charm,
+                    Cost = 1, Power = 0, Life = 3,
+                    Text = "When one of your units destroys an enemy unit, restore its Defense and give it +1/0.",
+                    PlayTarget = PlayTargetKind.FriendlyEmptySpace,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.OnFriendlyKill, Action = EffectAction.HealFull, Scope = TargetScope.TargetUnit },
+                        new EffectDef { Trigger = Trigger.OnFriendlyKill, Action = EffectAction.GainStats, Scope = TargetScope.TargetUnit, Power = 1 }
+                    }
+                },
+                new CardDefinition
+                {
+                    Id = "War Drum", Archetype = Archetype.Expedition, Type = CardType.Charm,
+                    Cost = 2, Power = 0, Life = 3,
+                    Text = "Whenever a friendly unit is defeated, units behind it Advance.",
+                    PlayTarget = PlayTargetKind.FriendlyEmptySpace,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.OnFriendlyDestroyed, Action = EffectAction.AdvanceBehindTarget }
+                    }
+                },
+
                 //---- Heart ----
+                new CardDefinition
+                {
+                    Id = "Scorch", Archetype = Archetype.Heart, Type = CardType.Ability,
+                    Cost = 2,
+                    Text = "Deal 2 damage to target space. If it had a Space Effect, the space becomes Scorched.",
+                    PlayTarget = PlayTargetKind.AnySpace,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.OnPlay, Action = EffectAction.ScorchSpace, Scope = TargetScope.TargetSpace }
+                    }
+                },
+                new CardDefinition
+                {
+                    Id = "Ash Eater", Archetype = Archetype.Heart, Type = CardType.Unit,
+                    Cost = 4, Power = 2, Life = 4,
+                    Text = "On Destroy: This lane becomes Scorched.",
+                    PlayTarget = PlayTargetKind.FriendlyEmptySpace,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.OnDestroy, Action = EffectAction.ApplySpaceEffect, Scope = TargetScope.TargetLane, SpaceEffect = SpaceEffectType.Scorched }
+                    }
+                },
+                new CardDefinition
+                {
+                    Id = "Lash Out", Archetype = Archetype.Heart, Type = CardType.Ability,
+                    Cost = 3,
+                    Text = "Deal damage to all spaces in front of target friendly unit equal to its Life, then destroy it.",
+                    PlayTarget = PlayTargetKind.FriendlyUnit,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.OnPlay, Action = EffectAction.LashOut }
+                    }
+                },
+                new CardDefinition
+                {
+                    Id = "Ritual of Ascendance", Archetype = Archetype.Heart, Type = CardType.Ability,
+                    Cost = 2,
+                    Text = "Destroy target friendly non-spirit unit and gain energy equal to its cost. Draw a random spirit card.",
+                    PlayTarget = PlayTargetKind.FriendlyUnit,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.OnPlay, Action = EffectAction.SacrificeForEnergy }
+                    }
+                },
+                new CardDefinition
+                {
+                    Id = "Ritual of Renewal", Archetype = Archetype.Heart, Type = CardType.Ability,
+                    Cost = 2,
+                    Text = "Destroy target friendly unit and then re-call it. Give it +1/0 and Regen 1.",
+                    PlayTarget = PlayTargetKind.FriendlyUnit,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.OnPlay, Action = EffectAction.RebirthTarget }
+                    }
+                },
+                new CardDefinition
+                {
+                    Id = "Ritual of Reckoning", Archetype = Archetype.Heart, Type = CardType.Ability,
+                    Cost = 6,
+                    Text = "Friendly units in target column each deal their life to the space in front of them, then are destroyed.",
+                    PlayTarget = PlayTargetKind.AnySpace,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.OnPlay, Action = EffectAction.ReckoningColumn }
+                    }
+                },
+                new CardDefinition
+                {
+                    Id = "Ritual of Reinvention", Archetype = Archetype.Heart, Type = CardType.Ability,
+                    Cost = 3,
+                    Text = "Destroy target unit's spirit. Draw a card; if it's a spirit, bind it to the same unit.",
+                    PlayTarget = PlayTargetKind.FriendlyUnit,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.OnPlay, Action = EffectAction.ReinventSpirit }
+                    }
+                },
+                new CardDefinition
+                {
+                    Id = "Soulcatcher", Archetype = Archetype.Heart, Type = CardType.Charm,
+                    Cost = 3, Power = 0, Life = 3,
+                    Text = "When one of your spirit bonds breaks, this takes 1 damage and the spirit returns to your hand.",
+                    PlayTarget = PlayTargetKind.FriendlyEmptySpace,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.OnOwnerBondBreak, Action = EffectAction.ReclaimSpirit },
+                        new EffectDef { Trigger = Trigger.OnOwnerBondBreak, Action = EffectAction.DealDamage, Scope = TargetScope.Self, Amount = 1 }
+                    }
+                },
+                new CardDefinition
+                {
+                    Id = "Spirit Caller", Archetype = Archetype.Heart, Type = CardType.Unit,
+                    Cost = 4, Power = 2, Life = 3,
+                    Text = "When this unit's bond breaks, bind a new copy of the spirit at the start of your next turn.",
+                    PlayTarget = PlayTargetKind.FriendlyEmptySpace,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.OnOwnBondBreak, Action = EffectAction.ScheduleRebind }
+                    }
+                },
+                new CardDefinition
+                {
+                    Id = "Spirit Fencer", Archetype = Archetype.Heart, Type = CardType.Unit,
+                    Cost = 3, Power = 2, Life = 3,
+                    Text = "While bonded, has Parry 1 and Regen 1.",
+                    PlayTarget = PlayTargetKind.FriendlyEmptySpace,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.Static, Action = EffectAction.StaticParry, Scope = TargetScope.Self, Condition = EffectCondition.WhileBonded, Amount = 1 },
+                        new EffectDef { Trigger = Trigger.Static, Action = EffectAction.StaticRegen, Scope = TargetScope.Self, Condition = EffectCondition.WhileBonded, Amount = 1 }
+                    }
+                },
+                new CardDefinition
+                {
+                    Id = "Spirit of Renewal", Archetype = Archetype.Heart, Type = CardType.Unit,
+                    Cost = 1, Power = 0, Life = 2, IsSpirit = true,
+                    Text = "Bond: The host gains +0/1 at end of turn.",
+                    PlayTarget = PlayTargetKind.FriendlyUnit,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.EndOfTurn, Action = EffectAction.GainStats, Scope = TargetScope.Self, Life = 1 }
+                    }
+                },
+                new CardDefinition
+                {
+                    Id = "Spirit of Ferocity", Archetype = Archetype.Heart, Type = CardType.Unit,
+                    Cost = 3, Power = 2, Life = 3, IsSpirit = true,
+                    Text = "Bond: When the host deals damage, it gains +1/0.",
+                    PlayTarget = PlayTargetKind.FriendlyUnit,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.OnDealtDamage, Action = EffectAction.GainStats, Scope = TargetScope.Self, Power = 1 }
+                    }
+                },
+                new CardDefinition
+                {
+                    Id = "Spirit of Perspective", Archetype = Archetype.Heart, Type = CardType.Unit,
+                    Cost = 3, Power = 0, Life = 2, IsSpirit = true,
+                    Text = "Spirit Bind: Flying.",
+                    Flying = true,
+                    PlayTarget = PlayTargetKind.FriendlyUnit
+                },
+                new CardDefinition
+                {
+                    Id = "Spirit of Reticence", Archetype = Archetype.Heart, Type = CardType.Unit,
+                    Cost = 3, Power = 1, Life = 4, IsSpirit = true,
+                    Text = "Spirit Bind: Heavy.",
+                    Heavy = true,
+                    PlayTarget = PlayTargetKind.FriendlyUnit
+                },
+                new CardDefinition
+                {
+                    Id = "Spirit of Opportunity", Archetype = Archetype.Heart, Type = CardType.Unit,
+                    Cost = 2, Power = 0, Life = 3, IsSpirit = true,
+                    Text = "Spirit Bind: The host deals double damage if unblocked.",
+                    DoubleWhenUnblocked = true,
+                    PlayTarget = PlayTargetKind.FriendlyUnit
+                },
+                new CardDefinition
+                {
+                    Id = "Spirit of Vulnerability", Archetype = Archetype.Heart, Type = CardType.Unit,
+                    Cost = 1, Power = 0, Life = 3, IsSpirit = true,
+                    Text = "Spirit Bind: Ability Amp 1.",
+                    Amplify = 1,
+                    PlayTarget = PlayTargetKind.FriendlyUnit
+                },
+                new CardDefinition
+                {
+                    Id = "Spirit of Reprisal", Archetype = Archetype.Heart, Type = CardType.Unit,
+                    Cost = 1, Power = 1, Life = 1, IsSpirit = true,
+                    Text = "Bond Break: Deal 1 damage to the source of the break.",
+                    PlayTarget = PlayTargetKind.FriendlyUnit,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.OnBondBreak, Action = EffectAction.DamageBreaker, Amount = 1 }
+                    }
+                },
                 new CardDefinition
                 {
                     Id = "Dead Man Walking", Archetype = Archetype.Heart, Type = CardType.Unit,
@@ -1065,7 +1502,101 @@ namespace LightCard.Core
                     PlayTarget = PlayTargetKind.FriendlyUnit
                 },
 
+                new CardDefinition
+                {
+                    Id = "Valuable Coin", Archetype = Archetype.Tower, Type = CardType.Charm,
+                    Cost = 0, Power = 0, Life = 1,
+                    Text = "Equip: Bestow +0/2.",
+                    IsEquip = true,
+                    PlayTarget = PlayTargetKind.FriendlyEmptySpace,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.OnEquip, Action = EffectAction.GainStats, Scope = TargetScope.Self, Life = 2 }
+                    }
+                },
+                new CardDefinition
+                {
+                    //Sheet: triggers on receiving a Valuable Coin; adapted to any equip
+                    Id = "Bauble Merchant", Archetype = Archetype.Tower, Type = CardType.Unit,
+                    Cost = 2, Power = 1, Life = 4,
+                    Text = "When this equips a Charm, gain a random Charm that costs 2 or less.",
+                    PlayTarget = PlayTargetKind.FriendlyEmptySpace,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.OnEquipped, Action = EffectAction.AddRandomCheapCharm, Amount = 2 }
+                    }
+                },
+                new CardDefinition
+                {
+                    Id = "Lose Hope", Archetype = Archetype.Tower, Type = CardType.Ability,
+                    Cost = 3,
+                    Text = "Return target unit to its owner's hand.",
+                    PlayTarget = PlayTargetKind.AnyUnit,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.OnPlay, Action = EffectAction.ReturnToHand }
+                    }
+                },
+                new CardDefinition
+                {
+                    Id = "Shatter", Archetype = Archetype.Tower, Type = CardType.Ability,
+                    Cost = 3,
+                    Text = "Destroy target friendly Charm. Deal damage equal to its remaining Defense to all units in that lane.",
+                    PlayTarget = PlayTargetKind.AnyUnit,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.OnPlay, Action = EffectAction.ShatterCharm }
+                    }
+                },
+                new CardDefinition
+                {
+                    Id = "Flagellant's Charm", Archetype = Archetype.Tower, Type = CardType.Charm,
+                    Cost = 0, Power = 0, Life = 1,
+                    Text = "Each time you take damage, Attune a random card from your hand.",
+                    PlayTarget = PlayTargetKind.FriendlyEmptySpace,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.OnOwnerPlayerDamaged, Action = EffectAction.AutoAttune }
+                    }
+                },
+
                 //---- Ocean ----
+                new CardDefinition
+                {
+                    Id = "Catalytic Spike", Archetype = Archetype.Ocean, Type = CardType.Ability,
+                    Cost = 3,
+                    Text = "Deal 2 damage to target unit and give it a random Keyword ability.",
+                    PlayTarget = PlayTargetKind.AnyUnit,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.OnPlay, Action = EffectAction.DealDamage, Scope = TargetScope.TargetUnit, Amount = 2 },
+                        new EffectDef { Trigger = Trigger.OnPlay, Action = EffectAction.GainRandomKeyword, Scope = TargetScope.TargetUnit }
+                    }
+                },
+                new CardDefinition
+                {
+                    Id = "Dispersal", Archetype = Archetype.Ocean, Type = CardType.Ability,
+                    Cost = 5,
+                    Text = "Destroy target unit. Randomly distribute its Power and Life to its owner's nearby units.",
+                    PlayTarget = PlayTargetKind.AnyUnit,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.OnPlay, Action = EffectAction.DisperseTarget }
+                    }
+                },
+                new CardDefinition
+                {
+                    Id = "Beached Whale", Archetype = Archetype.Ocean, Type = CardType.Unit,
+                    Cost = 4, Power = 0, Life = 7,
+                    Text = "Call: This space becomes Desert, then deal 1 damage to a random enemy per Flooded space. Immobile.",
+                    Immobile = true,
+                    PlayTarget = PlayTargetKind.FriendlyEmptySpace,
+                    Effects =
+                    {
+                        new EffectDef { Trigger = Trigger.OnCall, Action = EffectAction.ApplySpaceEffect, Scope = TargetScope.Self, SpaceEffect = SpaceEffectType.Desert },
+                        new EffectDef { Trigger = Trigger.OnCall, Action = EffectAction.FloodBarrage }
+                    }
+                },
                 new CardDefinition
                 {
                     Id = "Chimera", Archetype = Archetype.Ocean, Type = CardType.Unit,

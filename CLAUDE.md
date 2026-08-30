@@ -63,7 +63,7 @@ is connected: Main menu "Begin Match" plays the top deck of the collection
 menu or rematches. Remaining phase 2 polish: animate from the `GameEvent`
 stream instead of full-state refreshes. Decks thin out on entry (cards missing
 from `CardCatalogV1` are skipped, then padded back from the catalog) until
-more of the set is implemented. The catalog is 113 cards across all six
+more of the set is implemented. The catalog is COMPLETE: 161 cards, every named sheet card, across all six
 archetypes (Spirit Bind, equips, Guardian, discard, transforms, Flood/Desert
 mutations all live; rulings in `Docs/design/rules-v2.md`, deferred-card list
 there too). `LightCard/Sync Card Assets From Catalog` mirrors

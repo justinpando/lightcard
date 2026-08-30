@@ -19,5 +19,5 @@ MonoBehaviour:
   cost: 2
   power: 0
   life: 0
-  description: Deal 2 damage to target space. If it had a Space Effect, space becomes
-    Scorched.
+  description: Deal 2 damage to target space. If it had a Space Effect, the space
+    becomes Scorched.

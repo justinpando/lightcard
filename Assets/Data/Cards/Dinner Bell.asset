@@ -19,5 +19,6 @@ MonoBehaviour:
   cost: 3
   power: 0
   life: 3
-  description: When a nearby friendly unit is defeated, call a Snarling Hound to
-    its space and this takes 1 damage.
+  description: 'When a nearby friendly unit is defeated, call a Snarling Hound to
+    its space and this takes 1 damage. Activate (1): Call a Snarling Hound to a random
+    nearby space.'

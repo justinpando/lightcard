@@ -18,5 +18,5 @@ MonoBehaviour:
   name: Flagellant's Charm
   cost: 0
   power: 0
-  life: 0
-  description: Each time you take damage, replace a card.
+  life: 1
+  description: Each time you take damage, Attune a random card from your hand.

@@ -16,7 +16,11 @@ namespace LightCard.Core
         /// <summary>Units called to this space gain a random keyword (Ocean).</summary>
         Flooded,
         /// <summary>Units here lose 1/1 at the start of their owner's turn (Ocean).</summary>
-        Desert
+        Desert,
+        /// <summary>Units here cannot be healed (provisional ruling; Heart's Scorch line).</summary>
+        Scorched,
+        /// <summary>Shifting into this space costs +1; units damaged here are pushed toward their backline (Expedition).</summary>
+        Rugged
     }
 
     /// <summary>When an effect fires.</summary>
@@ -79,7 +83,21 @@ namespace LightCard.Core
         /// <summary>Fires whenever either player draws a card (Seer's Guillotine).</summary>
         OnAnyDraw,
         /// <summary>Fires when the owner pays this card's ActivateCost (rules-v3 activations).</summary>
-        OnActivate
+        OnActivate,
+        /// <summary>Fires on the attacker after its strike deals damage; target coords are the victim's space (Ferocity, Reverse Engineer).</summary>
+        OnDealtDamage,
+        /// <summary>Fires on the owner's OTHER units when a friendly unit's attack destroys an enemy; target coords are the killer's space (Covenant of Valor).</summary>
+        OnFriendlyKill,
+        /// <summary>Fires on the owner's units when the owner takes player damage (Flagellant's Charm).</summary>
+        OnOwnerPlayerDamaged,
+        /// <summary>Fires on the owner's units when one of the owner's spirit bonds breaks (Soulcatcher).</summary>
+        OnOwnerBondBreak,
+        /// <summary>Fires when the OPPOSING player discards a card (Amber Spyglass).</summary>
+        OnEnemyDiscard,
+        /// <summary>Fires on the HOST unit when its own spirit bond breaks (Spirit Caller).</summary>
+        OnOwnBondBreak,
+        /// <summary>Fires on a unit when an Equip charm attaches to it (Bauble Merchant).</summary>
+        OnEquipped
     }
 
     /// <summary>What an effect does. Magnitudes live in EffectDef.Power/Life/Amount.</summary>
@@ -194,7 +212,65 @@ namespace LightCard.Core
         /// <summary>Static: the source has +Power attack per board space bearing SpaceEffect (Living Torrent).</summary>
         StaticPowerPerSpace,
         /// <summary>Call CalledCardId to a random empty space adjacent (8-way) to the source, on the owner's half (Dinner Bell's activation).</summary>
-        CallUnitNearby
+        CallUnitNearby,
+        /// <summary>Deal 2 ability damage to the target space's occupant; if the space carried an effect, it becomes Scorched (Scorch).</summary>
+        ScorchSpace,
+        /// <summary>Static: units in Scope heal Amount at their owner's turn start (Enchanted Rose, Spirit Fencer).</summary>
+        StaticRegen,
+        /// <summary>Deal Amount to the unit whose attack broke this bond, if any (Spirit of Reprisal).</summary>
+        DamageBreaker,
+        /// <summary>Heal units in Scope to full (Covenant of Valor).</summary>
+        HealFull,
+        /// <summary>Friendly units behind the target space in its lane each advance one step (War Drum).</summary>
+        AdvanceBehindTarget,
+        /// <summary>2 ability damage to the target unit; a surviving charm is restored to full instead (Percussive Maintenance).</summary>
+        PercussiveMend,
+        /// <summary>If the trigger's target is an enemy charm, add a copy of its card to hand (Reverse Engineer).</summary>
+        CopyStruckCharm,
+        /// <summary>Return the target unit or charm to its owner's hand, dropping all bonuses (Lose Hope, adapted to one target).</summary>
+        ReturnToHand,
+        /// <summary>Destroy the targeted friendly charm; every unit in its lane takes its remaining life as ability damage (Shatter).</summary>
+        ShatterCharm,
+        /// <summary>Attune a random hand card for free: discard it for +1 max energy and +1 of its Affinity (Flagellant's Charm).</summary>
+        AutoAttune,
+        /// <summary>Deal the target friendly unit's life to every occupant in front of it, then destroy it (Lash Out).</summary>
+        LashOut,
+        /// <summary>Destroy the target friendly non-spirit unit, gain energy equal to its cost, draw a random spirit (Ritual of Ascendance).</summary>
+        SacrificeForEnergy,
+        /// <summary>Destroy the target friendly unit, re-call it to the same space with +1/0 and Regen 1 (Ritual of Renewal).</summary>
+        RebirthTarget,
+        /// <summary>Each friendly unit in the target lane deals its life to the space in front of it, then dies (Ritual of Reckoning).</summary>
+        ReckoningColumn,
+        /// <summary>Break the target unit's bond (triggers fire), draw a card, and bind it if it is a spirit (Ritual of Reinvention).</summary>
+        ReinventSpirit,
+        /// <summary>Destroy the target unit and randomly distribute its power and life to its owner's nearby units (Dispersal).</summary>
+        DisperseTarget,
+        /// <summary>Deal 1 ability damage to a random enemy per Flooded space on the board (Beached Whale).</summary>
+        FloodBarrage,
+        /// <summary>Add the most recently broken spirit's card to the owner's hand (Soulcatcher).</summary>
+        ReclaimSpirit,
+        /// <summary>The owner's next Ability costs Amount less (Attenuating Rod, adapted from per-card discounts).</summary>
+        DiscountNextAbility,
+        /// <summary>Static: calling to the space directly behind the source costs Amount less (Trailblazer, Flagbearer).</summary>
+        StaticCallDiscountBehind,
+        /// <summary>Absorb the owner's half: +1/+1 per own-half space effect, then clear them (Geo).</summary>
+        GeoAbsorb,
+        /// <summary>Bless the owner's next Unit call: Amount cost discount, +Power/+Life, and EffectDef.Granted attached (Virtuous/Valorous Call).</summary>
+        BlessNextCall,
+        /// <summary>Schedule: at the start of the owner's next turn, destroy whatever occupies the target space (Sword of Damocles).</summary>
+        ScheduleDoom,
+        /// <summary>Schedule: at the start of the owner's next turn, rebind a copy of the just-broken spirit to the source (Spirit Caller).</summary>
+        ScheduleRebind,
+        /// <summary>Frontline friendly units gain +2/0, temp Overpower, and die at end of turn (Give Your All).</summary>
+        GiveYourAll,
+        /// <summary>Friendly units in the target lane gain Push until end of turn (Break Through).</summary>
+        TempPushLane,
+        /// <summary>Every friendly unit that moved this turn immediately attacks (Superior Tempo).</summary>
+        AttackWithMoved,
+        /// <summary>Banish all your charms (no destroy triggers); gain a Valuable Coin card per charm removed (Fire Sale).</summary>
+        FireSale,
+        /// <summary>Add a random Charm costing at most Amount to the owner's hand (Bauble Merchant).</summary>
+        AddRandomCheapCharm
     }
 
     /// <summary>Which units an effect applies to, relative to its source or its play target.</summary>
@@ -222,6 +298,8 @@ namespace LightCard.Core
         NearestEnemyInLane,
         /// <summary>Every enemy unit or charm in the source's lane (Spirit of Wrath).</summary>
         EnemiesInLane,
+        /// <summary>Every enemy unit and charm on the board (Thunder Rod, adapted).</summary>
+        AllEnemyUnits,
         /// <summary>The space (or its occupant) directly in front of the source.</summary>
         InFront,
         /// <summary>Friendly units in the eight spaces around the source (glossary "Nearby").</summary>
@@ -241,7 +319,9 @@ namespace LightCard.Core
         /// <summary>Source is on its owner's frontline row.</summary>
         Frontline,
         /// <summary>No enemy unit or charm in the source's lane.</summary>
-        Unblocked
+        Unblocked,
+        /// <summary>Source has a spirit bound to it (Spirit Fencer).</summary>
+        WhileBonded
     }
 
     /// <summary>What a card may be aimed at when played.</summary>
@@ -327,6 +407,22 @@ namespace LightCard.Core
         public SpaceEffectType BoundTo = SpaceEffectType.None;
         /// <summary>Immune to the Desert drain (Sand Shark).</summary>
         public bool DesertImmune;
+        /// <summary>While any unit with this is on the board, Verdant and Bramble magnitudes are doubled (Sunlamp).</summary>
+        public bool BoostsGardenEffects;
+        /// <summary>Cannot Shift or Auto-Advance, and cannot be moved by effects (Beached Whale).</summary>
+        public bool Immobile;
+        /// <summary>Attacks pass over blockers and hit the player directly (Spirit of Perspective's Flying).</summary>
+        public bool Flying;
+        /// <summary>Attacks deal double damage when the lane is unblocked (Spirit of Opportunity).</summary>
+        public bool DoubleWhenUnblocked;
+        /// <summary>Ability damage taken is increased by this much (Spirit of Vulnerability's Amp).</summary>
+        public int Amplify;
+        /// <summary>Ability damage aimed at this is redirected to the mirrored space's occupant (Dark Mirror).</summary>
+        public bool Reflects;
+        /// <summary>Equip charm that friendly CHARMS may also enter (Adaptive Armature).</summary>
+        public bool EquipsCharms;
+        /// <summary>Geo: costs 1 less per space effect on the owner's half.</summary>
+        public bool CostPerOwnSpaceEffect;
 
         public PlayTargetKind PlayTarget = PlayTargetKind.None;
 

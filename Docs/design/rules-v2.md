@@ -216,27 +216,44 @@ mechanic. Agent sweeps still overstate spreads; human play decides magnitude.
   nearest enemy per lane and floods the impact space. Mirage swaps every
   Flooded/Desert space. Fractal/Amalgam consume adjacent *friendly* units
   (random one / all), shedding Flux ("Rush if so").
-- Adaptations recorded: Message in a Bottle simplified to draw + 1 self-damage
-  per friendly death (charge system deferred); Focus Form tutors the first
-  low-cost card (random-selection and hand-keyword variants deferred);
-  Ailing Scholar's life decay floors at 1 (max-life clamp).
-- Deferred cards (need systems not yet built): cost-modifier auras beyond
-  Scholar (Attenuating Rod, Trailblazer, Flagbearer, Geo), Valuable Coin
-  economy, Forge, Dark Mirror/reflection, Crystal Amplifier, Sword of
-  Damocles (delayed effects), War Drum, Covenant of Valor, Superior Tempo,
-  Break Through, Give Your All, Valorous Call, Scorch/Scorched, Frozen,
-  Rugged/Mountaineer, remaining spirit passives (Flying, Heavy-bind,
-  Opportunity, Renewal, Reprisal, Fencer, Caller), Ritual cycle, Shatter,
-  Lose Hope, Bauble Merchant, Reverse Engineer, Percussive Maintenance,
-  Dense Lecture is in; Thunder Rod, Fire Sale, Dispersal, Catalytic Spike,
-  Beached Whale, Enchanted Rose, Sunlamp, Windstriker's original stat note.
+## COMPLETE catalog (161 cards) — provisional rulings and adaptations
 
-## First full round-robin (3 seeds, direction only)
+Every named sheet card is implemented. Where sheet text was ambiguous or
+required per-card-instance state, these adaptations were made (each needs a
+designer yes/no):
 
-Heart 1/15 (weakest — bond investments need tuning), Tower beats Garden and
-Atelier but folds to Expedition and Ocean, Ocean strong (beats Garden,
-Atelier, Tower; splits Expedition), Expedition still the front-runner. Zero
-illegal AI commands across all new mechanics.
+- **Scorched** (undefined on the sheet): units standing on it cannot be healed.
+- **Rugged**: shifting in costs +1 energy; damaged survivors on it are knocked
+  one space toward their own backline.
+- **Attenuating Rod**: "reduce a random hand Ability's cost" → "your NEXT
+  Ability costs 1 less" (stacking) — avoids per-hand-card state.
+- **Thunder Rod**: "all other targets" → 1 damage to every enemy unit.
+- **Lose Hope**: two targets → "return target unit to its owner's hand".
+- **Bauble Merchant**: triggers on ANY equip attaching, not only Valuable Coin.
+- **Valuable Coin** (two sheet versions): 0-cost Equip charm, Bestow +0/2.
+- **Crystal Amplifier**: Resist 1 only (adjacent-splash half deferred).
+- **Adaptive Armature**: charm-accepting Equip bestowing +0/2 (its cost
+  discount deferred).
+- **Spirit Caller / Sword of Damocles**: "end of turn"/"beginning of next
+  turn" both resolve at the caster's next turn start via the pending queue.
+- **Spirit of Reprisal**: only combat breaks have a source to punish.
+- **Message in a Bottle**: draw + 1 self-damage per friendly death (charges
+  deferred). **Focus Form**: tutors the first matching card, no bonus keyword.
+- **Reckoning**: each sacrificed unit blasts the space directly in front.
+- **Dispersal**: stats scatter to the victim's owner's nearby units.
+- **Frozen** space is defined by the sheet but no card applies it — dormant.
+- **Forge** (copying equipment) remains the single unimplemented card.
+- New keywords live: Overpower (excess kill damage rolls onto the unit
+  behind, Give Your All), Flying (attacks skip blockers), Immobile,
+  Reflects, Amplify, Regen (static aura form), next-call blessings,
+  positional call discounts, delayed effects, player-facing Activations.
+
+## Full-catalog round-robin (3 seeds per pairing, 45 matches)
+
+Wins of 15: **Expedition 10, Ocean 10, Atelier 9, Tower 7, Garden 5,
+Heart 4.** Every archetype wins games; zero illegal AI commands. Top tuning
+questions for human play: Expedition/Ocean's edge, Heart's bond economics
+(better but still last), Garden vs Ocean 0-3.
 
 ## Rejected (designer ruling)
 
