@@ -545,11 +545,11 @@ namespace LightCard.Core
                 {
                     Id = "Thunder Rod", Archetype = Archetype.Atelier, Type = CardType.Charm,
                     Cost = 6, Power = 0, Life = 6,
-                    Text = "Whenever your opponent plays an Ability, deal 1 damage to every enemy unit.",
+                    Text = "Whenever your opponent plays an Ability, deal 1 damage to every other unit and charm on the board.",
                     PlayTarget = PlayTargetKind.FriendlyEmptySpace,
                     Effects =
                     {
-                        new EffectDef { Trigger = Trigger.OnEnemyAbilityPlay, Action = EffectAction.DealDamage, Scope = TargetScope.AllEnemyUnits, Amount = 1 }
+                        new EffectDef { Trigger = Trigger.OnEnemyAbilityPlay, Action = EffectAction.DealDamage, Scope = TargetScope.AllOtherUnits, Amount = 1 }
                     }
                 },
                 new CardDefinition
@@ -1210,7 +1210,7 @@ namespace LightCard.Core
                 {
                     Id = "Ritual of Reckoning", Archetype = Archetype.Heart, Type = CardType.Ability,
                     Cost = 6,
-                    Text = "Friendly units in target column each deal their life to the space in front of them, then are destroyed.",
+                    Text = "Friendly units in target column each deal their life to every unit ahead of them in the lane, then are destroyed.",
                     PlayTarget = PlayTargetKind.AnySpace,
                     Effects =
                     {
@@ -1244,7 +1244,7 @@ namespace LightCard.Core
                 {
                     Id = "Spirit Caller", Archetype = Archetype.Heart, Type = CardType.Unit,
                     Cost = 4, Power = 2, Life = 3,
-                    Text = "When this unit's bond breaks, bind a new copy of the spirit at the start of your next turn.",
+                    Text = "When this unit's bond breaks, bind a new copy of the spirit at the end of the turn.",
                     PlayTarget = PlayTargetKind.FriendlyEmptySpace,
                     Effects =
                     {
@@ -1526,11 +1526,12 @@ namespace LightCard.Core
                 {
                     Id = "Lose Hope", Archetype = Archetype.Tower, Type = CardType.Ability,
                     Cost = 3,
-                    Text = "Return target unit to its owner's hand.",
-                    PlayTarget = PlayTargetKind.AnyUnit,
+                    Text = "Return target friendly unit and target enemy unit to their owners' hands.",
+                    PlayTarget = PlayTargetKind.FriendlyUnitThenEnemyUnit,
                     Effects =
                     {
-                        new EffectDef { Trigger = Trigger.OnPlay, Action = EffectAction.ReturnToHand }
+                        new EffectDef { Trigger = Trigger.OnPlay, Action = EffectAction.ReturnToHand },
+                        new EffectDef { Trigger = Trigger.OnPlay, Action = EffectAction.ReturnToHand, UsesSecondTarget = true }
                     }
                 },
                 new CardDefinition
@@ -1573,7 +1574,7 @@ namespace LightCard.Core
                 {
                     Id = "Dispersal", Archetype = Archetype.Ocean, Type = CardType.Ability,
                     Cost = 5,
-                    Text = "Destroy target unit. Randomly distribute its Power and Life to its owner's nearby units.",
+                    Text = "Destroy target unit. Randomly distribute its Power and Life to nearby units.",
                     PlayTarget = PlayTargetKind.AnyUnit,
                     Effects =
                     {
@@ -1742,11 +1743,11 @@ namespace LightCard.Core
                 {
                     Id = "Focus Form", Archetype = Archetype.Ocean, Type = CardType.Ability,
                     Cost = 0,
-                    Text = "Draw the first card in your deck that costs 1 or less; call it if it is a Unit.",
+                    Text = "Draw a random Unit that costs 1 or less from your deck. It gains a random Keyword.",
                     PlayTarget = PlayTargetKind.None,
                     Effects =
                     {
-                        new EffectDef { Trigger = Trigger.OnPlay, Action = EffectAction.TutorLowCost, Amount = 1 }
+                        new EffectDef { Trigger = Trigger.OnPlay, Action = EffectAction.DrawLowCostUnitWithKeyword, Amount = 1 }
                     }
                 },
                 new CardDefinition

@@ -47,6 +47,8 @@ public class MatchContext : MonoBehaviour
 
     private int selectedHandIndex = -1;
     private int selectedUnitId = -1;
+    /// <summary>First pick of a two-target card (Lose Hope); null until stage one is chosen.</summary>
+    private (int x, int y)? pendingFirstTarget;
     private List<(int x, int y)> playTargets = new List<(int x, int y)>();
     private List<(int x, int y)> shiftTargets = new List<(int x, int y)>();
     private bool activateSelectable;
@@ -329,10 +331,19 @@ public class MatchContext : MonoBehaviour
         }
 
         var dropCard = CardCatalogV1.Get(state.Players[LocalPlayer].Hand[handIndex]);
-        var preference = dropCard.PlayTarget == PlayTargetKind.AnyUnit ? SpacePreference.Occupied
+        var preference = dropCard.PlayTarget == PlayTargetKind.AnyUnit || dropCard.PlayTarget == PlayTargetKind.FriendlyUnitThenEnemyUnit ? SpacePreference.Occupied
                        : dropCard.PlayTarget == PlayTargetKind.FriendlyEmptySpace ? SpacePreference.Empty
                        : SpacePreference.Nearest;
         var space = RaycastSpace(screenPosition, preference);
+
+        //Two-target cards: the drop picks the first target and selection persists
+        if (dropCard.PlayTarget == PlayTargetKind.FriendlyUnitThenEnemyUnit)
+        {
+            if (space != null && playTargets.Contains((space.X, space.Y))) HandleTwoTargetPick(dropCard, space);
+            else ClearSelection();
+            return;
+        }
+
         if (space != null)
         {
             var card = dropCard;
@@ -408,6 +419,14 @@ public class MatchContext : MonoBehaviour
 
         if (selectedHandIndex >= 0)
         {
+            var card = CardCatalogV1.Get(state.Players[LocalPlayer].Hand[selectedHandIndex]);
+            if (card.PlayTarget == PlayTargetKind.FriendlyUnitThenEnemyUnit)
+            {
+                if (playTargets.Contains((space.X, space.Y))) HandleTwoTargetPick(card, space);
+                else ClearSelection();
+                return;
+            }
+
             if (playTargets.Contains((space.X, space.Y)))
             {
                 Submit(new PlayCardCommand { Player = LocalPlayer, HandIndex = selectedHandIndex, TargetX = space.X, TargetY = space.Y });
@@ -538,13 +557,41 @@ public class MatchContext : MonoBehaviour
                 foreach (var unit in state.Units.Where(u => u.Owner == LocalPlayer && !u.IsCharm && !u.Definition.IsSpirit))
                     yield return (unit.X, unit.Y);
                 break;
+            case PlayTargetKind.FriendlyUnitThenEnemyUnit:
+                //Stage one: friendly units. Stage two is re-highlighted after the first pick.
+                foreach (var unit in state.Units.Where(u => u.Owner == LocalPlayer))
+                    yield return (unit.X, unit.Y);
+                break;
         }
+    }
+
+    /// <summary>Advance a two-target card (Lose Hope) one stage: pick friendly, then enemy, then play.</summary>
+    private void HandleTwoTargetPick(CardDefinition card, SpaceView space)
+    {
+        if (pendingFirstTarget == null)
+        {
+            pendingFirstTarget = (space.X, space.Y);
+            playTargets = state.Units.Where(u => u.Owner != LocalPlayer).Select(u => (u.X, u.Y)).ToList();
+            fieldView.ClearHighlights();
+            fieldView.HighlightSpaces(playTargets, SpaceView.Highlight.PlayTarget);
+            hud.SetStatus($"{card.Id}: now click the enemy unit to return.");
+            return;
+        }
+
+        var first = pendingFirstTarget.Value;
+        Submit(new PlayCardCommand
+        {
+            Player = LocalPlayer, HandIndex = selectedHandIndex,
+            TargetX = first.x, TargetY = first.y,
+            Target2X = space.X, Target2Y = space.Y
+        });
     }
 
     private void ClearSelection()
     {
         selectedHandIndex = -1;
         selectedUnitId = -1;
+        pendingFirstTarget = null;
         activateSelectable = false;
         playTargets.Clear();
         shiftTargets.Clear();

@@ -240,18 +240,37 @@ Rod** discounts a random Ability *copy* in hand (per-copy discounts now exist:
 Coin, **Crystal Amplifier** has its adjacent splash, **Adaptive Armature** has
 its charm cost discount (-2 on its space), **Message in a Bottle** uses real
 3-charge counting, **Focus Form / Quick Sketch** tutor a *random* matching
-card. Remaining adaptations, designer-confirmed by trust:
+card. The remaining eight were resolved by designer ruling on 2026-08-30:
 
-- **Thunder Rod**: "all other targets" → 1 damage to every enemy unit.
-- **Lose Hope**: two targets → "return target unit to its owner's hand".
-- **Valuable Coin** (two sheet versions): 0-cost Equip charm, Bestow +0/2.
-- **Spirit Caller**: "end of turn" rebind resolves at the caster's next turn
-  start via the pending queue (Sword of Damocles is sheet-exact).
-- **Spirit of Reprisal**: only combat breaks have a source to punish.
-- **Focus Form**: no bonus keyword on the tutored card (hand-instance
-  keywords still don't exist).
-- **Reckoning**: each sacrificed unit blasts the space directly in front.
-- **Dispersal**: stats scatter to the victim's owner's nearby units.
+- **Thunder Rod**: "all other targets" = every unit and charm on the board
+  except the Rod itself, BOTH sides (designer: "the implementation is clear").
+- **Lose Hope**: true two-target play — return one target friendly unit AND
+  one target enemy unit to hand. `PlayCardCommand` carries `Target2X/Y`;
+  `PlayTargetKind.FriendlyUnitThenEnemyUnit`; effects flagged
+  `UsesSecondTarget` resolve against the second pick. The match view stages
+  the picks (friendly first, then enemies highlight).
+- **Spirit Caller**: the rebind lands at the **end of the turn the bond
+  broke**, whoever's turn it is — no next-turn beat separating break and
+  rebind (designer ruling). Sword of Damocles stays on the pending queue.
+- **Spirit of Reprisal**: the break's source is a **unit or a player** —
+  combat breaks punish the attacking unit; ability breaks punish the casting
+  player (`LastBreakSourceUnitId`/`LastBreakSourcePlayer`, set where damage
+  enters the spirit). Sourceless damage (poison, brambles, collisions) still
+  fizzles.
+- **Focus Form**: full sheet text — draws a random Unit ≤1 from the deck and
+  tags that hand copy with a random Keyword (`PlayerState.HandKeywords`,
+  index-aligned like HandDiscounts), applied when the unit is called.
+- **Ritual of Reckoning**: "in front of" = the **whole lane ahead** of each
+  sacrificed unit (designer: lane matches the 6-energy cost). All blasts
+  snapshot life and resolve first — fellow martyrs ahead are caught in the
+  blast — then every martyr dies.
+- **Dispersal**: stats scatter to **all nearby units, either owner** (sheet's
+  "other nearby units"; positioning decides who profits).
+- **Valuable Coin**: the sheet lists two cards with this name — Atelier
+  ("Target Charm gains 2 Durability", cost 1) and Tower (0-cost Equip
+  drop-loop). Currently one merged card (Tower-style 0-cost Equip, Bestow
+  +0/2) because catalog ids are unique names and Fire Sale/Bauble Merchant
+  reference "Valuable Coin". OPEN: split needs a rename or an id scheme.
 - **Frozen** space is defined by the sheet but no card applies it — dormant.
 - **Forge** (copying equipment) remains the single unimplemented card.
 - New keywords live: Overpower (excess kill damage rolls onto the unit

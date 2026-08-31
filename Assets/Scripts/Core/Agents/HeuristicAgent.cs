@@ -59,6 +59,20 @@ namespace LightCard.Core.Agents
                 if (state.EffectiveCost(Player, definition) > playerState.Energy) continue;
                 if (playerState.Affinity[definition.Archetype] < definition.AffinityRequirement) continue;
 
+                if (definition.PlayTarget == PlayTargetKind.FriendlyUnitThenEnemyUnit)
+                {
+                    //Two-target cards (Lose Hope): every friendly x enemy pair
+                    foreach (var friendly in state.UnitsOf(Player).ToList())
+                        foreach (var enemy in state.Units.Where(u => u.Owner != Player).ToList())
+                            yield return new PlayCardCommand
+                            {
+                                Player = Player, HandIndex = handIndex,
+                                TargetX = friendly.X, TargetY = friendly.Y,
+                                Target2X = enemy.X, Target2Y = enemy.Y
+                            };
+                    continue;
+                }
+
                 foreach (var (x, y) in EnumerateTargets(state, definition))
                     yield return new PlayCardCommand { Player = Player, HandIndex = handIndex, TargetX = x, TargetY = y };
             }

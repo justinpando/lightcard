@@ -713,6 +713,128 @@ namespace LightCard.CoreTests
                                   $"{(a.Winner == 0 ? "Formation/Expedition" : "Patient/Garden")})");
             });
 
+            Test("Thunder Rod: zaps every other unit on the board, both sides", () =>
+            {
+                var state = EmptyGame();
+                var rod = PlayUnit(state, 0, "Thunder Rod", 0, 0);
+                var mine = PlayUnit(state, 0, "Conscript", 1, 1);
+                var theirs = PlayUnit(state, 1, "Conscript", 1, 4);
+                mine.BonusLife += 5;
+                theirs.BonusLife += 5;
+
+                PlayAbility(state, 1, "Focus Form", 0, 0);
+
+                AssertEqual(0, rod.Damage, "the rod spares itself");
+                AssertEqual(1, mine.Damage, "the rod's own side is hit too");
+                AssertEqual(1, theirs.Damage, "enemy units are hit");
+            });
+
+            Test("Lose Hope: two targets - one friendly, one enemy, both bounced", () =>
+            {
+                var state = EmptyGame();
+                var mine = PlayUnit(state, 0, "Conscript", 0, 1);
+                var theirs = PlayUnit(state, 1, "Conscript", 0, 4);
+
+                var command = Play(state, 0, "Lose Hope", 0, 1);
+                command.Target2X = 0;
+                command.Target2Y = 1; //friendly as second target: invalid
+                AssertTrue(!GameEngine.Execute(state, command).Success, "second target must be an enemy unit");
+
+                command.Target2X = 0;
+                command.Target2Y = 4;
+                AssertTrue(GameEngine.Execute(state, command).Success, "friendly-then-enemy pair is valid");
+                AssertEqual(0, state.Units.Count, "both units left the board");
+                AssertTrue(state.Players[0].Hand.Contains("Conscript"), "friendly returned to its owner's hand");
+                AssertTrue(state.Players[1].Hand.Contains("Conscript"), "enemy returned to its owner's hand");
+            });
+
+            Test("Spirit Caller + Reprisal: breaker punished, rebind at end of the same turn", () =>
+            {
+                var state = EmptyGame();
+                var host = PlayUnit(state, 0, "Spirit Caller", 1, 2);
+                host.Flux = false;
+                host.BoundSpiritCardId = "Spirit of Reprisal";
+                var attacker = PlayUnit(state, 1, "Conscript", 1, 3);
+                attacker.Flux = false;
+                attacker.BonusPower += 3;
+                attacker.BonusLife += 5;
+
+                state.ActivePlayer = 1;
+                GameEngine.Execute(state, new EndTurnCommand { Player = 1 });
+
+                AssertEqual(1, attacker.Damage, "Reprisal struck the attacking unit");
+                AssertTrue(host.BoundSpiritCardId == "Spirit of Reprisal", "Spirit Caller rebound at end of the breaking turn");
+                AssertTrue(host.PendingRebindSpiritId == null, "pending rebind consumed");
+            });
+
+            Test("Reprisal: an ability break hits the casting player", () =>
+            {
+                var state = EmptyGame();
+                var host = PlayUnit(state, 0, "Conscript", 1, 2);
+                host.BonusLife += 5;
+                host.BoundSpiritCardId = "Spirit of Reprisal";
+                int lifeBefore = state.Players[1].Life;
+
+                PlayAbility(state, 1, "Pin Prick", 1, 2);
+
+                AssertTrue(host.BoundSpiritCardId == null, "the bond broke");
+                AssertEqual(lifeBefore - 1, state.Players[1].Life, "the caster paid for the break");
+            });
+
+            Test("Focus Form: tutored unit carries its keyword into play", () =>
+            {
+                var state = EmptyGame();
+                var cheap = CardCatalogV1.Cards.Values.First(c => c.Type == CardType.Unit && c.Cost <= 1);
+                state.Players[0].Deck.Add(cheap.Id);
+
+                PlayAbility(state, 0, "Focus Form", 0, 0);
+                var playerState = state.Players[0];
+                int index = playerState.Hand.IndexOf(cheap.Id);
+                AssertTrue(index >= 0, "cheap unit drawn to hand");
+                AssertTrue(index < playerState.HandKeywords.Count && playerState.HandKeywords[index] >= 0, "hand copy tagged with a keyword");
+
+                playerState.Energy = cheap.Cost;
+                playerState.Affinity[cheap.Archetype] = Math.Max(playerState.Affinity[cheap.Archetype], cheap.AffinityRequirement);
+                var call = GameEngine.Execute(state, new PlayCardCommand { Player = 0, HandIndex = index, TargetX = 2, TargetY = 0 });
+                AssertTrue(call.Success, "tagged unit playable");
+
+                var called = state.GetUnitAt(2, 0);
+                int bonusSum = called.BonusArmor + called.BonusPierce + called.BonusParry + called.BonusPower + called.BonusLife;
+                AssertEqual(1, bonusSum, "exactly one keyword bonus applied on call");
+            });
+
+            Test("Ritual of Reckoning: lane-wide blasts, then the column dies", () =>
+            {
+                var state = EmptyGame();
+                var back = PlayUnit(state, 0, "Conscript", 0, 0);
+                var front = PlayUnit(state, 0, "Conscript", 0, 1);
+                var enemy = PlayUnit(state, 1, "Conscript", 0, 4);
+                enemy.BonusLife += 30;
+                int total = state.CurrentLife(back) + state.CurrentLife(front);
+
+                PlayAbility(state, 0, "Ritual of Reckoning", 0, 0);
+
+                AssertTrue(state.GetUnitAt(0, 0) == null && state.GetUnitAt(0, 1) == null, "all martyrs destroyed");
+                AssertEqual(total, enemy.Damage, "every martyr's blast swept the whole lane ahead");
+            });
+
+            Test("Dispersal: stats scatter to all nearby units, either owner", () =>
+            {
+                var state = EmptyGame();
+                var victim = PlayUnit(state, 1, "Conscript", 1, 3);
+                victim.BonusPower += 3;
+                victim.BonusLife += 3;
+                int points = state.EffectivePower(victim) + state.CurrentLife(victim);
+                var myHeir = PlayUnit(state, 0, "Conscript", 1, 2);
+                var theirHeir = PlayUnit(state, 1, "Conscript", 0, 3);
+
+                PlayAbility(state, 0, "Dispersal", 1, 3);
+
+                AssertTrue(state.GetUnit(victim.Id) == null, "victim destroyed");
+                int scattered = myHeir.BonusPower + myHeir.BonusLife + theirHeir.BonusPower + theirHeir.BonusLife;
+                AssertEqual(points, scattered, "all points landed on the nearby units of both owners");
+            });
+
             Console.WriteLine();
             Console.WriteLine($"{passed} passed, {failed} failed");
             return failed == 0 ? 0 : 1;

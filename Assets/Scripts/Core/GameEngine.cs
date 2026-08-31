@@ -105,7 +105,7 @@ namespace LightCard.Core
                 unit.EvadeUsedThisTurn = 0;
             }
 
-            //Scheduled effects due this turn (Sword of Damocles, Spirit Caller)
+            //Scheduled effects due this turn (Sword of Damocles)
             for (int i = state.Pending.Count - 1; i >= 0; i--)
             {
                 var pending = state.Pending[i];
@@ -114,21 +114,8 @@ namespace LightCard.Core
                 if (pending.TurnsLeft > 0) { state.Pending[i] = pending; continue; }
                 state.Pending.RemoveAt(i);
 
-                if (pending.IsRebind)
-                {
-                    var host = state.GetUnit(pending.UnitId);
-                    if (host != null && host.BoundSpiritCardId == null && !string.IsNullOrEmpty(pending.CardId))
-                    {
-                        host.BoundSpiritCardId = pending.CardId;
-                        host.SpiritDamage = 0;
-                        events.Add(new GameEvent { Type = GameEventType.UnitBonded, UnitId = host.Id, CardId = pending.CardId, X = host.X, Y = host.Y });
-                    }
-                }
-                else
-                {
-                    var doomed = state.GetUnitAt(pending.X, pending.Y);
-                    if (doomed != null) DestroyUnit(state, doomed, events);
-                }
+                var doomed = state.GetUnitAt(pending.X, pending.Y);
+                if (doomed != null) DestroyUnit(state, doomed, events);
             }
 
             //X-bound (Ocean): destroyed unless standing on the required effect
@@ -225,6 +212,23 @@ namespace LightCard.Core
                     DamageUnit(state, unit, 1, result.Events);
             }
 
+            //Spirit Caller: bonds broken this turn re-bind at the end of the turn,
+            //whoever's turn it was, so the break and the re-bind resolve in one beat
+            foreach (var host in state.Units.Where(u => u.PendingRebindSpiritId != null).ToList())
+            {
+                string spiritId = host.PendingRebindSpiritId;
+                host.PendingRebindSpiritId = null;
+                if (!state.Units.Contains(host) || host.BoundSpiritCardId != null) continue;
+                host.BoundSpiritCardId = spiritId;
+                host.SpiritDamage = 0;
+                result.Events.Add(new GameEvent { Type = GameEventType.UnitBonded, UnitId = host.Id, CardId = spiritId, X = host.X, Y = host.Y });
+                foreach (var effect in host.AllEffects.Where(e => e.Trigger == Trigger.OnBonded).ToList())
+                {
+                    if (!state.Units.Contains(host)) break;
+                    ResolveEffect(state, effect, host, host.Owner, host.X, host.Y, result.Events);
+                }
+            }
+
             //Pins on the ending player's units expire now (rules-v2)
             foreach (var unit in state.UnitsOf(player))
                 unit.Pinned = false;
@@ -266,10 +270,13 @@ namespace LightCard.Core
             if (playerState.Affinity[definition.Archetype] < definition.AffinityRequirement)
                 return CommandResult.Fail($"{cardId} requires {definition.Archetype} Affinity {definition.AffinityRequirement} (have {playerState.Affinity[definition.Archetype]}).");
 
-            string targetError = ValidatePlayTarget(state, command.Player, definition, command.TargetX, command.TargetY);
+            string targetError = ValidatePlayTarget(state, command.Player, definition, command.TargetX, command.TargetY, command.Target2X, command.Target2Y);
             if (targetError != null) return CommandResult.Fail(targetError);
 
             var result = new CommandResult { Success = true };
+
+            //Focus Form: a keyword tagged onto this exact hand copy, applied on call
+            int keywordRoll = command.HandIndex < playerState.HandKeywords.Count ? playerState.HandKeywords[command.HandIndex] : -1;
 
             RemoveFromHand(playerState, command.HandIndex);
             playerState.Energy -= cost;
@@ -279,7 +286,12 @@ namespace LightCard.Core
             if (definition.Type == CardType.Ability)
             {
                 foreach (var effect in definition.Effects.Where(e => e.Trigger == Trigger.OnPlay))
-                    ResolveEffect(state, effect, null, command.Player, command.TargetX, command.TargetY, result.Events);
+                {
+                    //Two-target cards (Lose Hope): flagged effects aim at the second target
+                    int ex = effect.UsesSecondTarget ? command.Target2X : command.TargetX;
+                    int ey = effect.UsesSecondTarget ? command.Target2Y : command.TargetY;
+                    ResolveEffect(state, effect, null, command.Player, ex, ey, result.Events);
+                }
 
                 playerState.AbilitiesPlayedThisTurn++;
 
@@ -308,6 +320,13 @@ namespace LightCard.Core
             {
                 CallUnit(state, command.Player, cardId, command.TargetX, command.TargetY, result.Events);
 
+                //Focus Form's tagged keyword lands on the called unit
+                if (keywordRoll >= 0 && definition.Type == CardType.Unit)
+                {
+                    var tagged = state.GetUnitAt(command.TargetX, command.TargetY);
+                    if (tagged != null) ApplyKeyword(state, tagged, keywordRoll, result.Events);
+                }
+
                 //Next-call riders (Virtuous Call, Valorous Call) bless this arrival
                 if (definition.Type == CardType.Unit &&
                     (playerState.NextCallDiscount > 0 || playerState.NextCallPower != 0 || playerState.NextCallLife != 0 || playerState.NextCallGranted != null))
@@ -335,7 +354,7 @@ namespace LightCard.Core
             return result;
         }
 
-        private static string ValidatePlayTarget(GameState state, int player, CardDefinition definition, int x, int y)
+        private static string ValidatePlayTarget(GameState state, int player, CardDefinition definition, int x, int y, int x2 = -1, int y2 = -1)
         {
             switch (definition.PlayTarget)
             {
@@ -358,6 +377,15 @@ namespace LightCard.Core
                     if (host == null || host.Owner != player) return "Spirits bind to your own units.";
                     if (host.IsCharm) return "Spirits cannot bind to charms.";
                     if (host.Definition.IsSpirit) return "Spirits cannot bind to spirits.";
+                    return null;
+                }
+                case PlayTargetKind.FriendlyUnitThenEnemyUnit:
+                {
+                    if (!GameState.InBounds(x, y) || !GameState.InBounds(x2, y2)) return "Target space is out of bounds.";
+                    var friendly = state.GetUnitAt(x, y);
+                    if (friendly == null || friendly.Owner != player) return "First target must be a friendly unit.";
+                    var foe = state.GetUnitAt(x2, y2);
+                    if (foe == null || foe.Owner == player) return "Second target must be an enemy unit.";
                     return null;
                 }
                 default:
@@ -664,7 +692,6 @@ namespace LightCard.Core
 
         private static void StrikeGuarded(GameState state, UnitState attacker, UnitState target, int power, List<GameEvent> events, bool allowRiders)
         {
-            state.LastCombatAttackerId = attacker.Id; //for Reprisal-style break effects
             int lifeBefore = state.CurrentLife(target);
             int targetX = target.X, targetY = target.Y;
             int damage = Math.Max(0, power - state.EffectiveArmor(target));
@@ -677,7 +704,7 @@ namespace LightCard.Core
                 events.Add(new GameEvent { Type = GameEventType.AttackParried, UnitId = target.Id, CardId = target.CardId });
             }
 
-            if (damage > 0) DamageUnit(state, target, damage, events);
+            if (damage > 0) DamageUnit(state, target, damage, events, attacker.Id, attacker.Owner);
 
             bool targetAlive = state.Units.Contains(target);
 
@@ -690,12 +717,12 @@ namespace LightCard.Core
             {
                 var behind = state.GetUnitAt(targetX, targetY + GameState.ForwardDir(attacker.Owner));
                 if (behind != null && behind.Owner != attacker.Owner)
-                    DamageUnit(state, behind, damage - lifeBefore, events);
+                    DamageUnit(state, behind, damage - lifeBefore, events, attacker.Id, attacker.Owner);
             }
 
             //Retaliate: a surviving defender strikes back (ignores armor: effect damage)
             if (targetAlive && target.Definition.Retaliate > 0 && state.Units.Contains(attacker))
-                DamageUnit(state, attacker, target.Definition.Retaliate, events);
+                DamageUnit(state, attacker, target.Definition.Retaliate, events, target.Id, target.Owner);
 
             //OnDealtDamage (Ferocity, Reverse Engineer): target coords = victim's space
             if (damage > 0 && state.Units.Contains(attacker))
@@ -855,7 +882,7 @@ namespace LightCard.Core
                 case EffectAction.DealDamage:
                 {
                     foreach (var unit in GatherUnits(state, effect.Scope, source, owner, targetX, targetY))
-                        DealAbilityDamage(state, unit, effect.Amount, events);
+                        DealAbilityDamage(state, unit, effect.Amount, events, owner);
                     break;
                 }
                 case EffectAction.LaneDamage:
@@ -870,7 +897,7 @@ namespace LightCard.Core
                         if (damage <= 0) break;
                         var victim = state.GetUnitAt(targetX, y);
                         if (victim == null) continue;
-                        DealAbilityDamage(state, victim, damage, events);
+                        DealAbilityDamage(state, victim, damage, events, owner);
                         damage += effect.Amount;
                     }
                     break;
@@ -883,7 +910,7 @@ namespace LightCard.Core
 
                     var occupant = state.GetUnitAt(targetX, targetY);
                     if (occupant != null && effect.Amount > 0)
-                        DealAbilityDamage(state, occupant, effect.Amount, events);
+                        DealAbilityDamage(state, occupant, effect.Amount, events, owner);
                     break;
                 }
                 case EffectAction.GainPierce:
@@ -1031,6 +1058,27 @@ namespace LightCard.Core
                     events.Add(new GameEvent { Type = GameEventType.CardDrawn, Player = owner, CardId = found });
                     break;
                 }
+                case EffectAction.DrawLowCostUnitWithKeyword:
+                {
+                    //Focus Form: random cheap Unit from the deck to hand, tagged with
+                    //a random keyword that lands when the unit is called
+                    var playerState = state.Players[owner];
+                    var unitMatches = new List<int>();
+                    for (int i = 0; i < playerState.Deck.Count; i++)
+                    {
+                        var candidate = CardCatalogV1.Get(playerState.Deck[i]);
+                        if (candidate.Type == CardType.Unit && candidate.Cost <= effect.Amount) unitMatches.Add(i);
+                    }
+                    if (unitMatches.Count == 0) break;
+                    int deckIndex = unitMatches[state.NextRandom(unitMatches.Count)];
+                    string tutored = playerState.Deck[deckIndex];
+                    playerState.Deck.RemoveAt(deckIndex);
+                    playerState.Hand.Add(tutored);
+                    while (playerState.HandKeywords.Count < playerState.Hand.Count - 1) playerState.HandKeywords.Add(-1);
+                    playerState.HandKeywords.Add(state.NextRandom(5));
+                    events.Add(new GameEvent { Type = GameEventType.CardDrawn, Player = owner, CardId = tutored });
+                    break;
+                }
                 case EffectAction.AddRandomAbility:
                 {
                     var abilities = CardCatalogV1.Cards.Values.Where(c => c.Type == CardType.Ability).OrderBy(c => c.Id).ToList();
@@ -1088,7 +1136,7 @@ namespace LightCard.Core
                     foreach (var enemy in state.Units.Where(u => u.Owner != owner && u.X == targetX).ToList())
                     {
                         if (state.Units.Contains(enemy))
-                            DealAbilityDamage(state, enemy, burst, events);
+                            DealAbilityDamage(state, enemy, burst, events, owner);
                     }
                     break;
                 }
@@ -1188,7 +1236,7 @@ namespace LightCard.Core
                         {
                             var victim = state.GetUnitAt(lane, y);
                             if (victim == null) continue;
-                            DealAbilityDamage(state, victim, effect.Amount, events);
+                            DealAbilityDamage(state, victim, effect.Amount, events, owner);
                             if (effect.SpaceEffect != SpaceEffectType.None)
                             {
                                 state.SpaceEffects[lane, y] = effect.SpaceEffect;
@@ -1217,7 +1265,7 @@ namespace LightCard.Core
                 {
                     bool hadEffect = state.SpaceEffects[targetX, targetY] != SpaceEffectType.None;
                     var occupant = state.GetUnitAt(targetX, targetY);
-                    if (occupant != null) DealAbilityDamage(state, occupant, 2, events);
+                    if (occupant != null) DealAbilityDamage(state, occupant, 2, events, owner);
                     if (hadEffect)
                     {
                         state.SpaceEffects[targetX, targetY] = SpaceEffectType.Scorched;
@@ -1227,8 +1275,11 @@ namespace LightCard.Core
                 }
                 case EffectAction.DamageBreaker:
                 {
-                    var breaker = state.GetUnit(state.LastCombatAttackerId);
+                    //Spirit of Reprisal: punish whoever caused the break - the
+                    //attacking unit if one exists, else the casting player
+                    var breaker = state.GetUnit(state.LastBreakSourceUnitId);
                     if (breaker != null) DamageUnit(state, breaker, effect.Amount, events);
+                    else if (state.LastBreakSourcePlayer >= 0) DamagePlayer(state, state.LastBreakSourcePlayer, effect.Amount, events);
                     break;
                 }
                 case EffectAction.HealFull:
@@ -1257,7 +1308,7 @@ namespace LightCard.Core
                 {
                     var victim = state.GetUnitAt(targetX, targetY);
                     if (victim == null) break;
-                    DealAbilityDamage(state, victim, 2, events);
+                    DealAbilityDamage(state, victim, 2, events, owner);
                     if (state.Units.Contains(victim) && victim.IsCharm && victim.Damage > 0)
                     {
                         events.Add(new GameEvent { Type = GameEventType.UnitHealed, UnitId = victim.Id, CardId = victim.CardId, Amount = victim.Damage });
@@ -1292,7 +1343,7 @@ namespace LightCard.Core
                     int burst = state.CurrentLife(charm);
                     DestroyUnit(state, charm, events);
                     foreach (var victim in state.Units.Where(u => u.X == targetX).ToList())
-                        if (state.Units.Contains(victim)) DealAbilityDamage(state, victim, burst, events);
+                        if (state.Units.Contains(victim)) DealAbilityDamage(state, victim, burst, events, owner);
                     break;
                 }
                 case EffectAction.AutoAttune:
@@ -1317,7 +1368,7 @@ namespace LightCard.Core
                     for (int y = targetY + dir; GameState.InBounds(targetX, y); y += dir)
                     {
                         var hit = state.GetUnitAt(targetX, y);
-                        if (hit != null && state.Units.Contains(hit)) DealAbilityDamage(state, hit, lash, events);
+                        if (hit != null && state.Units.Contains(hit)) DealAbilityDamage(state, hit, lash, events, owner);
                     }
                     if (state.Units.Contains(martyr)) DestroyUnit(state, martyr, events);
                     break;
@@ -1353,21 +1404,30 @@ namespace LightCard.Core
                 }
                 case EffectAction.ReckoningColumn:
                 {
+                    //Each martyr blasts its life down the whole lane ahead of it (both
+                    //sides - fellow martyrs in front are caught in the blast), THEN all
+                    //martyrs are destroyed. Blast values snapshot before any damage.
                     int forward = GameState.ForwardDir(owner);
-                    foreach (var martyr in state.UnitsOf(owner).Where(u => !u.IsCharm && u.X == targetX).ToList())
+                    var martyrs = state.UnitsOf(owner).Where(u => !u.IsCharm && u.X == targetX).ToList();
+                    var blasts = martyrs.Select(m => (martyr: m, blast: state.CurrentLife(m))).ToList();
+                    foreach (var (martyr, blast) in blasts)
                     {
-                        if (!state.Units.Contains(martyr)) continue;
-                        var inFront = state.GetUnitAt(martyr.X, martyr.Y + forward);
-                        int blast = state.CurrentLife(martyr);
-                        if (inFront != null) DealAbilityDamage(state, inFront, blast, events);
-                        if (state.Units.Contains(martyr)) DestroyUnit(state, martyr, events);
+                        for (int y = martyr.Y + forward; GameState.InBounds(targetX, y); y += forward)
+                        {
+                            var hit = state.GetUnitAt(targetX, y);
+                            if (hit != null && state.Units.Contains(hit)) DealAbilityDamage(state, hit, blast, events, owner);
+                        }
                     }
+                    foreach (var (martyr, _) in blasts)
+                        if (state.Units.Contains(martyr)) DestroyUnit(state, martyr, events);
                     break;
                 }
                 case EffectAction.ReinventSpirit:
                 {
                     var vessel = state.GetUnitAt(targetX, targetY);
                     if (vessel == null || vessel.Owner != owner || vessel.BoundSpiritCardId == null) break;
+                    state.LastBreakSourceUnitId = -1;
+                    state.LastBreakSourcePlayer = owner; //the caster caused this break
                     BreakBond(state, vessel, events);
                     var playerState = state.Players[owner];
                     if (playerState.Deck.Count == 0) break;
@@ -1391,9 +1451,9 @@ namespace LightCard.Core
                     var dispersed = state.GetUnitAt(targetX, targetY);
                     if (dispersed == null || dispersed.IsCharm) break;
                     int points = state.EffectivePower(dispersed) + state.CurrentLife(dispersed);
-                    int heirOwner = dispersed.Owner;
                     DestroyUnit(state, dispersed, events);
-                    var heirs = state.UnitsOf(heirOwner).Where(u => !u.IsCharm &&
+                    //Sheet: "other nearby units" - any owner; positioning decides who profits
+                    var heirs = state.Units.Where(u => !u.IsCharm &&
                         Math.Abs(u.X - targetX) <= 1 && Math.Abs(u.Y - targetY) <= 1).ToList();
                     if (heirs.Count == 0) break;
                     for (int n = 0; n < points; n++)
@@ -1413,7 +1473,7 @@ namespace LightCard.Core
                         var enemies = state.Units.Where(u => u.Owner != owner).ToList();
                         if (enemies.Count == 0) break;
                         var hit = enemies[state.NextRandom(enemies.Count)];
-                        DealAbilityDamage(state, hit, 1, events);
+                        DealAbilityDamage(state, hit, 1, events, owner);
                     }
                     break;
                 }
@@ -1467,8 +1527,9 @@ namespace LightCard.Core
                     break;
                 case EffectAction.ScheduleRebind:
                 {
+                    //Spirit Caller: the broken spirit returns at the end of the current turn
                     if (source == null || string.IsNullOrEmpty(state.LastBrokenSpiritId)) break;
-                    state.Pending.Add(new PendingAction { Player = owner, TurnsLeft = 1, UnitId = source.Id, CardId = state.LastBrokenSpiritId, IsRebind = true });
+                    source.PendingRebindSpiritId = state.LastBrokenSpiritId;
                     break;
                 }
                 case EffectAction.GiveYourAll:
@@ -1550,9 +1611,13 @@ namespace LightCard.Core
         }
 
         /// <summary>Small random buff for Ocean mutations and Flooded calls.</summary>
-        private static void GrantRandomKeyword(GameState state, UnitState unit, List<GameEvent> events)
+        private static void GrantRandomKeyword(GameState state, UnitState unit, List<GameEvent> events) =>
+            ApplyKeyword(state, unit, state.NextRandom(5), events);
+
+        /// <summary>Apply a rolled keyword (0-4); rolls can also ride on hand copies (Focus Form).</summary>
+        private static void ApplyKeyword(GameState state, UnitState unit, int roll, List<GameEvent> events)
         {
-            switch (state.NextRandom(5))
+            switch (roll)
             {
                 case 0: unit.BonusArmor += 1; break;
                 case 1: unit.BonusPierce += 1; break;
@@ -1570,7 +1635,7 @@ namespace LightCard.Core
         private static bool reflecting;  //Dark Mirror re-entrancy guard
         private static bool splashing;   //Crystal Amplifier re-entrancy guard
 
-        private static void DealAbilityDamage(GameState state, UnitState unit, int amount, List<GameEvent> events)
+        private static void DealAbilityDamage(GameState state, UnitState unit, int amount, List<GameEvent> events, int sourcePlayer = -1)
         {
             //Dark Mirror: ability damage aimed here bounces to the mirrored space
             if (unit.Definition.Reflects && !reflecting)
@@ -1579,7 +1644,7 @@ namespace LightCard.Core
                 if (mirrored != null)
                 {
                     reflecting = true;
-                    DealAbilityDamage(state, mirrored, amount, events);
+                    DealAbilityDamage(state, mirrored, amount, events, sourcePlayer);
                     reflecting = false;
                 }
                 return;
@@ -1594,7 +1659,7 @@ namespace LightCard.Core
                 {
                     var neighbor = GameState.InBounds(cx + dx, cy + dy) ? state.GetUnitAt(cx + dx, cy + dy) : null;
                     if (neighbor != null && state.Units.Contains(neighbor))
-                        DealAbilityDamage(state, neighbor, amount, events);
+                        DealAbilityDamage(state, neighbor, amount, events, sourcePlayer);
                 }
                 splashing = false;
                 if (!state.Units.Contains(unit)) return;
@@ -1609,7 +1674,7 @@ namespace LightCard.Core
 
             amount += state.EffectiveAmplify(unit);
             amount -= state.EffectiveResist(unit);
-            DamageUnit(state, unit, amount, events);
+            DamageUnit(state, unit, amount, events, -1, sourcePlayer);
         }
 
         private static List<UnitState> GatherUnits(GameState state, TargetScope scope, UnitState source, int owner, int targetX, int targetY)
@@ -1650,6 +1715,9 @@ namespace LightCard.Core
                         state.Units.Where(u => u.Owner != owner && u.X == source.X).ToList();
                 case TargetScope.AllEnemyUnits:
                     return state.Units.Where(u => u.Owner != owner).ToList();
+                case TargetScope.AllOtherUnits:
+                    //Thunder Rod: every targetable thing on the board except the source
+                    return state.Units.Where(u => u != source).ToList();
                 case TargetScope.InFront:
                 {
                     if (source == null) return new List<UnitState>();
@@ -1831,7 +1899,7 @@ namespace LightCard.Core
 
         //---- Damage, healing, death ----
 
-        private static void DamageUnit(GameState state, UnitState unit, int amount, List<GameEvent> events)
+        private static void DamageUnit(GameState state, UnitState unit, int amount, List<GameEvent> events, int sourceUnitId = -1, int sourcePlayer = -1)
         {
             if (amount <= 0 || !state.Units.Contains(unit)) return;
 
@@ -1845,7 +1913,12 @@ namespace LightCard.Core
                 events.Add(new GameEvent { Type = GameEventType.UnitDamaged, UnitId = unit.Id, CardId = unit.BoundSpiritCardId, Amount = amount });
 
                 if (unit.SpiritDamage >= spirit.Life)
+                {
+                    //Record who caused the break for Reprisal-style punishments
+                    state.LastBreakSourceUnitId = sourceUnitId;
+                    state.LastBreakSourcePlayer = sourcePlayer;
                     BreakBond(state, unit, events);
+                }
                 return;
             }
 
@@ -2022,11 +2095,12 @@ namespace LightCard.Core
             }
         }
 
-        /// <summary>Remove a hand copy, keeping the per-copy discount list index-aligned.</summary>
+        /// <summary>Remove a hand copy, keeping the per-copy discount/keyword lists index-aligned.</summary>
         private static void RemoveFromHand(PlayerState playerState, int index)
         {
             playerState.Hand.RemoveAt(index);
             if (index < playerState.HandDiscounts.Count) playerState.HandDiscounts.RemoveAt(index);
+            if (index < playerState.HandKeywords.Count) playerState.HandKeywords.RemoveAt(index);
         }
 
         /// <summary>Random discard from a player's hand, firing their discard watchers.</summary>

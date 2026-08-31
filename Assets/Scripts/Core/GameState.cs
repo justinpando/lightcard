@@ -49,6 +49,8 @@ namespace LightCard.Core
         public string BoundSpiritCardId;
         /// <summary>Damage the bound spirit has absorbed so far.</summary>
         public int SpiritDamage;
+        /// <summary>Spirit to re-bind at the end of the current turn (Spirit Caller), or null.</summary>
+        public string PendingRebindSpiritId;
 
         public CardDefinition BoundSpirit => BoundSpiritCardId == null ? null : CardCatalogV1.Get(BoundSpiritCardId);
 
@@ -106,6 +108,11 @@ namespace LightCard.Core
         /// May be shorter than Hand: missing entries mean no discount.
         /// </summary>
         public List<int> HandDiscounts = new List<int>();
+        /// <summary>
+        /// Per-copy keyword rolls tagged onto hand cards (Focus Form), index-aligned
+        /// with Hand; -1 or missing = none. Applied when the unit is called.
+        /// </summary>
+        public List<int> HandKeywords = new List<int>();
         //Next-call riders (Virtuous Call, Valorous Call): consumed by the next Unit card played
         public int NextCallDiscount;
         public int NextCallPower;
@@ -124,21 +131,19 @@ namespace LightCard.Core
             copy.Deck = new List<string>(Deck);
             copy.Hand = new List<string>(Hand);
             copy.HandDiscounts = new List<int>(HandDiscounts);
+            copy.HandKeywords = new List<int>(HandKeywords);
             copy.Affinity = new Dictionary<Archetype, int>(Affinity);
             return copy;
         }
     }
 
-    /// <summary>A queued future effect (Sword of Damocles, Spirit Caller). Struct: cloned by value.</summary>
+    /// <summary>A queued future destruction (Sword of Damocles). Struct: cloned by value.</summary>
     public struct PendingAction
     {
         public int Player;
         public int TurnsLeft;
         public int X;
         public int Y;
-        public int UnitId;
-        public string CardId;
-        public bool IsRebind; //false = destroy occupant of (X,Y)
     }
 
     public class GameState
@@ -154,8 +159,10 @@ namespace LightCard.Core
         public int RngCalls;
         /// <summary>Id of the most recently resolved card play (Trace).</summary>
         public string LastCardPlayed;
-        /// <summary>Unit id of the most recent combat attacker (Spirit of Reprisal); -1 outside combat.</summary>
-        public int LastCombatAttackerId = -1;
+        /// <summary>Unit source of the damage that last broke a bond (Spirit of Reprisal); -1 = none.</summary>
+        public int LastBreakSourceUnitId = -1;
+        /// <summary>Player source of the damage that last broke a bond (ability casts); -1 = none.</summary>
+        public int LastBreakSourcePlayer = -1;
         /// <summary>Card id of the most recently broken spirit (Soulcatcher).</summary>
         public string LastBrokenSpiritId;
         /// <summary>-1 while the game is running.</summary>
@@ -381,7 +388,8 @@ namespace LightCard.Core
                 RngCalls = RngCalls,
                 Winner = Winner,
                 LastCardPlayed = LastCardPlayed,
-                LastCombatAttackerId = LastCombatAttackerId,
+                LastBreakSourceUnitId = LastBreakSourceUnitId,
+                LastBreakSourcePlayer = LastBreakSourcePlayer,
                 LastBrokenSpiritId = LastBrokenSpiritId
             };
             return copy;

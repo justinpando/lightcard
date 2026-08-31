@@ -272,7 +272,9 @@ namespace LightCard.Core
         /// <summary>Add a random Charm costing at most Amount to the owner's hand (Bauble Merchant).</summary>
         AddRandomCheapCharm,
         /// <summary>The source gains a charge; every Amount-th charge, the owner draws a card (Message in a Bottle).</summary>
-        ChargeDraw
+        ChargeDraw,
+        /// <summary>Draw a random Unit costing at most Amount from the deck to hand, tagging that copy with a random keyword applied when called (Focus Form).</summary>
+        DrawLowCostUnitWithKeyword
     }
 
     /// <summary>Which units an effect applies to, relative to its source or its play target.</summary>
@@ -300,8 +302,10 @@ namespace LightCard.Core
         NearestEnemyInLane,
         /// <summary>Every enemy unit or charm in the source's lane (Spirit of Wrath).</summary>
         EnemiesInLane,
-        /// <summary>Every enemy unit and charm on the board (Thunder Rod, adapted).</summary>
+        /// <summary>Every enemy unit and charm on the board.</summary>
         AllEnemyUnits,
+        /// <summary>Every unit and charm on the board except the source itself, both sides (Thunder Rod).</summary>
+        AllOtherUnits,
         /// <summary>The space (or its occupant) directly in front of the source.</summary>
         InFront,
         /// <summary>Friendly units in the eight spaces around the source (glossary "Nearby").</summary>
@@ -335,7 +339,9 @@ namespace LightCard.Core
         AnySpace,
         AnyUnit,
         /// <summary>Spirits: a friendly non-charm, non-spirit-bearing unit to bind to.</summary>
-        FriendlyUnit
+        FriendlyUnit,
+        /// <summary>Two targets: first a friendly unit, then an enemy unit (Lose Hope).</summary>
+        FriendlyUnitThenEnemyUnit
     }
 
     /// <summary>
@@ -356,6 +362,8 @@ namespace LightCard.Core
         public string CalledCardId;
         /// <summary>The ability attached by GrantAbility.</summary>
         public EffectDef Granted;
+        /// <summary>On two-target cards, this effect resolves against the second target.</summary>
+        public bool UsesSecondTarget;
     }
 
     /// <summary>Immutable definition of a card. Instances on the board are UnitState.</summary>
