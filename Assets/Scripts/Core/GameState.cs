@@ -38,6 +38,9 @@ namespace LightCard.Core
         public bool Pinned;
         /// <summary>Damage taken at the start of the owner's turn; permanent until cured (rules-v2).</summary>
         public int Poison;
+        /// <summary>Who applied the poison, for damage attribution; last applier wins. -1 = none.</summary>
+        public int PoisonSourceUnitId = -1;
+        public int PoisonSourcePlayer = -1;
         /// <summary>True on the turn a unit is called; units in Flux may not attack.</summary>
         public bool Flux;
         public bool AttackedThisTurn;
@@ -152,6 +155,8 @@ namespace LightCard.Core
         public List<UnitState> Units = new List<UnitState>();
         public List<PendingAction> Pending = new List<PendingAction>();
         public SpaceEffectType[,] SpaceEffects = new SpaceEffectType[GameConfig.Lanes, GameConfig.Rows];
+        /// <summary>Player who created each space effect (damage attribution); -1 = none.</summary>
+        public int[,] SpaceEffectSources = NewSourceGrid();
         public int ActivePlayer;
         public int TurnNumber;
         public int NextUnitId = 1;
@@ -169,6 +174,26 @@ namespace LightCard.Core
         public int Winner = -1;
 
         public bool IsOver => Winner >= 0;
+
+        private static int[,] NewSourceGrid()
+        {
+            var grid = new int[GameConfig.Lanes, GameConfig.Rows];
+            for (int x = 0; x < GameConfig.Lanes; x++)
+                for (int y = 0; y < GameConfig.Rows; y++)
+                    grid[x, y] = -1;
+            return grid;
+        }
+
+        /// <summary>
+        /// Set a space effect and record its creator. Mutations that only change
+        /// the type of an existing effect (Mirage) keep the original creator by
+        /// writing SpaceEffects directly instead.
+        /// </summary>
+        public void SetSpaceEffect(int x, int y, SpaceEffectType effect, int sourcePlayer)
+        {
+            SpaceEffects[x, y] = effect;
+            SpaceEffectSources[x, y] = effect == SpaceEffectType.None ? -1 : sourcePlayer;
+        }
 
         //---- Coordinate helpers ----
 
@@ -381,6 +406,7 @@ namespace LightCard.Core
                 Units = Units.ConvertAll(u => u.Clone()),
                 Pending = new List<PendingAction>(Pending),
                 SpaceEffects = (SpaceEffectType[,])SpaceEffects.Clone(),
+                SpaceEffectSources = (int[,])SpaceEffectSources.Clone(),
                 ActivePlayer = ActivePlayer,
                 TurnNumber = TurnNumber,
                 NextUnitId = NextUnitId,

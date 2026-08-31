@@ -140,7 +140,7 @@ namespace LightCard.Core
             foreach (var unit in state.UnitsOf(player).Where(u => u.Poison > 0).ToList())
             {
                 if (state.Units.Contains(unit))
-                    DamageUnit(state, unit, unit.Poison, events);
+                    DamageUnit(state, unit, unit.Poison, events, unit.PoisonSourceUnitId, unit.PoisonSourcePlayer);
             }
 
             //Start-of-turn triggers (Living Torrent) for the active player's units
@@ -209,7 +209,7 @@ namespace LightCard.Core
             foreach (var unit in state.UnitsOf(player).Where(u => !u.IsCharm).ToList())
             {
                 if (state.Units.Contains(unit) && state.SpaceEffects[unit.X, unit.Y] == SpaceEffectType.Inferno)
-                    DamageUnit(state, unit, 1, result.Events);
+                    DamageUnit(state, unit, 1, result.Events, -1, state.SpaceEffectSources[unit.X, unit.Y]);
             }
 
             //Spirit Caller: bonds broken this turn re-bind at the end of the turn,
@@ -660,7 +660,7 @@ namespace LightCard.Core
             var result = new CommandResult { Success = true };
             playerState.Energy -= GameConfig.ClearEnergyCost;
             playerState.PowerUsedThisTurn = true;
-            state.SpaceEffects[command.X, command.Y] = SpaceEffectType.None;
+            state.SetSpaceEffect(command.X, command.Y, SpaceEffectType.None, -1);
             result.Events.Add(new GameEvent { Type = GameEventType.EnergyChanged, Player = command.Player, Amount = playerState.Energy });
             result.Events.Add(new GameEvent { Type = GameEventType.SpaceEffectApplied, X = command.X, Y = command.Y, SpaceEffect = SpaceEffectType.None });
             return result;
@@ -740,7 +740,7 @@ namespace LightCard.Core
 
             //Push: after the attack, shove a surviving target one space away
             if (allowRiders && targetAlive && (attacker.Definition.PushOnAttack || attacker.TempPushOnAttack))
-                PushUnit(state, target, GameState.ForwardDir(attacker.Owner), events);
+                PushUnit(state, target, GameState.ForwardDir(attacker.Owner), events, attacker.Id, attacker.Owner);
 
             //Overpower (Give Your All): excess kill damage rolls onto the unit behind
             if (!targetAlive && attacker.TempOverpower && damage > lifeBefore)
@@ -851,7 +851,7 @@ namespace LightCard.Core
                     bool appliedAny = false;
                     foreach (var (x, y) in GatherSpaces(state, effect.Scope, source, targetX, targetY))
                     {
-                        state.SpaceEffects[x, y] = effect.SpaceEffect;
+                        state.SetSpaceEffect(x, y, effect.SpaceEffect, owner);
                         events.Add(new GameEvent { Type = GameEventType.SpaceEffectApplied, X = x, Y = y, SpaceEffect = effect.SpaceEffect });
                         appliedAny = true;
                     }
@@ -912,7 +912,7 @@ namespace LightCard.Core
                 case EffectAction.DealDamage:
                 {
                     foreach (var unit in GatherUnits(state, effect.Scope, source, owner, targetX, targetY))
-                        DealAbilityDamage(state, unit, effect.Amount, events, owner);
+                        DealAbilityDamage(state, unit, effect.Amount, events, owner, source?.Id ?? -1);
                     break;
                 }
                 case EffectAction.LaneDamage:
@@ -927,7 +927,7 @@ namespace LightCard.Core
                         if (damage <= 0) break;
                         var victim = state.GetUnitAt(targetX, y);
                         if (victim == null) continue;
-                        DealAbilityDamage(state, victim, damage, events, owner);
+                        DealAbilityDamage(state, victim, damage, events, owner, source?.Id ?? -1);
                         damage += effect.Amount;
                     }
                     break;
@@ -935,12 +935,12 @@ namespace LightCard.Core
                 case EffectAction.ClearSpaceEffect:
                 {
                     if (state.SpaceEffects[targetX, targetY] == SpaceEffectType.None) break;
-                    state.SpaceEffects[targetX, targetY] = SpaceEffectType.None;
+                    state.SetSpaceEffect(targetX, targetY, SpaceEffectType.None, -1);
                     events.Add(new GameEvent { Type = GameEventType.SpaceEffectApplied, X = targetX, Y = targetY, SpaceEffect = SpaceEffectType.None });
 
                     var occupant = state.GetUnitAt(targetX, targetY);
                     if (occupant != null && effect.Amount > 0)
-                        DealAbilityDamage(state, occupant, effect.Amount, events, owner);
+                        DealAbilityDamage(state, occupant, effect.Amount, events, owner, source?.Id ?? -1);
                     break;
                 }
                 case EffectAction.GainPierce:
@@ -958,7 +958,7 @@ namespace LightCard.Core
                     {
                         if (unit.IsCharm) continue; //charms are immobile
                         if (state.Units.Contains(unit))
-                            PushUnit(state, unit, GameState.ForwardDir(owner), events);
+                            PushUnit(state, unit, GameState.ForwardDir(owner), events, source?.Id ?? -1, owner);
                     }
                     break;
                 }
@@ -978,6 +978,8 @@ namespace LightCard.Core
                     {
                         if (unit.IsCharm || !state.Units.Contains(unit)) continue;
                         unit.Poison += effect.Amount;
+                        unit.PoisonSourceUnitId = source?.Id ?? -1; //last applier wins
+                        unit.PoisonSourcePlayer = owner;
                         events.Add(new GameEvent { Type = GameEventType.UnitPoisoned, UnitId = unit.Id, CardId = unit.CardId, Amount = unit.Poison });
                     }
                     break;
@@ -1017,7 +1019,7 @@ namespace LightCard.Core
                     {
                         if (unit.IsCharm) continue; //charms are immobile
                         if (state.Units.Contains(unit))
-                            PushUnit(state, unit, -GameState.ForwardDir(owner), events);
+                            PushUnit(state, unit, -GameState.ForwardDir(owner), events, source?.Id ?? -1, owner);
                     }
                     break;
                 }
@@ -1141,10 +1143,10 @@ namespace LightCard.Core
                 case EffectAction.ApplySpaceEffectMirrored:
                 {
                     if (source == null) break;
-                    state.SpaceEffects[source.X, source.Y] = effect.SpaceEffect;
+                    state.SetSpaceEffect(source.X, source.Y, effect.SpaceEffect, owner);
                     events.Add(new GameEvent { Type = GameEventType.SpaceEffectApplied, X = source.X, Y = source.Y, SpaceEffect = effect.SpaceEffect });
                     int mirrorY = GameConfig.Rows - 1 - source.Y;
-                    state.SpaceEffects[source.X, mirrorY] = effect.SpaceEffect;
+                    state.SetSpaceEffect(source.X, mirrorY, effect.SpaceEffect, owner);
                     events.Add(new GameEvent { Type = GameEventType.SpaceEffectApplied, X = source.X, Y = mirrorY, SpaceEffect = effect.SpaceEffect });
                     break;
                 }
@@ -1166,7 +1168,7 @@ namespace LightCard.Core
                     foreach (var enemy in state.Units.Where(u => u.Owner != owner && u.X == targetX).ToList())
                     {
                         if (state.Units.Contains(enemy))
-                            DealAbilityDamage(state, enemy, burst, events, owner);
+                            DealAbilityDamage(state, enemy, burst, events, owner, source?.Id ?? -1);
                     }
                     break;
                 }
@@ -1266,10 +1268,10 @@ namespace LightCard.Core
                         {
                             var victim = state.GetUnitAt(lane, y);
                             if (victim == null) continue;
-                            DealAbilityDamage(state, victim, effect.Amount, events, owner);
+                            DealAbilityDamage(state, victim, effect.Amount, events, owner, source?.Id ?? -1);
                             if (effect.SpaceEffect != SpaceEffectType.None)
                             {
-                                state.SpaceEffects[lane, y] = effect.SpaceEffect;
+                                state.SetSpaceEffect(lane, y, effect.SpaceEffect, owner);
                                 events.Add(new GameEvent { Type = GameEventType.SpaceEffectApplied, X = lane, Y = y, SpaceEffect = effect.SpaceEffect });
                             }
                             break;
@@ -1295,10 +1297,10 @@ namespace LightCard.Core
                 {
                     bool hadEffect = state.SpaceEffects[targetX, targetY] != SpaceEffectType.None;
                     var occupant = state.GetUnitAt(targetX, targetY);
-                    if (occupant != null) DealAbilityDamage(state, occupant, 2, events, owner);
+                    if (occupant != null) DealAbilityDamage(state, occupant, 2, events, owner, source?.Id ?? -1);
                     if (hadEffect)
                     {
-                        state.SpaceEffects[targetX, targetY] = SpaceEffectType.Scorched;
+                        state.SetSpaceEffect(targetX, targetY, SpaceEffectType.Scorched, owner);
                         events.Add(new GameEvent { Type = GameEventType.SpaceEffectApplied, X = targetX, Y = targetY, SpaceEffect = SpaceEffectType.Scorched });
                     }
                     break;
@@ -1338,7 +1340,7 @@ namespace LightCard.Core
                 {
                     var victim = state.GetUnitAt(targetX, targetY);
                     if (victim == null) break;
-                    DealAbilityDamage(state, victim, 2, events, owner);
+                    DealAbilityDamage(state, victim, 2, events, owner, source?.Id ?? -1);
                     if (state.Units.Contains(victim) && victim.IsCharm && victim.Damage > 0)
                     {
                         events.Add(new GameEvent { Type = GameEventType.UnitHealed, UnitId = victim.Id, CardId = victim.CardId, Amount = victim.Damage });
@@ -1373,7 +1375,7 @@ namespace LightCard.Core
                     int burst = state.CurrentLife(charm);
                     DestroyUnit(state, charm, events);
                     foreach (var victim in state.Units.Where(u => u.X == targetX).ToList())
-                        if (state.Units.Contains(victim)) DealAbilityDamage(state, victim, burst, events, owner);
+                        if (state.Units.Contains(victim)) DealAbilityDamage(state, victim, burst, events, owner, source?.Id ?? -1);
                     break;
                 }
                 case EffectAction.AutoAttune:
@@ -1398,7 +1400,7 @@ namespace LightCard.Core
                     for (int y = targetY + dir; GameState.InBounds(targetX, y); y += dir)
                     {
                         var hit = state.GetUnitAt(targetX, y);
-                        if (hit != null && state.Units.Contains(hit)) DealAbilityDamage(state, hit, lash, events, owner);
+                        if (hit != null && state.Units.Contains(hit)) DealAbilityDamage(state, hit, lash, events, owner, martyr.Id);
                     }
                     if (state.Units.Contains(martyr)) DestroyUnit(state, martyr, events);
                     break;
@@ -1445,7 +1447,7 @@ namespace LightCard.Core
                         for (int y = martyr.Y + forward; GameState.InBounds(targetX, y); y += forward)
                         {
                             var hit = state.GetUnitAt(targetX, y);
-                            if (hit != null && state.Units.Contains(hit)) DealAbilityDamage(state, hit, blast, events, owner);
+                            if (hit != null && state.Units.Contains(hit)) DealAbilityDamage(state, hit, blast, events, owner, martyr.Id);
                         }
                     }
                     foreach (var (martyr, _) in blasts)
@@ -1503,7 +1505,7 @@ namespace LightCard.Core
                         var enemies = state.Units.Where(u => u.Owner != owner).ToList();
                         if (enemies.Count == 0) break;
                         var hit = enemies[state.NextRandom(enemies.Count)];
-                        DealAbilityDamage(state, hit, 1, events, owner);
+                        DealAbilityDamage(state, hit, 1, events, owner, source?.Id ?? -1);
                     }
                     break;
                 }
@@ -1530,7 +1532,7 @@ namespace LightCard.Core
                         for (int y = 0; y < GameConfig.Rows; y++)
                         {
                             if (GameState.SideOfRow(y) != owner || state.SpaceEffects[x, y] == SpaceEffectType.None) continue;
-                            state.SpaceEffects[x, y] = SpaceEffectType.None;
+                            state.SetSpaceEffect(x, y, SpaceEffectType.None, -1);
                             events.Add(new GameEvent { Type = GameEventType.SpaceEffectApplied, X = x, Y = y, SpaceEffect = SpaceEffectType.None });
                             absorbed++;
                         }
@@ -1681,7 +1683,7 @@ namespace LightCard.Core
         private static bool reflecting;  //Dark Mirror re-entrancy guard
         private static bool splashing;   //Crystal Amplifier re-entrancy guard
 
-        private static void DealAbilityDamage(GameState state, UnitState unit, int amount, List<GameEvent> events, int sourcePlayer = -1)
+        private static void DealAbilityDamage(GameState state, UnitState unit, int amount, List<GameEvent> events, int sourcePlayer = -1, int sourceUnitId = -1)
         {
             //Dark Mirror: ability damage aimed here bounces to the mirrored space
             if (unit.Definition.Reflects && !reflecting)
@@ -1690,7 +1692,7 @@ namespace LightCard.Core
                 if (mirrored != null)
                 {
                     reflecting = true;
-                    DealAbilityDamage(state, mirrored, amount, events, sourcePlayer);
+                    DealAbilityDamage(state, mirrored, amount, events, sourcePlayer, sourceUnitId);
                     reflecting = false;
                 }
                 return;
@@ -1705,7 +1707,7 @@ namespace LightCard.Core
                 {
                     var neighbor = GameState.InBounds(cx + dx, cy + dy) ? state.GetUnitAt(cx + dx, cy + dy) : null;
                     if (neighbor != null && state.Units.Contains(neighbor))
-                        DealAbilityDamage(state, neighbor, amount, events, sourcePlayer);
+                        DealAbilityDamage(state, neighbor, amount, events, sourcePlayer, sourceUnitId);
                 }
                 splashing = false;
                 if (!state.Units.Contains(unit)) return;
@@ -1714,13 +1716,13 @@ namespace LightCard.Core
             if (state.SpaceEffects[unit.X, unit.Y] == SpaceEffectType.Primed)
             {
                 amount += 2;
-                state.SpaceEffects[unit.X, unit.Y] = SpaceEffectType.None;
+                state.SetSpaceEffect(unit.X, unit.Y, SpaceEffectType.None, -1);
                 events.Add(new GameEvent { Type = GameEventType.SpaceEffectApplied, X = unit.X, Y = unit.Y, SpaceEffect = SpaceEffectType.None });
             }
 
             amount += state.EffectiveAmplify(unit);
             amount -= state.EffectiveResist(unit);
-            DamageUnit(state, unit, amount, events, -1, sourcePlayer);
+            DamageUnit(state, unit, amount, events, sourceUnitId, sourcePlayer);
         }
 
         private static List<UnitState> GatherUnits(GameState state, TargetScope scope, UnitState source, int owner, int targetX, int targetY)
@@ -1891,11 +1893,12 @@ namespace LightCard.Core
             bool advanced = (destY - fromY) * forward > 0;
             bool retreated = (destY - fromY) * forward < 0;
 
-            //Brambled: units take damage entering or leaving (doubled under a Sunlamp)
+            //Brambled: units take damage entering or leaving (doubled under a Sunlamp),
+            //attributed to whoever planted the brambles
             int brambleDamage = state.GardenEffectsBoosted ? 2 : 1;
             bool enteredBramble = state.SpaceEffects[destX, destY] == SpaceEffectType.Brambled;
-            if (leftBramble) DamageUnit(state, unit, brambleDamage, events);
-            if (enteredBramble && state.Units.Contains(unit)) DamageUnit(state, unit, brambleDamage, events);
+            if (leftBramble) DamageUnit(state, unit, brambleDamage, events, -1, state.SpaceEffectSources[fromX, fromY]);
+            if (enteredBramble && state.Units.Contains(unit)) DamageUnit(state, unit, brambleDamage, events, -1, state.SpaceEffectSources[destX, destY]);
 
             if (!state.Units.Contains(unit)) return;
 
@@ -1922,8 +1925,8 @@ namespace LightCard.Core
             }
         }
 
-        /// <summary>Forced movement away from the pusher; collisions deal 1 damage to both.</summary>
-        private static void PushUnit(GameState state, UnitState unit, int pushDir, List<GameEvent> events)
+        /// <summary>Forced movement away from the pusher; collisions deal 1 damage to both, credited to whoever forced the move.</summary>
+        private static void PushUnit(GameState state, UnitState unit, int pushDir, List<GameEvent> events, int sourceUnitId = -1, int sourcePlayer = -1)
         {
             if (unit.IsHeavy) return; //Heavy: cannot be moved by Push or Pull
 
@@ -1935,8 +1938,8 @@ namespace LightCard.Core
             var occupant = state.GetUnitAt(unit.X, destY);
             if (occupant != null && FriendlyEquipAt(state, unit.Owner, unit.X, destY) == null)
             {
-                DamageUnit(state, unit, 1, events);
-                if (state.Units.Contains(occupant)) DamageUnit(state, occupant, 1, events);
+                DamageUnit(state, unit, 1, events, sourceUnitId, sourcePlayer);
+                if (state.Units.Contains(occupant)) DamageUnit(state, occupant, 1, events, sourceUnitId, sourcePlayer);
                 return;
             }
 
@@ -1996,7 +1999,7 @@ namespace LightCard.Core
             if (state.SpaceEffects[unit.X, unit.Y] == SpaceEffectType.Rugged && !unit.IsCharm && !resolvingRuggedPush)
             {
                 resolvingRuggedPush = true;
-                PushUnit(state, unit, -GameState.ForwardDir(unit.Owner), events);
+                PushUnit(state, unit, -GameState.ForwardDir(unit.Owner), events, -1, state.SpaceEffectSources[unit.X, unit.Y]);
                 resolvingRuggedPush = false;
             }
 

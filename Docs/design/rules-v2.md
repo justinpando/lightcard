@@ -255,13 +255,21 @@ card. The remaining eight were resolved by designer ruling on 2026-08-30:
 - **Spirit Caller**: the rebind lands at the **end of the turn the bond
   broke**, whoever's turn it is — no next-turn beat separating break and
   rebind (designer ruling). Sword of Damocles stays on the pending queue.
-- **Spirit of Reprisal**: the break's source is a **unit or a player** —
-  combat breaks punish the attacking unit; ability breaks punish the casting
-  player (`LastBreakSourceUnitId`/`LastBreakSourcePlayer`, set where damage
-  enters the spirit). Sourceless damage (poison, brambles, collisions) still
-  fizzles. OPEN (designer, 2026-08-30): poison/bramble arguably have sources
-  too; deliberately unresolved — sourceless damage may be healthy counterplay
-  (a way to pop bonds without feeding Reprisal). Revisit after playtesting.
+- **Damage sources are tracked accurately everywhere** (designer ruling
+  2026-08-30: "attach the sources... because it's accurate"). Combat damage
+  carries the attacking unit; ability/trigger damage carries the casting
+  player AND the effect's source unit (Fire-spitter credits Fire-spitter);
+  poison remembers its applier on the poisoned unit (last applier wins);
+  every space effect records its creator (`GameState.SpaceEffectSources`),
+  so bramble, Inferno, and Rugged-knockback collisions credit whoever made
+  the terrain; push collisions credit the pusher. Mirage's Flood/Desert swap
+  keeps the original creator. Truly authorless damage (fatigue) has none.
+- **Spirit of Reprisal** currently punishes the recorded break source —
+  the source unit if it is alive, else the source player. SEPARATE OPEN
+  DECISION (designer, 2026-08-30): which sources Reprisal *should* respond
+  to is a design filter on top of the accurate tracking — e.g. combat-only,
+  units-only, or everything. Everything, for now, until playtests say
+  otherwise.
 - **Focus Form**: full sheet text — draws a random Unit ≤1 from the deck and
   tags that hand copy with a random Keyword (`PlayerState.HandKeywords`,
   index-aligned like HandDiscounts), applied when the unit is called.

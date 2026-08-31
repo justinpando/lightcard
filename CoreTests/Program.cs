@@ -819,6 +819,48 @@ namespace LightCard.CoreTests
                 AssertEqual(total, enemy.Damage, "every martyr's blast swept the whole lane ahead");
             });
 
+            Test("Damage attribution: poison and terrain remember their makers", () =>
+            {
+                //Poison break: the applier player pays when the tick pops the bond
+                var state = EmptyGame();
+                var host = PlayUnit(state, 0, "Conscript", 1, 2);
+                host.BonusLife += 9;
+                host.BoundSpiritCardId = "Spirit of Reprisal";
+                host.Poison = 2;
+                host.PoisonSourcePlayer = 1;
+                int p1Before = state.Players[1].Life;
+                state.ActivePlayer = 1;
+                GameEngine.Execute(state, new EndTurnCommand { Player = 1 }); //P0's turn starts, poison ticks
+                AssertTrue(host.BoundSpiritCardId == null, "poison broke the bond");
+                AssertEqual(p1Before - 1, state.Players[1].Life, "the poisoner paid for the break");
+
+                //Bramble break: the planter pays when the victim walks in
+                var state2 = EmptyGame();
+                state2.SetSpaceEffect(1, 2, SpaceEffectType.Brambled, 1);
+                var walker = PlayUnit(state2, 0, "Conscript", 1, 1);
+                walker.Flux = false;
+                walker.BonusLife += 9;
+                walker.BoundSpiritCardId = "Spirit of Reprisal";
+                int planterBefore = state2.Players[1].Life;
+                GameEngine.Execute(state2, new ShiftCommand { Player = 0, UnitId = walker.Id, Direction = MoveDirection.Forward });
+                AssertTrue(walker.BoundSpiritCardId == null, "bramble broke the bond");
+                AssertEqual(planterBefore - 1, state2.Players[1].Life, "the planter paid for the break");
+            });
+
+            Test("Damage attribution: trigger damage credits the source unit", () =>
+            {
+                var state = EmptyGame();
+                var rod = PlayUnit(state, 0, "Thunder Rod", 0, 0);
+                var enemyHost = PlayUnit(state, 1, "Conscript", 1, 4);
+                enemyHost.BonusLife += 9;
+                enemyHost.BoundSpiritCardId = "Spirit of Reprisal";
+
+                PlayAbility(state, 1, "Focus Form", 0, 0); //rod zaps, pops the bond
+
+                AssertTrue(enemyHost.BoundSpiritCardId == null, "the rod's zap broke the bond");
+                AssertEqual(1, rod.Damage, "Reprisal struck the rod itself, not just its owner");
+            });
+
             Test("Valuable Coin: dropped back onto the space when the bearer dies", () =>
             {
                 var state = EmptyGame();
