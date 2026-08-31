@@ -274,7 +274,9 @@ namespace LightCard.Core
         /// <summary>The source gains a charge; every Amount-th charge, the owner draws a card (Message in a Bottle).</summary>
         ChargeDraw,
         /// <summary>Draw a random Unit costing at most Amount from the deck to hand, tagging that copy with a random keyword applied when called (Focus Form).</summary>
-        DrawLowCostUnitWithKeyword
+        DrawLowCostUnitWithKeyword,
+        /// <summary>On the source's space: spawn the CalledCardId charm if the space is empty, else return the card to the owner's hand (Valuable Coin's drop).</summary>
+        DropCharm
     }
 
     /// <summary>Which units an effect applies to, relative to its source or its play target.</summary>
@@ -339,9 +341,20 @@ namespace LightCard.Core
         AnySpace,
         AnyUnit,
         /// <summary>Spirits: a friendly non-charm, non-spirit-bearing unit to bind to.</summary>
-        FriendlyUnit,
-        /// <summary>Two targets: first a friendly unit, then an enemy unit (Lose Hope).</summary>
-        FriendlyUnitThenEnemyUnit
+        FriendlyUnit
+    }
+
+    /// <summary>Whose side a target slot accepts.</summary>
+    public enum Team { Any, Self, Enemy }
+
+    /// <summary>
+    /// One target slot of a multi-target card. A card with a non-empty
+    /// Targets list ignores PlayTarget: the player picks one unit per slot,
+    /// in order, all distinct; effects address slots via EffectDef.TargetIndex.
+    /// </summary>
+    public class TargetDef
+    {
+        public Team Team = Team.Any;
     }
 
     /// <summary>
@@ -362,8 +375,8 @@ namespace LightCard.Core
         public string CalledCardId;
         /// <summary>The ability attached by GrantAbility.</summary>
         public EffectDef Granted;
-        /// <summary>On two-target cards, this effect resolves against the second target.</summary>
-        public bool UsesSecondTarget;
+        /// <summary>On multi-target cards, which target slot this effect resolves against.</summary>
+        public int TargetIndex;
     }
 
     /// <summary>Immutable definition of a card. Instances on the board are UnitState.</summary>
@@ -437,6 +450,9 @@ namespace LightCard.Core
         public bool CostPerOwnSpaceEffect;
 
         public PlayTargetKind PlayTarget = PlayTargetKind.None;
+
+        /// <summary>Target slots for multi-target cards; non-empty overrides PlayTarget.</summary>
+        public List<TargetDef> Targets = new List<TargetDef>();
 
         public List<EffectDef> Effects = new List<EffectDef>();
     }

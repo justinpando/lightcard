@@ -244,11 +244,14 @@ card. The remaining eight were resolved by designer ruling on 2026-08-30:
 
 - **Thunder Rod**: "all other targets" = every unit and charm on the board
   except the Rod itself, BOTH sides (designer: "the implementation is clear").
-- **Lose Hope**: true two-target play — return one target friendly unit AND
-  one target enemy unit to hand. `PlayCardCommand` carries `Target2X/Y`;
-  `PlayTargetKind.FriendlyUnitThenEnemyUnit`; effects flagged
-  `UsesSecondTarget` resolve against the second pick. The match view stages
-  the picks (friendly first, then enemies highlight).
+- **Lose Hope**: true two-target play via the general multi-target system
+  (designer request 2026-08-30: no hardcoded pair kinds). A card declares
+  `Targets` as a list of `TargetDef { Team = Self | Enemy | Any }` slots;
+  the player picks one unit per slot, in order, all distinct
+  (`PlayCardCommand.Targets`), and each effect addresses a slot via
+  `EffectDef.TargetIndex`. The match view stages the picks slot by slot;
+  the agent enumerates distinct combinations. Any future N-target card is
+  pure catalog data.
 - **Spirit Caller**: the rebind lands at the **end of the turn the bond
   broke**, whoever's turn it is — no next-turn beat separating break and
   rebind (designer ruling). Sword of Damocles stays on the pending queue.
@@ -256,7 +259,9 @@ card. The remaining eight were resolved by designer ruling on 2026-08-30:
   combat breaks punish the attacking unit; ability breaks punish the casting
   player (`LastBreakSourceUnitId`/`LastBreakSourcePlayer`, set where damage
   enters the spirit). Sourceless damage (poison, brambles, collisions) still
-  fizzles.
+  fizzles. OPEN (designer, 2026-08-30): poison/bramble arguably have sources
+  too; deliberately unresolved — sourceless damage may be healthy counterplay
+  (a way to pop bonds without feeding Reprisal). Revisit after playtesting.
 - **Focus Form**: full sheet text — draws a random Unit ≤1 from the deck and
   tags that hand copy with a random Keyword (`PlayerState.HandKeywords`,
   index-aligned like HandDiscounts), applied when the unit is called.
@@ -266,11 +271,14 @@ card. The remaining eight were resolved by designer ruling on 2026-08-30:
   blast — then every martyr dies.
 - **Dispersal**: stats scatter to **all nearby units, either owner** (sheet's
   "other nearby units"; positioning decides who profits).
-- **Valuable Coin**: the sheet lists two cards with this name — Atelier
-  ("Target Charm gains 2 Durability", cost 1) and Tower (0-cost Equip
-  drop-loop). Currently one merged card (Tower-style 0-cost Equip, Bestow
-  +0/2) because catalog ids are unique names and Fire Sale/Bauble Merchant
-  reference "Valuable Coin". OPEN: split needs a rename or an id scheme.
+- **Valuable Coin** (designer ruling 2026-08-30): ONE card, the Tower
+  circulating-treasure design. 0-cost Equip charm, Bestow +0/2 (the Atelier
+  draft's "2 Durability" folded in as intrinsic value so players pick it up
+  and discover the combo), and **the bearer drops the coin back onto its
+  space when defeated** (owner's hand if death triggers filled the space).
+  The coin outlives its bearers and keeps feeding Bauble Merchant; the
+  Atelier "Target Charm gains 2 Durability" draft is retired. Known combo
+  axis: sacrifice engines can farm re-equip triggers — watch in playtests.
 - **Frozen** space is defined by the sheet but no card applies it — dormant.
 - **Forge** (copying equipment) remains the single unimplemented card.
 - New keywords live: Overpower (excess kill damage rolls onto the unit

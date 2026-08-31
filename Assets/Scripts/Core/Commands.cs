@@ -17,9 +17,12 @@ namespace LightCard.Core
         /// <summary>Target space; ignored for PlayTargetKind.None.</summary>
         public int TargetX;
         public int TargetY;
-        /// <summary>Second target space for two-target cards (FriendlyUnitThenEnemyUnit); -1 otherwise.</summary>
-        public int Target2X = -1;
-        public int Target2Y = -1;
+        /// <summary>
+        /// All chosen targets of a multi-target card, one per CardDefinition.Targets
+        /// slot, in slot order; null for single-target cards. The engine mirrors
+        /// Targets[0] into TargetX/TargetY.
+        /// </summary>
+        public List<(int x, int y)> Targets;
     }
 
     /// <summary>The Shift power: spend 1 energy to move a unit one space. Shares the once-per-turn power action with Clear.</summary>

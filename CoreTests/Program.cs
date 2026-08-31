@@ -736,12 +736,13 @@ namespace LightCard.CoreTests
                 var theirs = PlayUnit(state, 1, "Conscript", 0, 4);
 
                 var command = Play(state, 0, "Lose Hope", 0, 1);
-                command.Target2X = 0;
-                command.Target2Y = 1; //friendly as second target: invalid
-                AssertTrue(!GameEngine.Execute(state, command).Success, "second target must be an enemy unit");
+                command.Targets = new List<(int x, int y)> { (0, 1), (0, 1) }; //same unit twice: invalid
+                AssertTrue(!GameEngine.Execute(state, command).Success, "targets must be distinct");
 
-                command.Target2X = 0;
-                command.Target2Y = 4;
+                command.Targets = new List<(int x, int y)> { (0, 4), (0, 1) }; //slots swapped: invalid
+                AssertTrue(!GameEngine.Execute(state, command).Success, "slot teams are enforced");
+
+                command.Targets = new List<(int x, int y)> { (0, 1), (0, 4) };
                 AssertTrue(GameEngine.Execute(state, command).Success, "friendly-then-enemy pair is valid");
                 AssertEqual(0, state.Units.Count, "both units left the board");
                 AssertTrue(state.Players[0].Hand.Contains("Conscript"), "friendly returned to its owner's hand");
@@ -816,6 +817,21 @@ namespace LightCard.CoreTests
 
                 AssertTrue(state.GetUnitAt(0, 0) == null && state.GetUnitAt(0, 1) == null, "all martyrs destroyed");
                 AssertEqual(total, enemy.Damage, "every martyr's blast swept the whole lane ahead");
+            });
+
+            Test("Valuable Coin: dropped back onto the space when the bearer dies", () =>
+            {
+                var state = EmptyGame();
+                PlayUnit(state, 0, "Valuable Coin", 1, 1);
+                var bearer = PlayUnit(state, 0, "Conscript", 1, 1); //calling onto the equip consumes it
+                AssertEqual(1, state.Units.Count, "coin consumed by the arriving bearer");
+                bearer.Damage = state.EffectiveMaxLife(bearer) - 1; //one hit from death
+                PlayAbility(state, 1, "Pin Prick", 1, 1);
+
+                AssertTrue(state.GetUnit(bearer.Id) == null, "bearer died");
+                var dropped = state.GetUnitAt(1, 1);
+                AssertTrue(dropped != null && dropped.CardId == "Valuable Coin", "the coin dropped back onto the space");
+                AssertEqual(0, dropped.Owner, "the dead bearer's owner keeps the coin");
             });
 
             Test("Dispersal: stats scatter to all nearby units, either owner", () =>
@@ -894,6 +910,8 @@ namespace LightCard.CoreTests
 
         private static (int x, int y)? FindTarget(GameState state, int player, CardDefinition definition)
         {
+            if (definition.Targets.Count > 0) return null; //bot skips multi-target cards
+
             switch (definition.PlayTarget)
             {
                 case PlayTargetKind.None:

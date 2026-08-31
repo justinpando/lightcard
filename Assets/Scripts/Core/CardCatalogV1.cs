@@ -1503,12 +1503,17 @@ namespace LightCard.Core
                 {
                     Id = "Valuable Coin", Archetype = Archetype.Tower, Type = CardType.Charm,
                     Cost = 0, Power = 0, Life = 1,
-                    Text = "Equip: Bestow +0/2.",
+                    Text = "Equip: Bestow +0/2. When the bearer is defeated, it drops the Valuable Coin here.",
                     IsEquip = true,
                     PlayTarget = PlayTargetKind.FriendlyEmptySpace,
                     Effects =
                     {
-                        new EffectDef { Trigger = Trigger.OnEquip, Action = EffectAction.GainStats, Scope = TargetScope.Self, Life = 2 }
+                        new EffectDef { Trigger = Trigger.OnEquip, Action = EffectAction.GainStats, Scope = TargetScope.Self, Life = 2 },
+                        new EffectDef
+                        {
+                            Trigger = Trigger.OnEquip, Action = EffectAction.GrantAbility, Scope = TargetScope.Self,
+                            Granted = new EffectDef { Trigger = Trigger.OnDestroy, Action = EffectAction.DropCharm, CalledCardId = "Valuable Coin" }
+                        }
                     }
                 },
                 new CardDefinition
@@ -1527,11 +1532,15 @@ namespace LightCard.Core
                     Id = "Lose Hope", Archetype = Archetype.Tower, Type = CardType.Ability,
                     Cost = 3,
                     Text = "Return target friendly unit and target enemy unit to their owners' hands.",
-                    PlayTarget = PlayTargetKind.FriendlyUnitThenEnemyUnit,
+                    Targets =
+                    {
+                        new TargetDef { Team = Team.Self },
+                        new TargetDef { Team = Team.Enemy }
+                    },
                     Effects =
                     {
-                        new EffectDef { Trigger = Trigger.OnPlay, Action = EffectAction.ReturnToHand },
-                        new EffectDef { Trigger = Trigger.OnPlay, Action = EffectAction.ReturnToHand, UsesSecondTarget = true }
+                        new EffectDef { Trigger = Trigger.OnPlay, Action = EffectAction.ReturnToHand, TargetIndex = 0 },
+                        new EffectDef { Trigger = Trigger.OnPlay, Action = EffectAction.ReturnToHand, TargetIndex = 1 }
                     }
                 },
                 new CardDefinition

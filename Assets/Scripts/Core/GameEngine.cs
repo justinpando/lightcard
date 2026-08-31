@@ -270,7 +270,21 @@ namespace LightCard.Core
             if (playerState.Affinity[definition.Archetype] < definition.AffinityRequirement)
                 return CommandResult.Fail($"{cardId} requires {definition.Archetype} Affinity {definition.AffinityRequirement} (have {playerState.Affinity[definition.Archetype]}).");
 
-            string targetError = ValidatePlayTarget(state, command.Player, definition, command.TargetX, command.TargetY, command.Target2X, command.Target2Y);
+            string targetError;
+            if (definition.Targets.Count > 0)
+            {
+                targetError = ValidateMultiTargets(state, command.Player, definition, command.Targets);
+                if (targetError == null)
+                {
+                    //Mirror slot 0 so events and downstream code see a primary target
+                    command.TargetX = command.Targets[0].x;
+                    command.TargetY = command.Targets[0].y;
+                }
+            }
+            else
+            {
+                targetError = ValidatePlayTarget(state, command.Player, definition, command.TargetX, command.TargetY);
+            }
             if (targetError != null) return CommandResult.Fail(targetError);
 
             var result = new CommandResult { Success = true };
@@ -287,9 +301,13 @@ namespace LightCard.Core
             {
                 foreach (var effect in definition.Effects.Where(e => e.Trigger == Trigger.OnPlay))
                 {
-                    //Two-target cards (Lose Hope): flagged effects aim at the second target
-                    int ex = effect.UsesSecondTarget ? command.Target2X : command.TargetX;
-                    int ey = effect.UsesSecondTarget ? command.Target2Y : command.TargetY;
+                    //Multi-target cards: each effect aims at its declared target slot
+                    int ex = command.TargetX, ey = command.TargetY;
+                    if (command.Targets != null && effect.TargetIndex < command.Targets.Count)
+                    {
+                        ex = command.Targets[effect.TargetIndex].x;
+                        ey = command.Targets[effect.TargetIndex].y;
+                    }
                     ResolveEffect(state, effect, null, command.Player, ex, ey, result.Events);
                 }
 
@@ -354,7 +372,28 @@ namespace LightCard.Core
             return result;
         }
 
-        private static string ValidatePlayTarget(GameState state, int player, CardDefinition definition, int x, int y, int x2 = -1, int y2 = -1)
+        /// <summary>Multi-target cards: one unit per slot, teams as declared, all distinct.</summary>
+        private static string ValidateMultiTargets(GameState state, int player, CardDefinition definition, List<(int x, int y)> targets)
+        {
+            if (targets == null || targets.Count != definition.Targets.Count)
+                return $"{definition.Id} needs {definition.Targets.Count} targets.";
+
+            for (int i = 0; i < targets.Count; i++)
+            {
+                var (x, y) = targets[i];
+                if (!GameState.InBounds(x, y)) return "Target space is out of bounds.";
+                var unit = state.GetUnitAt(x, y);
+                if (unit == null) return "No unit on target space.";
+                var slot = definition.Targets[i];
+                if (slot.Team == Team.Self && unit.Owner != player) return "That target must be friendly.";
+                if (slot.Team == Team.Enemy && unit.Owner == player) return "That target must be an enemy.";
+                for (int j = 0; j < i; j++)
+                    if (targets[j].x == x && targets[j].y == y) return "Targets must be distinct.";
+            }
+            return null;
+        }
+
+        private static string ValidatePlayTarget(GameState state, int player, CardDefinition definition, int x, int y)
         {
             switch (definition.PlayTarget)
             {
@@ -377,15 +416,6 @@ namespace LightCard.Core
                     if (host == null || host.Owner != player) return "Spirits bind to your own units.";
                     if (host.IsCharm) return "Spirits cannot bind to charms.";
                     if (host.Definition.IsSpirit) return "Spirits cannot bind to spirits.";
-                    return null;
-                }
-                case PlayTargetKind.FriendlyUnitThenEnemyUnit:
-                {
-                    if (!GameState.InBounds(x, y) || !GameState.InBounds(x2, y2)) return "Target space is out of bounds.";
-                    var friendly = state.GetUnitAt(x, y);
-                    if (friendly == null || friendly.Owner != player) return "First target must be a friendly unit.";
-                    var foe = state.GetUnitAt(x2, y2);
-                    if (foe == null || foe.Owner == player) return "Second target must be an enemy unit.";
                     return null;
                 }
                 default:
@@ -1593,6 +1623,22 @@ namespace LightCard.Core
                     if (string.IsNullOrEmpty(state.LastBrokenSpiritId)) break;
                     state.Players[owner].Hand.Add(state.LastBrokenSpiritId);
                     events.Add(new GameEvent { Type = GameEventType.CardDrawn, Player = owner, CardId = state.LastBrokenSpiritId });
+                    break;
+                }
+                case EffectAction.DropCharm:
+                {
+                    //Valuable Coin: the treasure outlives its bearer - it lands back
+                    //on the space (or the owner's hand if death triggers filled it)
+                    if (string.IsNullOrEmpty(effect.CalledCardId)) break;
+                    if (state.GetUnitAt(targetX, targetY) == null)
+                    {
+                        CallUnit(state, owner, effect.CalledCardId, targetX, targetY, events);
+                    }
+                    else
+                    {
+                        state.Players[owner].Hand.Add(effect.CalledCardId);
+                        events.Add(new GameEvent { Type = GameEventType.CardDrawn, Player = owner, CardId = effect.CalledCardId });
+                    }
                     break;
                 }
                 case EffectAction.GrantAbility:

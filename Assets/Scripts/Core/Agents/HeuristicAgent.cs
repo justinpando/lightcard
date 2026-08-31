@@ -59,17 +59,16 @@ namespace LightCard.Core.Agents
                 if (state.EffectiveCost(Player, definition) > playerState.Energy) continue;
                 if (playerState.Affinity[definition.Archetype] < definition.AffinityRequirement) continue;
 
-                if (definition.PlayTarget == PlayTargetKind.FriendlyUnitThenEnemyUnit)
+                if (definition.Targets.Count > 0)
                 {
-                    //Two-target cards (Lose Hope): every friendly x enemy pair
-                    foreach (var friendly in state.UnitsOf(Player).ToList())
-                        foreach (var enemy in state.Units.Where(u => u.Owner != Player).ToList())
-                            yield return new PlayCardCommand
-                            {
-                                Player = Player, HandIndex = handIndex,
-                                TargetX = friendly.X, TargetY = friendly.Y,
-                                Target2X = enemy.X, Target2Y = enemy.Y
-                            };
+                    //Multi-target cards: every distinct combination across the slots
+                    foreach (var combo in EnumerateTargetCombos(state, definition.Targets))
+                        yield return new PlayCardCommand
+                        {
+                            Player = Player, HandIndex = handIndex,
+                            TargetX = combo[0].x, TargetY = combo[0].y,
+                            Targets = combo
+                        };
                     continue;
                 }
 
@@ -114,6 +113,30 @@ namespace LightCard.Core.Agents
             {
                 for (int handIndex = 0; handIndex < playerState.Hand.Count; handIndex++)
                     yield return new ReplaceCardCommand { Player = Player, HandIndex = handIndex };
+            }
+        }
+
+        /// <summary>Cartesian product over a multi-target card's slots, distinct picks only.</summary>
+        private IEnumerable<List<(int x, int y)>> EnumerateTargetCombos(GameState state, List<TargetDef> slots)
+        {
+            var candidates = new List<List<(int x, int y)>>();
+            foreach (var slot in slots)
+                candidates.Add(state.Units
+                    .Where(u => slot.Team == Team.Any ||
+                                (slot.Team == Team.Self ? u.Owner == Player : u.Owner != Player))
+                    .Select(u => (u.X, u.Y)).ToList());
+            if (candidates.Any(c => c.Count == 0)) yield break;
+
+            var indices = new int[candidates.Count];
+            while (true)
+            {
+                var combo = new List<(int x, int y)>();
+                for (int i = 0; i < candidates.Count; i++) combo.Add(candidates[i][indices[i]]);
+                if (combo.Distinct().Count() == combo.Count) yield return combo;
+
+                int slot = candidates.Count - 1;
+                while (slot >= 0 && ++indices[slot] >= candidates[slot].Count) { indices[slot] = 0; slot--; }
+                if (slot < 0) yield break;
             }
         }
 
