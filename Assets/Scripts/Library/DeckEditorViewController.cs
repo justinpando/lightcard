@@ -27,6 +27,8 @@ public class DeckEditorViewController : MonoBehaviour
 
     public Button saveButton;
     public Button closeButton;
+    /// <summary>Cycles the deck's player power (Shift/Clear). Cloned from saveButton at runtime when not wired in the scene.</summary>
+    public Button powerButton;
     public System.Action OnClose;
 
     private SaveDataManager saveManager;
@@ -43,10 +45,12 @@ public class DeckEditorViewController : MonoBehaviour
 
         this.saveManager = saveManager;
         
+        workingDeck = new Deck ();
+
+        EnsurePowerButton();
+
         saveButton.onClick.AddListener(SaveChanges);
         closeButton.onClick.AddListener(CloseDeckEditor);
-        
-        workingDeck = new Deck ();
         
         deckHeaderView.Initialize(library, workingDeck);
         deckHeaderView.nameInputCanvasGroup.interactable = true;
@@ -65,9 +69,52 @@ public class DeckEditorViewController : MonoBehaviour
 
         workingDeck.name = selectedDeck.name;
         workingDeck.SetCardList(selectedDeck.cards);
-        
+        workingDeck.power = string.IsNullOrEmpty(selectedDeck.power) ? "Shift" : selectedDeck.power;
+        RefreshPowerLabel();
+
         libraryScrollBar.value = 1f;
         InitializeDeckCards();
+    }
+
+    /// <summary>
+    /// The rules-v3 loadout picker: a deck brings Shift OR Clear for the whole
+    /// match. Built by cloning the save button so it inherits the scene's styling.
+    /// </summary>
+    private void EnsurePowerButton()
+    {
+        if (powerButton == null)
+        {
+            powerButton = Instantiate(saveButton, saveButton.transform.parent);
+            powerButton.name = "PowerButton";
+
+            var rect = (RectTransform)powerButton.transform;
+            var saveRect = (RectTransform)saveButton.transform;
+            rect.SetSiblingIndex(saveButton.transform.GetSiblingIndex());
+            //Without a layout group driving the panel, sit just below the save button
+            if (saveButton.transform.parent.GetComponent<UnityEngine.UI.LayoutGroup>() == null)
+                rect.anchoredPosition = saveRect.anchoredPosition - new Vector2(0f, saveRect.rect.height + 8f);
+        }
+
+        //Drop any listeners cloned from the save button before wiring our own
+        powerButton.onClick = new Button.ButtonClickedEvent();
+        powerButton.onClick.AddListener(TogglePower);
+        RefreshPowerLabel();
+    }
+
+    private void TogglePower()
+    {
+        workingDeck.power = workingDeck.power == "Clear" ? "Shift" : "Clear";
+        RefreshPowerLabel();
+    }
+
+    private void RefreshPowerLabel()
+    {
+        if (powerButton == null) return;
+        string label = $"Power: {workingDeck.power}";
+        var legacyText = powerButton.GetComponentInChildren<Text>();
+        if (legacyText != null) { legacyText.text = label; return; }
+        var tmpText = powerButton.GetComponentInChildren<TMPro.TMP_Text>();
+        if (tmpText != null) tmpText.text = label;
     }
 
     private void InitializeCollectionCards()
@@ -155,6 +202,7 @@ public class DeckEditorViewController : MonoBehaviour
     {
         selectedDeck.name = workingDeck.name;
         selectedDeck.SetCardList(workingDeck.cards);
+        selectedDeck.power = workingDeck.power;
 
         saveManager.Save();
     }

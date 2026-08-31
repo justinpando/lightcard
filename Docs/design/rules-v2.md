@@ -230,8 +230,9 @@ designer yes/no):
   unit)** or **Clear (2 energy: remove any space effect, either half)** —
   usable once per turn. Bringing Clear costs you all mobility; that is the
   deckbuilding tradeoff. Stored per deck (`DeckSaveData.power`, default
-  Shift); the deck editor still needs a picker UI. In the match view a
-  Clear deck right-clicks a space effect.
+  Shift); the deck editor has a Power toggle button (cycles Shift/Clear,
+  saved with the deck). In the match view a Clear deck right-clicks a
+  space effect.
 - **Rugged**: shifting in costs +1 energy; damaged survivors on it are knocked
   one space toward their own backline.
 Restored to exact sheet behavior on 2026-08-30 (designer request): **Attenuating
@@ -296,10 +297,27 @@ card. The remaining eight were resolved by designer ruling on 2026-08-30:
 
 ## Full-catalog round-robin (3 seeds per pairing, 45 matches)
 
-Wins of 15: **Expedition 10, Ocean 10, Atelier 9, Tower 7, Garden 5,
-Heart 4.** Every archetype wins games; zero illegal AI commands. Top tuning
-questions for human play: Expedition/Ocean's edge, Heart's bond economics
-(better but still last), Garden vs Ocean 0-3.
+Latest sweep (2026-08-31, post-rulings: multi-target, coin drop loop, lane
+Reckoning, board-wide Thunder Rod, damage-source attribution):
+
+Wins of 15: **Expedition 13, Ocean 10, Garden 8, Atelier 8, Tower 5,
+Heart 1.** Zero stalls, zero illegal AI commands. Per-match log in
+`balance-sweep-latest.md`. Movement since the pre-rulings table
+(E10/O10/A9/T7/G5/H4):
+
+- **Garden 5 → 8**: the completed kit works; no longer a tuning emergency.
+- **Heart 4 → 1**: collapsed — swept 0-3 by Ocean, Tower, AND Expedition.
+  Top tuning priority. Suspects: the bond economy pays modern removal too
+  much value, and lane Reckoning/faster rebinds didn't offset it; the
+  Relentless personality may also race badly under auto-attack combat.
+- **Expedition 10 → 13**: dominant; second tuning priority (shave the
+  curve or its personality's lane-control edge).
+
+Rerun anytime: `LightCard/Run Balance Sweep` menu, or headless while the
+editor is closed —
+`Unity.exe -batchmode -nographics -quit -projectPath . -executeMethod
+BalanceSweep.RunHeadless` (use the 6000.5 editor the project is pinned to).
+Only 3 seeds per pairing: treat single-match margins as noise.
 
 ## Rejected (designer ruling)
 
