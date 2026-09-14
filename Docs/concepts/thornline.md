@@ -40,8 +40,9 @@ consequences, stated up front:
    exploration and expression verbs outside combat, not just in it. Two players
    walking the same zone with different builds should not have access to the same
    map.
-3. **The map remembers.** Abilities write to terrain, and terrain feeds every
-   other ability. A fight should leave a scar.
+3. **The map remembers.** Terrain is a system builds can *lean into* — not a tax
+   every ability pays. A fight in the right place should leave a scar; a fight in
+   a stone corridor is still a good fight.
 
 ## The shape of the game
 
@@ -197,12 +198,21 @@ this game's specific shape rather than about bars in general:
   *statement about your character*, not a leftover.
 - **It shortens the read.** Inspecting someone's build in a hub should be a glance.
 
-**The risk this creates, stated plainly:** if a build needs a heal, an elite, a
-mobility skill and a core damage skill, that is four of six spent before the
-secondary class contributes anything — and a multiclass system whose second class
-supplies one skill is barely a multiclass system.
+**And the elite slot is not a tax — it is the largest single expression surface
+in the game.** An elite can be anything: a transformation, a persistent aura, a
+new resource rule, a summon, a weapon technique that rewrites your chain, a
+terrain effect at a scale no normal skill reaches. It is one of six, it is your
+build's thesis, and two characters that share five skills and differ only in
+their elite are genuinely different characters. Counting it alongside the heal as
+"overhead" misreads what it does.
 
-The answer is to stop the bar from being the only place abilities live, rather
+So the real budget is: **one elite (a wildcard), one heal (a real choice you may
+decline), and four slots.** That is tighter than GW1 and it is meant to be.
+
+The residual risk is narrower than "six is too few": it is that a *category* —
+mobility, or a defensive cooldown — becomes compulsory and quietly eats the
+flexible slots. The answer is to stop the bar from being the only place abilities
+live, rather
 than to add slots back:
 
 - The **weapon** carries its own native skill, outside the six.
@@ -508,9 +518,75 @@ change what you do, not how big your numbers are.
 
 | Slot | What it decides |
 | --- | --- |
-| **Weapon** | Your attack's *shape* — greatsword (wide arc), hammer (slow, knocks), spear (reach, pins), paired daggers (fast, off-hand triggers), bow (arcing, takes preparations), staff (slow pierce line), scepter (fast single-target). **Gates abilities** — hammer knockdowns need a hammer — and takes coatings and oils. Carries 1 weapon-native skill. This is the martial build's main expression slot, so its variety is not cosmetic |
+| **Weapon** | Your attack's rhythm and shape, the abilities you can slot, and one weapon-native skill outside your six. See [Weapon families](#weapon-families) — this is the martial build's main expression surface, so its variety is not cosmetic |
 | **Armor** | Defense *profile*, not amount: trade-offs (+vs fire / −vs shock). 2 rune slots (capped attribute ranks) + 1 insignia (situational passive). **Armor is the class silhouette** and the main visual identity surface — dyeable, per-piece |
 | **Accessory ×2** | Sigils (above) and a Focus that shapes your resource economy |
+
+### Weapon families
+
+Seven martial families, plus implements for casters. A weapon is not a damage
+number with a model on it — each family has its own rhythm, its own resource
+quirk, and its own gated abilities, so **changing weapon changes how the character
+plays before a single skill slot changes.**
+
+| Family | Rhythm | Resource quirk | Gates | Mastery line |
+| --- | --- | --- | --- | --- |
+| **Sword** | Balanced 3-hit chain; reliable, interruptible at known points | Steady adrenaline | Ripostes, parries, chain-enders | **Reaver** |
+| **Heavy arms** (axe, hammer, greatsword) | Slow, committed, wide arcs | Adrenaline in big lumps; whiffing hurts | Knockdowns, armor-breaks, the biggest `Force` | **Reaver** |
+| **Spear** | Mid-range thrusts, keeps distance; throwable | Steady, rewards spacing | Pins, impales, shield pairings | **Warden** |
+| **Dagger** (paired) | Fastest; off-hand triggers on-hit effects | Fast small adrenaline | Positional strikes, off-hand chains, coatings | **Veilblade** |
+| **Martial arts** (unarmed) | Flowing chains, high mobility | Fastest adrenaline in the game | Grapples, throws, stance transitions | **Veilblade** |
+| **Bow** | Draw-and-release, arcing, distance | Draw time is the cost | **Preparations** — elemental arrows | **Beastbinder** |
+| **Gun** | Burst, flat trajectory, armor-piercing | **Reload** — a real rhythm, not a cooldown | Ammunition types, braced shots | **Cogwright** |
+| *Implements* (staff, scepter, focus) | Cast-facing; the caster's stat surface | Energy | Nothing martial; scales off casting attributes | *none — scales off the arcane lines* |
+
+Three rules make this carry real weight:
+
+**Anyone can hold anything; mastery is an attribute line.** A Verdurist can carry
+a greatsword. They will be bad with it — Heavy Arms is a Reaver line, and
+investing in it means taking points out of growth. So *"I want to actually swing
+this"* becomes a reason to take a martial secondary, which is exactly the kind of
+decision the pair system exists to produce.
+
+**Weapons gate abilities.** Hammer knockdowns need a hammer, off-hand chains need
+daggers, preparations need a bow. That is what stops the weapon from being
+cosmetic and makes the choice upstream of the bar.
+
+**Weapon mastery is how an arcane class buys into the martial half**, and the
+grapples-and-throws line on martial arts is a second home for `Force`, so the
+martial relationship to terrain does not live only on the Reaver.
+
+## Beyond terrain: the ability vocabulary
+
+Terrain is one system, not the tax every ability pays. Most abilities in this
+game should be straightforwardly, legibly good at something that has nothing to do
+with the ground:
+
+| Family | What it is | Mostly |
+| --- | --- | --- |
+| **Conditions** | Stacking physical afflictions — Bleeding, Crippled, Blind, Weakness, Deep Wound, Dazed | Martial |
+| **Hexes** | Targeted curses — drains, reversals, damage mirrors, action taxes | Arcane |
+| **Enchantments and wards** | Persistent buffs on self, ally, or a patch of ground | Arcane |
+| **Stances** | Self-only postures, **one at a time**, so switching is a real decision | Martial |
+| **Shouts and commands** | Short party-wide effects — and the natural hook for directing the retinue | Both |
+| **Interrupts** | Timing plays that punish casts; the main counterplay to arcane builds | Both |
+| **Weapon techniques** | Chain-enders, positional strikes, stance transitions | Martial |
+
+**Authoring rule: terrain-interacting abilities should be a minority — roughly a
+quarter to a third of the catalog.** The reasons are concrete, not stylistic:
+
+- If every skill touches the ground, every class is a landscaper and the
+  characters stop being different from each other.
+- Builds would homogenize toward terrain setup, because setup would be the only
+  thing the system rewards.
+- Missions indoors, on stone, on ships, in workshops and at night would all be
+  dead content — and cutting those out narrows the world badly.
+- A player who wants to be a duelist with a spear and a grudge should never be
+  told the game is about gardening.
+
+The matrix is spice. It should be the reason a *particular* build feels
+extraordinary in a *particular* mission, not a checklist every ability passes
+through.
 
 Appearance is decoupled from stats (transmog by default, not as an unlock).
 If the draw is being a specific character, making players choose between looking
@@ -638,6 +714,10 @@ is the *second* question. The first is:
   whether the bar is too tight.
 - **One companion with 3 trigger-conditioned ability slots**, to test whether
   programming a companion reads as build-crafting or as homework.
+- **Three weapon families** — heavy arms, dagger and bow — so the slice tests
+  whether changing weapon changes the character before any skill does.
+- Abilities weighted the way the catalog should be: roughly a third touching
+  terrain, the rest conditions, stances, hexes and weapon techniques.
 - ~8 sigils, deliberately including two that are near-useless on most builds.
 - Named pairs for all 20, on the nameplate, with the title card on first assembly.
 - Terrain grid with 5 surfaces: `Foliage`, `Burning`, `Scorched`, `Water`, `Ice`,
@@ -669,10 +749,11 @@ is the *second* question. The first is:
 Questions 1 and 3 from the first draft are now answered — persistent hubs with
 instanced zones, and owned gear never matters competitively. What remains:
 
-1. **Is six slots too tight?** Heal, elite, mobility and a core attack is four of
-   six before your secondary class says anything. Weapon skills, sigils and
-   retinue abilities are the pressure valves; if they are not enough, the honest
-   fix is seven slots rather than a heal that does not cost one.
+1. **Does any category become compulsory at six slots?** Not "is six too few" —
+   the elite is a wildcard and carries enormous expression on its own. The risk is
+   narrower: if every viable build ends up spending a slot on mobility or a
+   defensive cooldown, the flexible budget silently drops to three. The fix is kit
+   authoring (bundle mobility into damage skills for some builds), not more slots.
 2. **Is 8–15 minutes the right mission length?** Short enough that a bad build
    costs nothing, long enough that terrain setup pays off. Below ~8 minutes the
    terrain pillar has no time to matter; above ~20 the loadout decision stops
