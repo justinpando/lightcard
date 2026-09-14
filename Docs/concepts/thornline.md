@@ -662,6 +662,67 @@ authoritative state, replicated as deltas. Everything falls out of it:
 | `HeuristicAgent` (simulate-and-score over cloned states) + `AgentPersonality` | Retinue AI, and zone enemy AI. Stance-based squad behavior is an easier target than a card opponent |
 | `MatchRunner` headless sweeps | **Dead-build detection**: run every class pair against standard encounters and find combinations that cannot clear. Given the draw, this is the balance tool that matters — not tuning outliers down, but finding builds that are *boring* |
 
+## Lessons from Guild Wars 2
+
+GW2 is the closest thing to a controlled experiment this design will ever get:
+same studio, same world, a deliberate rebuild of the same skill system. It is a
+successful game and these were **trades, not errors** — but they are trades in
+precisely the direction that loses a GW1 build-crafter, which is the exact player
+this concept is for.
+
+The one-line diagnosis: **GW1 put the depth before the fight; GW2 moved it into
+the fight.** Preparation-game to execution-game. Everything below follows from
+that single shift.
+
+| What GW2 changed | What it cost | Guardrail here |
+| --- | --- | --- |
+| Weapon dictates skills 1–5 of a 10-slot bar; only 5 are freely chosen, from one profession's pool | Authorship. Half your bar is a property of the sword, not of you | **Weapons gate, never dictate** |
+| Secondary profession removed entirely; elite specs later restored some of it as *fixed packages* | The identity engine. No W/Mo, no Mo/W — one of the best things about the original | **Free pairing is load-bearing; never ship a premade hybrid that replaces it** |
+| Build expression migrated into trait grids and gear stat-combinations | Legibility. A build became percentage modifiers instead of eight nameable verbs | **Expression stays in named verbs** |
+| Combo fields and finishers — the same idea as terrain combos | Nothing, because almost nobody noticed them | **Telegraph loudly or don't build it** |
+| Trinity removed; everyone self-heals, damages, supports | Role fantasy. Open-world combat became undifferentiated | *(Already handled: distributed self-heals, but support as a real build)* |
+| Level 80 and ascended gear above exotic | The "skill, not time" promise | *(Already handled: the power ceiling law)* |
+
+### The four guardrails, and how each gets crossed
+
+Each of these is crossed by a **reasonable-sounding local decision**, which is
+why they are written down rather than trusted to judgment.
+
+**1. Weapons gate, never dictate.** A weapon carries *one* native skill and
+determines which abilities are *eligible* for your six. It never fills them.
+*How it gets crossed:* a "make weapons feel more distinct" pass gives each family
+two native skills, then three, and each increment sounds like an improvement.
+*Tripwire:* the moment a weapon supplies more than one slot's worth of bar, stop
+— you have rebuilt GW2's bar.
+
+**2. Free pairing is load-bearing.** 56 self-assembled pairs, not a menu of
+premade hybrids. *How it gets crossed:* an expansion wants a headline feature and
+"signature specializations" are easier to balance, market and animate than an open
+combination space. *Tripwire:* if a new package grants abilities that could not be
+assembled by pairing, it is an elite specialization wearing a different name.
+
+**3. Expression stays in named verbs.** You should be able to describe your build
+in one sentence, naming things that happen. *How it gets crossed:* sigils drift
+from "your vines also grow a trellis" toward "+6% growth duration", because
+numbers are trivially easy to author and to balance. A progression system then
+wants a trait grid for depth. *Tripwire:* if a sigil's text contains a percentage
+and no verb, reject it.
+
+**4. Telegraph the terrain system loudly.** GW2's combo fields are genuinely deep
+and cross-player, and they mostly went unused because they are a translucent circle
+under a pile of effects. This design's advantage is physical: brambles, burning
+grass and flooded ground are large, persistent and obviously different from bare
+ground. *How it gets crossed:* visual polish makes effects prettier and subtler at
+the same time. *Tripwire:* a new player should be able to say what just happened
+after a combo fires, without a wiki.
+
+### The thing to keep from GW2
+
+Execution depth is not the enemy — GW2's dodge-and-reposition combat is better
+moment-to-moment than GW1's. The error would be letting execution depth *crowd
+out* preparation depth. The target here is a game where the loadout screen decides
+more than the rotation does, and where a fight still rewards you for moving well.
+
 ## What is actually hard
 
 1. **Scope.** Still large, but mission structure is the biggest cut available:
