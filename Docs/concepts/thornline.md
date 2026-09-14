@@ -7,106 +7,207 @@
 > agent — transfer almost directly to it (see [Reuse from LT Cards](#reuse-from-lt-cards)).
 > Nothing here is committed to; it is a design to argue with.
 
-## The pitch
+## The draw
 
-A session-based online action RPG with MOBA structure and Guild Wars 1's build
-economy: pick a **primary** and **secondary** class, fill **eight ability slots**
-from the combined pool, equip a weapon, armor and two accessories, and bring a
-small **NPC retinue** you have outfitted yourself. Matches are fought on maps
-whose terrain is *material*, not decoration — a Verdurist grows a wall of
-brambles to seal a lane and a trellis to climb a cliff nobody expected to be
-climbable; an Emberwright sets the tall grass her enemy is hiding in on fire and
-takes the concealment away from the whole quarter of the map for the next forty
-seconds.
+**The fantasy of being a specific, strange, self-authored character — and the
+craft of assembling one.**
 
-The three things that make it not-another-MOBA, in priority order:
+Everything in this document is downstream of that sentence. Not competitive
+integrity, not ladder health, not match pacing. The moment of joy this game is
+built to produce is: *"I made a thing that works and nobody else is running it,
+and it looks and feels like the character in my head."* The second moment is
+showing someone.
 
-1. **Terrain is a first-class combatant.** Abilities write to the map, and the
-   map's state feeds every other ability's behavior.
-2. **Build-crafting over character-picking.** You do not pick a hero with a fixed
-   kit; you author one from ~8 slots out of hundreds of abilities, locked at
-   match start.
-3. **You bring a squad, not just a body.** Creep waves are replaced by units you
-   chose, equipped and trained.
+That is a narrow, unfashionable target, and it excludes things. Named
+consequences, stated up front:
+
+- **It is not a MOBA.** MOBA structure — session-based team objective play — is
+  borrowed as *one mode*, not as the game's shape. A 25-minute competitive
+  instance with no world, no downtime, no NPCs and no persistence gives a
+  self-authored character nowhere to *be*. See
+  [The shape of the game](#the-shape-of-the-game).
+- **PvE is primary, PvP is a wing.** This is the single biggest reversal from an
+  arena-first design, and it is also what makes the combinatorial build space
+  affordable — see [Why PvE-primary makes the build space possible](#why-pve-primary-makes-the-build-space-possible).
+- **Balance means "no dead builds", not "no strong builds".** The failure state
+  is a combination that is *boring*, not one that is 8% above the curve.
 
 ## Design pillars
 
-- **The map remembers.** Every skill should ideally ask "what is the ground doing
-  here?" before it asks "what is the health bar doing?" A match should end with a
-  visibly different map than it started with.
-- **Horizontal power.** Time played buys you *options*, never *numbers*. See
-  [The power ceiling law](#the-power-ceiling-law) — this is the load-bearing rule
-  and the one most likely to be eroded by well-meaning later decisions.
-- **Squads are strategy, not APM.** A retinue is a standing decision (composition,
-  gear, stance), not a micro contest. The best player must not be the fastest
-  clicker.
+1. **Combinations have names.** A build is not a spreadsheet row; it is a
+   character concept the game recognizes, names, and reacts to.
+2. **Your build changes the world you see.** Class abilities are traversal,
+   exploration and expression verbs outside combat, not just in it. Two players
+   walking the same zone with different builds should not have access to the same
+   map.
+3. **The map remembers.** Abilities write to terrain, and terrain feeds every
+   other ability. A fight should leave a scar.
 
-## The laws
+## The shape of the game
 
-Four non-negotiables. Everything below is negotiable; these are the ones that,
-once broken, turn the concept into a different and worse game.
+Guild Wars 1's structure, because it is the only shipped structure that supports
+both halves of the draw:
 
-| Law | Why |
+| Layer | What it is | Why it's here |
+| --- | --- | --- |
+| **Hubs** | Persistent social towns. Your character stands here with **your retinue visibly around you** | Where the fantasy is *worn*. Without a place to be seen, build-crafting has no second half |
+| **Missions** | Short instanced co-op runs, 1–4 players, the retinue filling empty party slots | The primary game. Where abilities are discovered, beasts tamed, sigils found |
+| **Arenas** | Instanced PvP, including the objective/lane mode from the MOBA idea | A proving ground and a second use for your build, not the point of the build |
+
+Instanced, not a shared open world. That is a deliberate cost decision, and the
+terrain system requires it: a map whose surfaces are being rewritten by players
+needs to be able to *reset*.
+
+## Missions
+
+**The loop:** Hub (build) → Briefing (read the profile) → Mission (8–15 min) →
+Reward → Hub.
+
+Bite-size by design, and this is the structural decision that makes the rest of
+the concept work rather than merely fitting alongside it. If the draw is making
+cool combinations, then **the loadout decision has to recur**. A long
+expedition-shaped game asks you to pick a build once a week; a 12-minute mission
+asks several times an evening, and build-crafting stops being character creation
+and becomes the game you are actually playing.
+
+That is Monster Hunter's loop with GW1's build economy dropped into the slot
+where MH puts weapons.
+
+| | |
 | --- | --- |
-| Ranked play normalizes gear and unlocks to maximum | A competitive game where the ladder rewards grinding is a grinding game with a ladder attached |
-| One elite ability per bar, hard cap | GW1's single best limiter. It makes 8 slots a real budget instead of a list of your favorites |
-| Terrain state is authoritative and shared | No client-side cosmetic fire. If it looks burning it *is* burning, for both teams, on the server |
-| Retinue commands are stance-level, on a cooldown | The moment direct unit micro outperforms stance play, this becomes a bad RTS |
+| **Length** | 8–15 minutes core. Optional *expedition* chains of 3 missions for a longer sitting, with no build swap between legs |
+| **Shape** | One stated objective (hunt / retrieve / escort / hold / clear), 1–3 optional objectives, one complication or boss around 60% in |
+| **Party** | 1–4. Retinue fills empty slots, so solo is never second-class |
+| **Failure** | Cheap. ~12 minutes and partial rewards kept — experimentation has to be cheap or nobody experiments |
 
-## Classes and the skill bar
+### The briefing is the puzzle
 
-Six at launch. Each is defined first by **what verb it performs on the world**,
-and only second by a damage role — this is deliberate, because the terrain pillar
-dies if only two classes can touch terrain.
+Every mission publishes its profile *before* you commit, and the profile is
+written in the combo grammar:
 
-| Class | World verb | Role sketch | Primary attribute (primary-only) |
-| --- | --- | --- | --- |
-| **Verdurist** ("green mage") | **Grows** — vines, brambles, tall grass, climbable trellises | Control, area denial, vertical routes | *Rootedness* — your grown terrain lasts longer and regrows once |
-| **Emberwright** | **Ignites and consumes** — burns foliage, spreads fire, denies areas | Damage over time, zoning, counter-concealment | *Combustion* — your fires spread one ring further |
-| **Tidecaller** | **Changes state** — floods, freezes, douses, conducts | Mobility surfaces, hard counters to fire, chain shock setup | *Current* — refunds resource when a combo you set up triggers |
-| **Warden** | **Breaks and blocks** — shatters terrain, raises cover, body-blocks | Frontline, peel, objective soak | *Bulwark* — armor scales with number of adjacent blocked cells |
-| **Beastbinder** | **Inhabits** — beasts scout, flush, and hold ground | Retinue specialist, map pressure | *Kinship* — +2 retinue points, and one beast's abilities appear on your own bar |
-| **Cogwright** | **Installs** — turrets, ziplines, oil slicks, scout drones | Siege, vision, infrastructure, steampunk constructs | *Fabrication* — installations cost less and can be repaired |
+> **The Drowned Kiln** — Marsh. Dominant surfaces `Water`, `Mud`, `Foliage`.
+> Enemies: Drowned (resist `Fire`, vulnerable to `Shock`). Hazard: rising flood
+> on a timer. Optional objectives need **Breaks** ×1, **Grows** ×1.
 
-The skill bar:
+So the pre-mission screen is a real decision with real information: a
+`Tidecaller/Cogwright` reads that and sees a chain-shock playground; a
+`Blightburner` reads it and knows their fire does nothing until something dries
+the ground out — which is either a reason to bring a different character, or a
+reason to bring the *Kindling* sigil and make it work anyway.
 
-- **8 slots**, chosen out of match, **locked at match start**. No mid-match
-  respec, no item-shop rebuild.
-- **At most 1 elite.** Elites are the build's thesis statement.
-- **Attributes**: a shared pool (~200 points) spent across your two classes'
-  attribute lines with GW1-style escalating costs, so ranks 1–9 are cheap and
-  10–12 are expensive. You can be broad and shallow or narrow and deep, never
-  both. The **primary attribute** in the table above is available *only* when
-  that class is your primary — this is what stops "everyone runs X secondary"
-  and gives the primary choice weight beyond skill access.
+This also converts pillar 2's build-gating from a wall into an invitation:
+optional objectives name the world verbs they want, up front, so a verb you lack
+is a reason to come back with a different character rather than a dead end you
+discover ten minutes in.
 
-### Multiclassing
+### Modifiers
 
-- **Primary** grants: full skill pool (elites included), armor class, and the
-  primary attribute.
-- **Secondary** grants: its **non-elite** skills and its attribute lines. No
-  primary attribute, no elites.
-- Secondary is swappable out of match, free, at any time. Primary is chosen per
-  character.
+A rotating set of mission modifiers rewrites the profile of an existing map:
+*Drought* (no `Water` surfaces persist), *Verdant Bloom* (`Foliage` regrows),
+*Tempest* (`Shock` chains double), *Ashfall* (everything starts `Scorched`).
 
-So `Verdurist/Tidecaller` is a terraformer who floods first and grows reeds in
-the water; `Tidecaller/Verdurist` is a water mage whose primary attribute refunds
-resource every time her ice shatters, using vines only as cheap setup. Same skill
-access, different games.
+This is the direct answer to the content-volume risk: a modifier multiplies how
+many builds a map is interesting for, and costs no new art. A small map count
+with a deep modifier table is the affordable version of this game.
+
+### Why PvE-primary makes the build space possible
+
+An arena-first game with hundreds of abilities across 30 class pairs has a
+balance surface no team can cover, and every patch invalidates someone's
+character. That pressure is what forces competitive games toward small, legible,
+homogenized kits — the exact opposite of this draw.
+
+Going PvE-primary buys the build space directly:
+
+- A build only has to be **viable and expressive**, not tournament-valid.
+- Strong, weird, situational and over-the-top are all *features* in co-op.
+- PvP lives in arenas with normalization, so competitive concerns stay quarantined
+  in the mode that asked for them.
+
+This is the trade being made on purpose: give up esports legitimacy, buy the
+combinatorial toybox.
+
+## Classes
+
+Six at launch. Each is defined first by **what verb it performs on the world** —
+and crucially, that verb works **outside combat too**, which is pillar 2's entire
+mechanism.
+
+| Class | World verb | In combat | **Out of combat** | Primary attribute (primary-only) |
+| --- | --- | --- | --- | --- |
+| **Verdurist** ("green mage") | **Grows** — vines, brambles, grass, trellises | Control, area denial | Grows a climbable trellis on any tagged wall; reaches ledges nobody else reaches | *Rootedness* — your terrain lasts longer, regrows once |
+| **Emberwright** | **Ignites** — burns foliage, spreads fire | Damage over time, zoning | Burns away overgrowth sealing a path; lights dark areas | *Combustion* — fires spread one ring further |
+| **Tidecaller** | **Changes state** — floods, freezes, douses | Mobility surfaces, chain setup | Freezes a river into a bridge; floods a channel to float something | *Current* — refunds resource when a combo you set up triggers |
+| **Warden** | **Breaks** — shatters terrain, raises cover | Frontline, peel | Breaks sealed walls and collapsed rubble; carries heavy things | *Bulwark* — armor scales with adjacent blocked cells |
+| **Beastbinder** | **Inhabits** — beasts scout, flush, hold | Retinue depth, pressure | Beasts track scents to hidden things; some beasts are mounts or fit through gaps | *Kinship* — +2 retinue points, one beast's abilities on your own bar |
+| **Cogwright** | **Installs** — turrets, ziplines, drones | Siege, vision, infrastructure | Ziplines across gaps; drones scout ahead and map rooms | *Fabrication* — installations cost less, can be repaired |
+
+**Consequence to accept deliberately:** if builds gate exploration, a solo player
+sometimes cannot reach something. That is the price of pillar 2, and the answer is
+the retinue and co-op — your party (or your hired retinue) covers verbs you lack.
+The alternative, making every verb universally available, deletes the pillar.
+
+## The skill bar and multiclassing
+
+- **8 slots**, chosen out of combat, locked when you enter a zone or match.
+- **At most 1 elite.** GW1's best limiter: it makes 8 slots a budget instead of a
+  list of favorites, and it forces the build to have a *thesis*.
+- **Attributes**: a shared ~200-point pool across both classes' lines, with
+  escalating costs so ranks 1–9 are cheap and 10–12 are expensive. Broad and
+  shallow, or narrow and deep — never both.
+- **Primary** grants: full skill pool including elites, armor class, and the
+  primary attribute. **Secondary** grants: non-elite skills and attribute lines
+  only. Secondary is swappable freely out of combat; primary is per character.
+
+The primary attribute is what stops "everyone runs the same secondary" and makes
+`Verdurist/Tidecaller` and `Tidecaller/Verdurist` genuinely different games out of
+identical skill access.
+
+### Named pairs
+
+**The cheapest, highest-leverage feature in this document.** All 30 ordered pairs
+get an authored in-world name, displayed under your character in hubs, with its
+own emote and a title card the first time you assemble one.
+
+| Pair | Name | The character it is |
+| --- | --- | --- |
+| Verdurist / Emberwright | **Blightburner** | Grows the fuel, then lights it. Slash-and-burn zoning |
+| Emberwright / Verdurist | **Ashgardener** | Burns first and plants in the ruin. Wants the *Second Growth* sigil |
+| Verdurist / Tidecaller | **Fenwright** | Floods, then grows reeds in it. The concealment specialist |
+| Tidecaller / Emberwright | **Steamcaller** | Lives inside steam clouds and fights where nobody can see |
+| Beastbinder / Cogwright | **Houndwright** | Machine-augmented animals. Your pack has brass in it |
+| Cogwright / Beastbinder | **Menagerist** | A collector who builds habitats and lets things out of them |
+| Verdurist / Beastbinder | **Grovekeeper** | Grows the terrain the pack hunts through |
+| Warden / Verdurist | **Bramblewarden** | A wall that grows more wall |
+| Warden / Emberwright | **Cinderguard** | Holds ground by making the ground unholdable |
+| Cogwright / Emberwright | **Boilerwright** | Oil, pressure, and things that should not be indoors |
+
+**Names are recognition, not rules.** A pair name describes an emergent
+playstyle; it grants nothing by itself. Mechanical pair identity comes from
+**sigils** instead, so there are never 30 hardcoded special cases in the balance
+surface — the discipline LT Cards already applies to card text.
+
+### Build codes
+
+A build (class pair, 8 skills, attributes, equipment template) serializes to a
+short shareable text code, paste-able in chat and in hubs. Trying someone else's
+character should take ten seconds. If the draw is combinations, **friction on
+trying a new one is the primary enemy** — so unlocks are account-wide, alts are
+free and unlimited, and any character can hold multiple named build templates and
+swap between them in a hub.
 
 ## Elements, surfaces and the combo grammar
 
-This is the system the whole concept rests on, so it is specified as a closed
-data table rather than as per-ability special cases — the same discipline LT
-Cards applies to card text.
+The expression engine. Specified as a closed data table rather than per-ability
+special cases, so new content ships as data.
 
 **Surfaces** (one per terrain cell, mutually exclusive):
 `Bare` · `Foliage` · `Bramble` · `Water` · `Ice` · `Oil` · `Mud` · `Burning` · `Scorched`
 
-**Volumes** (occupy the space above a cell, stack with any surface):
+**Volumes** (above a cell, stack with any surface):
 `Smoke` · `Steam` · `Pollen` · `Gas`
 
-**Elements** (what an ability applies): `Fire` · `Frost` · `Shock` · `Water` ·
+**Elements** (what abilities apply): `Fire` · `Frost` · `Shock` · `Water` ·
 `Growth` · `Force`
 
 ### The interaction matrix
@@ -116,252 +217,254 @@ Cards applies to card text.
 | **Fire** | ignites → `Burning`, **spreads cell to cell** | → `Steam` volume (vision block) | → `Burning`, instant, whole slick | melts → `Water` | — | intensifies, +1 spread ring |
 | **Frost** | wilts → `Bare` | → `Ice` (slide movement) | brittle — shatters on `Force` | thickens, +duration | hardens → fast walkable | douses → `Scorched` |
 | **Shock** | — | **chains to every unit touching the pool** | ignites → `Burning` | chains + stun | grounded, halved | — |
-| **Water** | soaks — fireproof ~8s | deepens → `Deep Water` (swim, drops non-swimmers' aim) | spreads the slick outward | melts → `Water` | — | douses → `Bare` |
+| **Water** | soaks — fireproof ~8s | deepens → `Deep Water` | spreads the slick outward | melts → `Water` | — | douses → `Bare` |
 | **Growth** | thickens → `Bramble` | → `Reeds` (walkable *and* concealing) | — | — | grows at double rate | — |
 | **Force** | flattens — **reveals anyone concealed** | displaces units | spreads the slick | shatters → `Bare` + slow | — | scatters embers to adjacent cells |
 
-`Scorched` is the pressure valve: nothing grows on it for ~20s. It is how an
-Emberwright permanently answers a Verdurist within a fight, and why Verdurists
-want Tidecallers.
+`Scorched` is the pressure valve: nothing grows on it for ~20s. It is how fire
+answers growth, and why the *Ashgardener* wants a sigil that breaks that rule.
 
-### Rules that fall out of the matrix
+Rules that fall out of the matrix:
 
-- **Concealment**: `Foliage`, `Reeds` and `Smoke` conceal. You are revealed if you
-  attack, if `Force` flattens the cell, or if it catches fire — so hiding is a
-  real but burnable resource, and counter-concealment is a whole strategic axis
-  rather than a single "reveal" item.
-- **Climbing**: `Growth` applied to a *wall* surface produces a `Trellis` —
-  climbable for ~15s. Maps must therefore be authored with deliberate
-  "sometimes-vertical" walls, and the flank routes of a map are partly
-  player-created. This is the single most distinctive traversal idea here and
-  also the most expensive (see [Technical spine](#technical-spine)).
-- **Fire spreads**, it is not an aura. It propagates as a cellular automaton over
-  flammable surfaces at a fixed tick, which means fire is *committed* — you can
-  start one you cannot control, and both teams' plans get rewritten.
+- **Concealment**: `Foliage`, `Reeds` and `Smoke` conceal. You are revealed by
+  attacking, by `Force` flattening the cell, or by it catching fire. Hiding is a
+  real but *burnable* resource.
+- **Climbing**: `Growth` on a tagged wall produces a `Trellis`, climbable ~15s.
+  Maps are authored with "sometimes-vertical" walls, so routes are partly
+  player-created — the clearest expression of pillar 2, and the most expensive
+  feature here.
+- **Fire spreads.** It is a cellular automaton over flammable surfaces, not an
+  aura. You can start one you cannot control.
+
+## Sigils: where builds get weird
+
+Two of your four equipment slots are accessories, and the **Sigil** is the engine
+of build identity. A sigil is a small, legible rules patch to a *single ability*:
+
+- *Second Growth* — your `Growth` works on `Scorched` ground. (The Ashgardener's
+  thesis, available to anyone, senseless on most builds.)
+- *Trellised* — your vines also grow a trellis on the nearest tagged wall.
+- *Scalding* — your `Steam` volumes damage.
+- *Pack Tactics* — your retinue's abilities trigger off *your* combos.
+- *Kindling* — your beasts leave a trail of `Foliage` where they run.
+
+This is the intended long-tail content and the answer to "how do combinations
+stay interesting past month two": each sigil is data, rewrites one ability, and
+the combo matrix stays the only global system. Sigils are also **where the named
+pairs get mechanical teeth** without hardcoding 30 exceptions.
+
+Sigils are found and earned in missions, never bought. Acquiring the
+piece that completes a build concept *is* the progression curve.
 
 ## The Retinue
 
-Each player brings a small squad. This is the part of the concept most likely to
-go wrong, so it is constrained hard.
+Your squad. Reframed from "lane pressure unit" to **entourage** — it is part of
+your character's statement, and it follows you into hubs where people can see it.
 
-### Budget
+### Composition and budget
 
-Retinue points scale **inversely to team size**, so total unit count on the field
-stays roughly constant and a 5v5 never becomes a 20-unit RTS:
+Retinue points scale with context, so field clutter stays bounded:
 
-| Mode | Retinue points per player | Typical squad |
+| Context | Points | Typical squad |
 | --- | --- | --- |
-| 5v5 Skirmish | 3 | one beast, or three drones |
-| 3v3 Arena | 5 | a beast + a scout, or one heavy construct + a drone |
-| 1v1 Duel | 8 | a real squad |
-| PvE explorable | 8 (party fills empty player slots with retinue) | this is the GW1 henchmen slot |
+| Missions (solo) | 8 | a real squad; fills the party |
+| Missions (4-player) | 3 each | one companion each |
+| Arena 3v3 | 5 | a beast + a scout, or one heavy construct |
+| Arena 5v5 | 3 | one beast, or three drones |
 
-Unit costs: scout drone 1 · beast or skirmisher 2 · heavy construct 3 ·
-named/trained companion 4.
+Costs: scout drone 1 · beast or skirmisher 2 · heavy construct 3 · named
+companion 4.
 
-### Control model
+### Equipment and abilities
 
-Stances plus one directed command, on a cooldown. Four stances: **Follow** ·
-**Hold** (guard a point) · **Hunt** (engage nearest enemy in radius) ·
-**Screen** (interpose between you and the nearest threat). One `Command` key
-issues "go there / attack that" with a ~6s cooldown, so a directed order is a
-decision, not a stream of inputs.
+Every retinue unit has the same four slots as you — **weapon, armor, accessory,
+accessory** — plus a **2-slot ability bar**. Two, not eight: a squad of three
+8-slot builds is a second game you did not ask to play, and it moves the fantasy
+from *commanding a crew* to *playing four characters*.
 
-**Beastbinder** buys depth here rather than getting it for free: extra command
-charges, direct control of one beast, and that beast's abilities surfaced onto
-the player's own 8-slot bar (where they compete for slots like everything else).
+**Named companions** (cost 4) are the roleplay slot: they have a name you give
+them, a persistent appearance, dyeable barding, and they level a small trait tree
+across missions. This is the beast-tamer fantasy's real home — not raw power, but
+*that specific animal, that you trained.*
 
-### Squads replace creep waves
+### Control
 
-Lane pressure is player-authored: you push with units you built, and losing them
-costs tempo (base respawn timer, ~45s) rather than gold. Map income is
-**territory-based** instead — which is how the retinue system and the terrain
-system are made to need each other, below.
+Four stances — **Follow · Hold · Hunt · Screen** — plus one directed command on a
+~6s cooldown. Stance-level by design: the moment direct micro outperforms stance
+play this becomes a bad RTS, and "commanding a crew" stops feeling like
+commanding.
 
-### Squad units are equipped, like you
-
-Every retinue unit has the same four equipment slots as a player — **weapon,
-armor, accessory, accessory** — plus a **2-slot ability bar** (not 8: a squad of
-three 8-slot builds is a second game you did not ask to play). A drone with a
-spotter scope and a smoke charge is a different object than a drone with a
-welding torch, and neither is stronger, which is the point.
+**Beastbinder** buys depth rather than everyone being forced into it: extra
+command charges, direct control of one beast, and that beast's abilities surfaced
+onto the player's own 8-slot bar, where they compete for slots like everything
+else.
 
 ## Equipment
 
-Four slots, per the concept: **Weapon · Armor · Accessory · Accessory**. All four
-are *horizontal* — they change what you do, not how big your numbers are.
+Four slots: **Weapon · Armor · Accessory · Accessory**. All horizontal — they
+change what you do, not how big your numbers are.
 
 | Slot | What it decides |
 | --- | --- |
-| **Weapon** | Your basic attack's shape (staff = slow pierce line, scepter = fast single target, bow = arcing, sword = melee arc) **and gates some abilities** — bow attacks need a bow. Carries 1 weapon-native skill |
-| **Armor** | Defense *profile*, not defense *amount*: armor class trades off (e.g. +vs fire / −vs shock). 2 rune slots (attribute ranks, capped) + 1 insignia (a situational passive) |
-| **Accessory ×2** | Where builds get strange. A **Focus** shapes your resource economy; a **Sigil** rewrites one ability's behavior — *"your vines also grow a trellis on the nearest wall"*, *"your steam volumes damage"* |
+| **Weapon** | Your attack's *shape* (staff = slow pierce line, scepter = fast single-target, bow = arcing, sword = melee arc) and **gates some abilities** — bow attacks need a bow. Carries 1 weapon-native skill |
+| **Armor** | Defense *profile*, not amount: trade-offs (+vs fire / −vs shock). 2 rune slots (capped attribute ranks) + 1 insignia (situational passive). **Armor is the class silhouette** and the main visual identity surface — dyeable, per-piece |
+| **Accessory ×2** | Sigils (above) and a Focus that shapes your resource economy |
 
-Sigils are the intended long-tail content: each one is a small, legible rules
-patch to a single ability, which means new content ships as data and the combo
-matrix stays the only global system.
+Appearance is decoupled from stats (transmog by default, not as an unlock).
+If the draw is being a specific character, making players choose between looking
+right and playing right is self-defeating.
 
-## Map and modes
+## Progression as discovery
 
-**Skirmish (signature, 5v5).** Three lanes, but the objectives are **terrain
-control sites** — a Grove, a Well, a Forge — captured not by standing on them but
-by putting the *right surface state* around them: grow the Grove, flood the Well,
-scorch the Forge. Holding sites pays team income and unlocks retinue reinforcements.
+- **Power ceiling reachable in ~10 hours.** Everything past it is horizontal:
+  abilities, sigils, beasts, companions, cosmetics.
+- **Arenas normalize** gear, attributes and access to maximum, so the PvP wing
+  never becomes a grind gate.
+- **Abilities are found, not purchased.** You learn a Verdurist elite by running
+  the mission where it happens and doing the thing, and missions advertise what
+  they can drop — so chasing the piece that completes a build concept is a
+  concrete plan, not a loot-table lottery. Horizontal progression *is* the
+  content, which is how "more options" avoids being a shop menu.
+- **The world reacts to your pair.** Hub NPCs, faction greetings and mission
+  briefing dialogue key off your named pair. Cheap authored content, disproportionate
+  payoff for the roleplay half of the draw.
 
-This is the design's keystone: it makes the terrain system the win condition
-rather than a garnish, and it makes every class's world verb a capture tool, so
-no composition is locked out of objectives.
+Stated as a rule because it will be under permanent pressure: every retention
+pass will propose a small vertical exception. The concept does not survive one —
+the instant playtime buys *numbers*, build choice becomes build *obligation*.
 
-**Arena (3v3).** No lanes, one contested terrain feature, bigger retinues.
+## Legibility
 
-**Explorable zones (PvE, co-op 1–4).** GW1's structure: persistent-ish zones
-where you unlock abilities, sigils, and beasts, with retinue units filling empty
-party slots. This is where acquisition lives, and the reason it can exist without
-poisoning the ladder is the next section.
+The competitive framing of this problem ("hidden 8-slot builds destroy
+counterplay") mostly evaporates once PvP is a wing. What remains is the
+*expressive* version of it: **your build should be legible enough to be admired.**
 
-## Progression and the power ceiling
-
-### The power ceiling law
-
-- Maximum *effective power* is reachable in roughly **10 hours**.
-- **Ranked matches normalize everything to maximum** — gear quality, attribute
-  points, and access to every ability and sigil in the game. What you actually
-  own affects casual, PvE and cosmetics only.
-- Everything earned past the ceiling is **horizontal**: new abilities, new sigils,
-  new retinue units, new beasts, cosmetics.
-
-Stated bluntly because it will be under constant pressure: every retention
-consultant, every mid-project "players need a reason to log in", every
-monetization pass will propose a small vertical exception. The concept does not
-survive one.
-
-### What you actually earn
-
-Unlocking abilities is the progression curve, and it is also the balance risk:
-a newer player in *casual* facing someone with 400 abilities unlocked is in a
-worse position even with equal gear. Mitigations: ranked normalizes (above),
-casual is matched partly on unlock breadth, and a rotating free "full access"
-loadout set exists at all times.
-
-## Readability and counterplay
-
-The hardest tension in the concept: **hidden 8-slot builds destroy MOBA
-counterplay.** In League you know what a Zed does. Here you know someone is a
-Verdurist/Emberwright, which narrows it to a few hundred possibilities.
-
-Three-part answer:
-
-1. **Silhouette telegraphs capability.** Class, weapon and armor class are visible
-   and constrain the space hard — a staff Verdurist cannot be doing melee burst.
-2. **Seen skills are logged.** Any ability used on or near you is added to a
-   per-opponent panel on the scoreboard for the rest of the match. Scouting is a
-   mechanic, and information advantage is something a retinue drone can buy.
-3. **Terrain is honest.** The most impactful actions in the game — the burning
-   field, the bramble wall, the trellis — are large, visible and permanent-ish.
-   The unreadable part of a build is never the part that decides the map.
-
-Lobby: classes are visible at pick, bars are not. Deliberately *not* a full
-pick/ban — the counter-play happens on the map, not in the lobby.
+- **Silhouette telegraphs concept** — class armor, weapon, and your visible
+  retinue say most of it before you act.
+- **Named pair on your nameplate** says the rest.
+- **Inspect and build codes** in hubs: looking at someone's character and getting
+  their build is a social feature, not a security leak.
+- In arenas only: abilities used on or near you are logged to a per-opponent
+  panel, so counterplay is learnable in the mode that needs it.
 
 ## Technical spine
 
 ### The terrain grid is the architecture
 
-Represent terrain as a **uniform cell grid** (~0.5 m cells) carrying
-`{surface, volume, timers, owner}` — roughly 2 bytes per cell. A 120 m × 120 m
-map is ~240 × 240 = 57,600 cells, ~115 KB of authoritative state, replicated as
-deltas. Everything else falls out of this:
+A uniform cell grid (~0.5 m cells) carrying `{surface, volume, timers, owner}`,
+roughly 2 bytes per cell. A 120 m × 120 m map is ~57,600 cells, ~115 KB of
+authoritative state, replicated as deltas. Everything falls out of it:
 
-- **Combos** are a lookup into the matrix, evaluated per cell.
-- **Fire spread** is a cellular automaton ticking at ~5 Hz over the same grid.
+- **Combos** are a lookup into the matrix, per cell.
+- **Fire spread** is a cellular automaton at ~5 Hz over the same grid.
 - **Pathing** uses **flow fields over the grid**, not navmesh rebuilds — vines and
-  walls flip cell costs instantly with no bake, which is exactly the operation a
-  navmesh is worst at. This is the single most important technical call in the
-  document.
+  walls flip cell costs instantly with no bake, the operation navmeshes are worst
+  at. The most important technical call in this document.
 - **Retinue AI** reads the same grid, so squad units understand fire and brambles
-  for free rather than needing a parallel representation.
+  for free.
 
 ### The rest
 
 | Concern | Approach | Risk |
 | --- | --- | --- |
-| Networking | Server-authoritative, fixed ~30 Hz tick, client prediction on own movement only | Standard, well-trodden |
-| Vision / concealment | **Server-side** visibility culling — hidden enemies are not sent to the client at all | Non-negotiable; client-side fog is a wallhack |
+| Networking | Server-authoritative, fixed ~30 Hz tick. Short instanced missions keep peak player counts low and sessions short-lived — far cheaper than an open world, and instances recycle | Low to moderate |
+| Hubs | Higher player count, **no terrain simulation, no combat** — a separate, much cheaper server path | Low, if kept genuinely combat-free |
+| Vision / concealment | Server-side visibility culling; hidden enemies are not sent to the client | Non-negotiable in arenas; client-side fog is a wallhack |
 | Climbing | Traversal volumes spawned from `Trellis` cells, with authored wall tagging | **High.** Dynamic verticality is where animation, pathing and level design all get expensive at once |
-| Replays / debugging | Fixed-tick + input log replay | Cheap if the tick is fixed from day one, near-impossible to retrofit |
-| Engine | Unity 6 is fine and matches existing team knowledge; a networked action game wants a real stack on top (dedicated-server Netcode for GameObjects, or Photon Fusion) | Unreal is the stronger default for traversal/animation; the honest tiebreaker is team familiarity |
+| Content pipeline | Abilities, sigils and the matrix as data with an editor and a headless test suite | The whole design depends on non-engineers shipping build-space content |
+| Engine | Unity 6 matches existing team knowledge; a networked action game still needs a real netcode stack on top | Unreal is stronger for traversal/animation; team familiarity is the honest tiebreaker |
 
 ### Reuse from LT Cards
 
 | From this repo | To Thornline |
 | --- | --- |
-| `EffectDef` grammar (Condition/Trigger/Target/Effect) as *data, not code* | Ability definitions, sigil rules, and the combo matrix — same discipline, and the reason content can ship without engineers |
-| Headless sim with no engine references | A headless combat sim for balance sweeps and squad AI training |
-| `CoreTests/` standalone runner | Same pattern: the combo matrix is exactly the kind of system that needs a few hundred cheap assertions |
-| `HeuristicAgent` (simulate-and-score over cloned states) + `AgentPersonality` | Retinue AI. Stance-based squad behavior is a much easier target than a full card game opponent |
-| `MatchRunner` headless agent-vs-agent sweeps | Automated balance passes on abilities and the combo matrix |
+| `EffectDef` grammar (Condition/Trigger/Target/Effect) as *data, not code* | Ability definitions, sigil rules, the combo matrix — and the reason content ships without engineers |
+| Headless sim with no engine references | Headless combat sim for build sweeps and squad AI |
+| `CoreTests/` standalone runner | The combo matrix is exactly the system that needs a few hundred cheap assertions |
+| `HeuristicAgent` (simulate-and-score over cloned states) + `AgentPersonality` | Retinue AI, and zone enemy AI. Stance-based squad behavior is an easier target than a card opponent |
+| `MatchRunner` headless sweeps | **Dead-build detection**: run every class pair against standard encounters and find combinations that cannot clear. Given the draw, this is the balance tool that matters — not tuning outliers down, but finding builds that are *boring* |
 
 ## What is actually hard
 
-Stated plainly, because the concept is a genuine multi-year team project and
-each of these has killed a similar game:
-
-1. **Scope.** A networked action MOBA + an RPG metagame + dynamic terrain + squad
-   AI is four games. Any one of them is a studio's full output.
-2. **Dynamic verticality.** Player-created climbable surfaces invalidate most
-   assumptions level design and pathing make. This is the feature most likely to
-   be cut, and it should be validated *first*, not polished last.
-3. **Retinue clutter.** Visual noise and target confusion in a 5v5 with 15 extra
-   units. Needs a strict silhouette and a hard field cap, enforced by the budget.
-4. **Build-space balance.** Hundreds of abilities × 30 class pairs × sigils is a
-   combinatorial surface no balance team can cover by hand. This is why the
-   headless sim and automated sweeps are listed as spine, not polish.
-5. **The ceiling law under commercial pressure.** See above.
+1. **Scope.** Still large, but mission structure is the biggest cut available:
+   short instanced maps with modifiers replace an authored open world, and that
+   alone removes most of the content and streaming cost. Hubs + missions + terrain
+   + squad AI is an achievable target in a way hubs + open world never was.
+2. **Content volume is the whole design.** Hundreds of abilities and sigils are
+   not polish here; they *are* the product. A thin version of this game has no
+   draw at all. This is the risk that should scare you most.
+3. **Dynamic verticality.** Player-created climbable surfaces invalidate most
+   pathing and level-design assumptions. Most likely to be cut — so validate it
+   early, alone, where its cost is visible.
+4. **Build-gated content.** Pillar 2 means some optional objectives are
+   unreachable with your current character. Briefings make this an invitation
+   rather than a wall, but it still needs a retinue that genuinely substitutes for
+   a missing verb.
+5. **Dead builds, not overpowered ones.** With 30 pairs × hundreds of abilities,
+   the realistic failure is dozens of combinations nobody enjoys. Automated sweeps
+   are spine, not polish.
 
 ## Vertical slice
 
-The slice must answer one question — **is terrain-combo combat fun?** — and
-nothing else. Deliberately no progression, no metagame, no matchmaking.
+The old slice asked "is terrain-combo combat fun?" Given the restated draw, that
+is the *second* question. The first is:
 
-**Target: 2v2, one small map, ~6 weeks of prototype work.**
+> **Do players want to make another character?**
 
-- 3 classes: Verdurist, Emberwright, Tidecaller. (The three that fight over the
-  matrix. Warden, Beastbinder and Cogwright prove nothing here.)
-- ~18 abilities total, 6 per class, 1 elite each.
-- 8-slot bar and primary/secondary already in — the build economy is half the
-  question and costs almost nothing to prototype.
-- Terrain grid with 5 surfaces: `Foliage`, `Burning`, `Scorched`, `Water`, `Ice`.
-  Fire spread on. No volumes, no `Trellis` — **verticality is slice 2**, tested
-  alone so its cost is visible.
-- 1 retinue unit each (a scout drone, `Hold`/`Follow` only) to test whether
-  stance-level squad play reads at all.
-- Local or simple client-server; no prediction yet.
+**Target: three missions on two small maps, 1–2 players, ~8 weeks.**
 
-**Kill criteria, decided before building:** if players in playtests treat the
-terrain as scenery — if they fight where they would have fought in any MOBA and
-the fire is a damage aura with extra steps — the concept does not work and no
-amount of content fixes it.
+- **4 classes, not 3** — Verdurist, Emberwright, Tidecaller, Beastbinder. Four
+  gives 12 ordered pairs, which is enough to feel like a *space*; three does not,
+  and the Beastbinder is needed because the retinue is half the fantasy.
+- ~28 abilities (7 per class, 1 elite each), the full 8-slot bar, primary/secondary
+  and attributes. **The build economy is the thing under test — it ships first.**
+- ~8 sigils, deliberately including two that are near-useless on most builds.
+- Named pairs for all 12, on the nameplate, with the title card on first assembly.
+- Terrain grid with 5 surfaces: `Foliage`, `Burning`, `Scorched`, `Water`, `Ice`,
+  fire spread on. No volumes, **no `Trellis` — verticality is slice 2**, tested
+  alone so its cost is legible.
+- One named companion each, `Hold`/`Follow`, with a name and dye.
+- **Three missions, two maps, with real briefings** — the third mission is the
+  second map under a modifier, to test whether a modifier actually changes the
+  loadout decision or just the scenery.
+- One small hub room where you can see another player and inspect their build.
+- No progression systems, no matchmaking, no arenas, no economy.
+
+**Kill criteria, written before building:**
+
+- If testers finish a mission and go straight into the next one **without
+  stopping in the hub**, the loadout decision is not real and the loop is hollow.
+  This is the primary metric of the slice.
+- If they never reroll or rebuild across a session, the draw is not there and no
+  content volume fixes it.
+- If two people running the same pair end up with near-identical bars, the build
+  space is fake.
+- If nobody asks another player what they are running, the expression layer failed.
 
 ## Open questions
 
-Genuinely undecided, and the answers change the design substantially:
+Questions 1 and 3 from the first draft are now answered — persistent hubs with
+instanced zones, and owned gear never matters competitively. What remains:
 
-1. **Persistent world, or lobby-only?** GW1 had towns and explorable zones; a
-   pure lobby game is dramatically cheaper and loses the "online RPG" feel you
-   opened with.
-2. **Team size.** 5v5 is the genre default and the worst fit for retinues; 3v3
-   makes squads matter far more and makes every ability more readable. My
-   instinct is 3v3 as the flagship, 5v5 as the second mode — the opposite of the
-   usual ordering.
-3. **Does owned gear ever matter competitively?** This doc says no. It is worth
-   your explicit sign-off, because it constrains monetization and retention
-   design permanently.
-4. **Death and respawn.** MOBA-style timers, or something with less downtime
-   given how much of the game is terrain setup you would hate to lose?
-5. **How deep does retinue configuration go?** 2 ability slots per unit is the
-   conservative call; the beast-tamer fantasy might want more, at the cost of
-   pre-match build time and in-match legibility.
-6. **Is the Beastbinder a class, or an axis?** "Bring beasts" and "bring
-   steampunk robots" could be retinue unlocks available to everyone, with the
-   Beastbinder/Cogwright classes being *better at commanding* them rather than
-   being the gate. That is probably the healthier design.
+1. **Is 8–15 minutes the right mission length?** Short enough that a bad build
+   costs nothing, long enough that terrain setup pays off. Below ~8 minutes the
+   terrain pillar has no time to matter; above ~20 the loadout decision stops
+   recurring often enough to *be* the game. The two pillars pull in opposite
+   directions here, and only the slice settles it.
+2. **How solo-able is it?** Retinue-fills-party makes it fully solo; a co-op
+   requirement makes the world verbs interlock more, at the cost of a much harder
+   launch.
+3. **Is the Beastbinder a class or an axis?** "Bring beasts" and "bring robots"
+   could be retinue unlocks available to everyone, with Beastbinder and Cogwright
+   being *better commanders* rather than the gate. Probably healthier, and it
+   widens the fantasy for every pair — but it costs those two classes their
+   headline identity.
+4. **How much authored narrative?** Class-pair reactivity is cheap and pays a lot;
+   a full campaign is the single largest cost in this document. Where between?
+5. **Arena modes at all in v1?** They are quarantined enough to cut, and cutting
+   them buys a year. The counter-argument is that showing off needs an audience
+   and PvP is the loudest one.
+6. **Does the terrain system survive its own cost?** It is the most expensive
+   pillar and the least connected to the restated draw. Worth asking honestly
+   whether a cheaper world-verb system (traversal and utility without a full
+   simulated surface grid) buys 80% of pillar 2 for 30% of the cost.
