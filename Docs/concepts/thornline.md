@@ -172,7 +172,8 @@ The alternative, making every verb universally available, deletes the pillar.
 
 ## The skill bar and multiclassing
 
-- **8 slots**, chosen out of combat, locked when you enter a zone or match.
+- **8 slots**, chosen out of combat, locked when you enter a zone or match. One
+  of them is almost always your self-heal — see [Healing](#healing).
 - **At most 1 elite.** GW1's best limiter: it makes 8 slots a budget instead of a
   list of favorites, and it forces the build to have a *thesis*.
 - **Attributes**: a shared ~200-point pool across both classes' lines, with
@@ -314,6 +315,68 @@ directions.
 Read together: an arcane build asks "what should this ground become?" and a
 martial build asks "what is this ground already, and who can I put on it?" Same
 table, opposite grip.
+
+## Healing
+
+GW1's answer, adopted: **every class has its own self-heal, and there is no
+dedicated healer class.** Three rules make that work.
+
+**1. Your self-heal costs a slot.** It is an ordinary skill occupying one of your
+eight, competing with everything else. This is the quiet genius of the GW1 bar —
+the heal slot is the most universally pressured slot in the game, and *choosing to
+leave it empty* is a real, aggressive build statement rather than an oversight.
+
+**2. Nobody is obligated, and nobody is a tax.** A mandatory healer in a
+12-minute mission is a queue tax and a person who did not get to pick their
+fantasy. Distributed sustain means any four characters form a viable party. The
+healer *fantasy* survives as a **build, not a class**: attribute lines and sigils
+let a Cogwright specialize into field repair or a Verdurist into healing groves,
+so someone who wants to play support can — and nobody has to.
+
+**3. Heals read the map.** This is the part that is specific to this game rather
+than borrowed. Most self-heals hook the terrain system, which has three
+consequences worth the whole feature: sustain becomes part of the terrain game
+instead of an orthogonal bar; enemies can **attack your healing** (burn the
+foliage you root in, douse the water you drink from, knock you off your anchor);
+and martials get another use for `Force` — displacing a healer off their ground is
+counterplay with no new machinery.
+
+| Class | Self-heal | Cost shape | Map hook |
+| --- | --- | --- | --- |
+| **Warden** | *Bracing Stance* — heal while planted, broken by movement | Immobility | Scales with adjacent blocked cells |
+| **Reaver** | *Bloodwake* — spend adrenaline on a hit to heal | Must be winning | Doubles if the target was displaced into a hazard |
+| **Veilblade** | *Quiet the Wound* — regen while concealed, ends on reveal | Disengagement | Requires `Foliage`, `Reeds` or `Smoke` |
+| **Beastbinder** | *Tend* — your beast returns and heals you both | Retinue downtime — the beast stops fighting | None; the reliable one |
+| **Verdurist** | *Rootdraw* — root yourself, heal fast | Rooted, and flammable | Scales with surrounding `Foliage`/`Bramble` |
+| **Emberwright** | *Cauterize* — consume a nearby `Burning` cell for a large instant heal | Extinguishes your own zoning | Requires `Burning` |
+| **Tidecaller** | *Drink Deep* — heal scaling with the water you stand in | Weak on dry ground | Scales with `Water`; self-solving |
+| **Cogwright** | *Field Repair* — a deployable that heals anyone inside it | Stationary, destructible, slow | None — the only party-facing heal, and the seed of support-without-a-healer |
+
+**Every heal has a floor that works on `Bare` ground.** Terrain is the amplifier,
+never the prerequisite — otherwise a mission with the wrong surfaces is simply
+unplayable for your character. Briefings advertise surfaces, so *"this map is dry,
+my Tidecaller heal will be weak"* is a planning input, not an ambush.
+
+### The heal slot is a combination engine
+
+Because a secondary class grants its non-elite skills, **you can take someone
+else's self-heal** — and since each one has a different cost shape, that single
+slot generates an enormous amount of character identity for its size:
+
+- A `Reaver/Veilblade` fights aggressively and vanishes into the grass to recover.
+- A `Reaver/Tidecaller` makes its own puddle and heals standing in the fight.
+- A `Verdurist/Beastbinder` never roots, because the hound does the healing.
+- A `Veilblade/Emberwright` heals by putting out the fire it is hiding in the
+  smoke of, which is a genuinely strange and specific way to play.
+
+One slot, eight options, 56 pairs. This is the design pattern the whole game wants
+more of: a small closed set whose *combinations* carry the expression.
+
+### Between fights
+
+Out-of-combat regeneration is fast and free. In 8–15 minute missions, downtime as
+a resource tax is pure friction — the heal slot is meant to matter *during* a
+fight, not to make you sit down after one.
 
 ## Sigils: where builds get weird
 
@@ -509,6 +572,9 @@ is the *second* question. The first is:
   primary/secondary, attributes, and **both resource economies** including the
   universal energy pool. **The build economy is the thing under test — it ships
   first.**
+- **All five self-heals**, since the heal slot is both the most-pressured slot on
+  the bar and the cheapest source of combination identity — a slice without it
+  tests a bar with a hole in it.
 - ~8 sigils, deliberately including two that are near-useless on most builds.
 - Named pairs for all 20, on the nameplate, with the title card on first assembly.
 - Terrain grid with 5 surfaces: `Foliage`, `Burning`, `Scorched`, `Water`, `Ice`,
@@ -558,12 +624,11 @@ instanced zones, and owned gear never matters competitively. What remains:
 5. **Arena modes at all in v1?** They are quarantined enough to cut, and cutting
    them buys a year. The counter-argument is that showing off needs an audience
    and PvP is the loudest one.
-6. **Is there a support class, and does this game have healing at all?** GW1
-   made the Monk mandatory and every party formed around it. In 12-minute missions
-   a mandatory healer is a queue tax, but with no sustain at all, martials take a
-   disproportionate share of the damage and the tank fantasy has nothing to
-   protect. The likeliest answer is distributed sustain (every class has some) plus
-   a martial-support class as a ninth, which is a real scope decision.
+6. **Does support-as-a-build actually hold up?** Distributed self-heals settle
+   that nobody is *obligated* to heal, but not whether someone who *wants* to play
+   a healer has enough to work with. If the answer turns out to be no, the fix is a
+   ninth class — and reintroducing a dedicated healer risks reintroducing the
+   obligation, which is the whole thing this design avoided.
 7. **Are eight classes too many for launch?** 56 pairs is the draw, but it is also
    8 ability pools, 8 armor sets, 8 silhouettes and 56 authored names before a
    single one is deep. Six deep classes may beat eight thin ones — and if it comes
