@@ -172,9 +172,9 @@ The alternative, making every verb universally available, deletes the pillar.
 
 ## The skill bar and multiclassing
 
-- **8 slots**, chosen out of combat, locked when you enter a zone or match. One
+- **6 slots**, chosen out of combat, locked when you enter a zone or match. One
   of them is almost always your self-heal — see [Healing](#healing).
-- **At most 1 elite.** GW1's best limiter: it makes 8 slots a budget instead of a
+- **At most 1 elite.** GW1's best limiter: it makes 6 slots a budget instead of a
   list of favorites, and it forces the build to have a *thesis*.
 - **Attributes**: a shared ~200-point pool across both classes' lines, with
   escalating costs so ranks 1–9 are cheap and 10–12 are expensive. Broad and
@@ -182,6 +182,39 @@ The alternative, making every verb universally available, deletes the pillar.
 - **Primary** grants: full skill pool including elites, armor class, and the
   primary attribute. **Secondary** grants: non-elite skills and attribute lines
   only. Secondary is swappable freely out of combat; primary is per character.
+
+### Why six and not eight
+
+Six is tighter than GW1's eight, on purpose, and the arguments are mostly about
+this game's specific shape rather than about bars in general:
+
+- **Missions are 8–15 minutes.** A bar you can fully express inside one fight
+  beats a bar you are still discovering at minute nine.
+- **Six is a gamepad.** Four face buttons plus two shoulders, or one clean radial.
+  Eight is not, and this is a real platform decision disguised as a number.
+- **Scarcity is the expression engine.** Every slot you remove makes the remaining
+  ones louder. With six, taking one skill from your secondary class is a
+  *statement about your character*, not a leftover.
+- **It shortens the read.** Inspecting someone's build in a hub should be a glance.
+
+**The risk this creates, stated plainly:** if a build needs a heal, an elite, a
+mobility skill and a core damage skill, that is four of six spent before the
+secondary class contributes anything — and a multiclass system whose second class
+supplies one skill is barely a multiclass system.
+
+The answer is to stop the bar from being the only place abilities live, rather
+than to add slots back:
+
+- The **weapon** carries its own native skill, outside the six.
+- **Sigils** modify abilities you already have instead of costing a slot.
+- The **retinue** carries its own abilities (below), so party-wide utility need
+  not come off your bar.
+- Class kits are authored so that no *category* is mandatory — mobility should
+  come bundled into a damage skill for some builds, not as a separate tax.
+
+Effective capability is therefore closer to six-plus-two than to six, while the
+thing you *tune* stays six. Whether four discretionary slots is enough room to
+feel like build-crafting is a primary question for the slice.
 
 The primary attribute is what stops "everyone runs the same secondary" and makes
 `Verdurist/Tidecaller` and `Tidecaller/Verdurist` genuinely different games out of
@@ -240,7 +273,7 @@ surface — the discipline LT Cards already applies to card text.
 
 ### Build codes
 
-A build (class pair, 8 skills, attributes, equipment template) serializes to a
+A build (class pair, 6 skills, attributes, equipment template) serializes to a
 short shareable text code, paste-able in chat and in hubs. Trying someone else's
 character should take ten seconds. If the draw is combinations, **friction on
 trying a new one is the primary enemy** — so unlocks are account-wide, alts are
@@ -322,9 +355,11 @@ GW1's answer, adopted: **every class has its own self-heal, and there is no
 dedicated healer class.** Three rules make that work.
 
 **1. Your self-heal costs a slot.** It is an ordinary skill occupying one of your
-eight, competing with everything else. This is the quiet genius of the GW1 bar —
+six, competing with everything else. This is the quiet genius of the GW1 bar —
 the heal slot is the most universally pressured slot in the game, and *choosing to
-leave it empty* is a real, aggressive build statement rather than an oversight.
+leave it empty* is a real, aggressive build statement rather than an oversight. At
+six slots it costs a **sixth of your character**, which makes skipping it a much
+louder statement than GW1 ever allowed.
 
 **2. Nobody is obligated, and nobody is a tax.** A mandatory healer in a
 12-minute mission is a queue tax and a person who did not get to pick their
@@ -420,9 +455,34 @@ companion 4.
 ### Equipment and abilities
 
 Every retinue unit has the same four slots as you — **weapon, armor, accessory,
-accessory** — plus a **2-slot ability bar**. Two, not eight: a squad of three
-8-slot builds is a second game you did not ask to play, and it moves the fantasy
-from *commanding a crew* to *playing four characters*.
+accessory** — plus a **3-slot ability bar**, which is deliberately *half a
+character*: three to your six. That ratio is the whole statement — a companion is
+a real build you author, not a pet with a trick, and not a second character you
+have to pilot.
+
+Three is enough for a companion to have a *role* (a heal, a control, a threat)
+where two only ever gave it a thing and another thing. It also means a companion
+can carry its own sustain, which is what lets support-as-a-build extend to the
+retinue.
+
+**Slots scale with cost**, so cheap units do not multiply the noise — a proposal
+rather than a rule, and easy to overrule: a 1-point scout drone gets 1 slot, a
+2-point beast gets 2, and anything 3 points or more gets the full 3. A solo
+player fielding four units is then reading about eight companion abilities, not
+twelve.
+
+### Companions are programmed, not micromanaged
+
+Each companion ability slot carries a **trigger condition** chosen alongside it —
+*when an enemy is rooted*, *when I drop below half health*, *when an ally stands
+in fire*, *on first contact*. You are not timing these in the fight; you are
+authoring the behavior in the hub and then watching it play out.
+
+This is the piece that makes 3 slots × 4 units tractable instead of an RTS, and
+it is a direct lift of the Condition/Trigger grammar already built in this repo's
+card engine — the same data shape, aimed at squad behavior. It also puts retinue
+expression where the rest of the game puts it: in the loadout screen, as a puzzle
+you solve before the mission and get graded on during it.
 
 **Named companions** (cost 4) are the roleplay slot: they have a name you give
 them, a persistent appearance, dyeable barding, and they level a small trait tree
@@ -438,7 +498,7 @@ commanding.
 
 **Beastbinder** buys depth rather than everyone being forced into it: extra
 command charges, direct control of one beast, and that beast's abilities surfaced
-onto the player's own 8-slot bar, where they compete for slots like everything
+onto the player's own 6-slot bar, where they compete for slots like everything
 else.
 
 ## Equipment
@@ -477,7 +537,7 @@ the instant playtime buys *numbers*, build choice becomes build *obligation*.
 
 ## Legibility
 
-The competitive framing of this problem ("hidden 8-slot builds destroy
+The competitive framing of this problem ("hidden 6-slot builds destroy
 counterplay") mostly evaporates once PvP is a wing. What remains is the
 *expressive* version of it: **your build should be legible enough to be admired.**
 
@@ -568,13 +628,16 @@ is the *second* question. The first is:
   to finish?" is now a primary question of the slice, and no arrangement of four
   casters answers it. Five gives 20 ordered pairs, both economies, and both grips
   on the matrix. It costs perhaps two weeks.
-- ~35 abilities (7 per class, 1 elite each), the full 8-slot bar,
+- ~35 abilities (7 per class, 1 elite each), the full 6-slot bar,
   primary/secondary, attributes, and **both resource economies** including the
   universal energy pool. **The build economy is the thing under test — it ships
   first.**
 - **All five self-heals**, since the heal slot is both the most-pressured slot on
   the bar and the cheapest source of combination identity — a slice without it
-  tests a bar with a hole in it.
+  tests a bar with a hole in it. At six slots this is also the sharpest test of
+  whether the bar is too tight.
+- **One companion with 3 trigger-conditioned ability slots**, to test whether
+  programming a companion reads as build-crafting or as homework.
 - ~8 sigils, deliberately including two that are near-useless on most builds.
 - Named pairs for all 20, on the nameplate, with the title card on first assembly.
 - Terrain grid with 5 surfaces: `Foliage`, `Burning`, `Scorched`, `Water`, `Ice`,
@@ -606,34 +669,38 @@ is the *second* question. The first is:
 Questions 1 and 3 from the first draft are now answered — persistent hubs with
 instanced zones, and owned gear never matters competitively. What remains:
 
-1. **Is 8–15 minutes the right mission length?** Short enough that a bad build
+1. **Is six slots too tight?** Heal, elite, mobility and a core attack is four of
+   six before your secondary class says anything. Weapon skills, sigils and
+   retinue abilities are the pressure valves; if they are not enough, the honest
+   fix is seven slots rather than a heal that does not cost one.
+2. **Is 8–15 minutes the right mission length?** Short enough that a bad build
    costs nothing, long enough that terrain setup pays off. Below ~8 minutes the
    terrain pillar has no time to matter; above ~20 the loadout decision stops
    recurring often enough to *be* the game. The two pillars pull in opposite
    directions here, and only the slice settles it.
-2. **How solo-able is it?** Retinue-fills-party makes it fully solo; a co-op
+3. **How solo-able is it?** Retinue-fills-party makes it fully solo; a co-op
    requirement makes the world verbs interlock more, at the cost of a much harder
    launch.
-3. **Is the Beastbinder a class or an axis?** "Bring beasts" and "bring robots"
+4. **Is the Beastbinder a class or an axis?** "Bring beasts" and "bring robots"
    could be retinue unlocks available to everyone, with Beastbinder and Cogwright
    being *better commanders* rather than the gate. Probably healthier, and it
    widens the fantasy for every pair — but it costs those two classes their
    headline identity.
-4. **How much authored narrative?** Class-pair reactivity is cheap and pays a lot;
+5. **How much authored narrative?** Class-pair reactivity is cheap and pays a lot;
    a full campaign is the single largest cost in this document. Where between?
-5. **Arena modes at all in v1?** They are quarantined enough to cut, and cutting
+6. **Arena modes at all in v1?** They are quarantined enough to cut, and cutting
    them buys a year. The counter-argument is that showing off needs an audience
    and PvP is the loudest one.
-6. **Does support-as-a-build actually hold up?** Distributed self-heals settle
+7. **Does support-as-a-build actually hold up?** Distributed self-heals settle
    that nobody is *obligated* to heal, but not whether someone who *wants* to play
    a healer has enough to work with. If the answer turns out to be no, the fix is a
    ninth class — and reintroducing a dedicated healer risks reintroducing the
    obligation, which is the whole thing this design avoided.
-7. **Are eight classes too many for launch?** 56 pairs is the draw, but it is also
+8. **Are eight classes too many for launch?** 56 pairs is the draw, but it is also
    8 ability pools, 8 armor sets, 8 silhouettes and 56 authored names before a
    single one is deep. Six deep classes may beat eight thin ones — and if it comes
    to cutting, cut an *arcane* one, because the martial half was the gap.
-8. **Does the terrain system survive its own cost?** It is the most expensive
+9. **Does the terrain system survive its own cost?** It is the most expensive
    pillar and the least connected to the restated draw. Worth asking honestly
    whether a cheaper world-verb system (traversal and utility without a full
    simulated surface grid) buys 80% of pillar 2 for 30% of the cost.
