@@ -112,7 +112,7 @@ with a deep modifier table is the affordable version of this game.
 
 ### Why PvE-primary makes the build space possible
 
-An arena-first game with hundreds of abilities across 30 class pairs has a
+An arena-first game with hundreds of abilities across 56 class pairs has a
 balance surface no team can cover, and every patch invalidates someone's
 character. That pressure is what forces competitive games toward small, legible,
 homogenized kits — the exact opposite of this draw.
@@ -129,18 +129,41 @@ combinatorial toybox.
 
 ## Classes
 
-Six at launch. Each is defined first by **what verb it performs on the world** —
-and crucially, that verb works **outside combat too**, which is pillar 2's entire
-mechanism.
+**Eight at launch — four martial, four arcane.** The earlier six-class roster was
+caster-heavy, and not by accident: defining classes by "what verb it performs on
+the world" structurally favors people who cast spells at the ground. That is a
+flaw in the method, not a truth about the game, and it needed fixing — half the
+character fantasies anyone actually wants to roleplay are martial ones, and a
+game whose combination space is three mages and a knight has a thin half.
+
+The fix is not "give warriors spells." It is
+[a different relationship to the same system](#how-martials-touch-the-matrix):
+**arcane classes write to the map; martial classes read it, move through it, and
+put people into it.**
+
+### Martial
+
+| Class | World verb | In combat | **Out of combat** | Primary attribute (primary-only) |
+| --- | --- | --- | --- | --- |
+| **Warden** | **Holds** — raises cover, body-blocks, anchors ground | Frontline, peel, objective soak | Braces collapsing structures; shields the party through a hazard; holds a gate open | *Bulwark* — armor scales with adjacent blocked cells |
+| **Reaver** | **Displaces** — knocks, throws, charges, shatters | Aggressive melee, the `Force` specialist | Breaks sealed walls and rubble; carries heavy things; charges gaps | *Momentum* — your displacement distance scales, and moving builds adrenaline |
+| **Veilblade** | **Slips** — concealment, verticality, gaps | Burst, flanks, assassination | Free-climbs without a `Trellis`; squeezes through gaps; scouts unseen | *Stillness* — you conceal in any volume, and break concealment on your terms |
+| **Beastbinder** | **Inhabits** — beasts scout, flush, hold; bow and preparations | Ranged martial, retinue depth | Beasts track scents; some are mounts or fit through gaps | *Kinship* — +2 retinue points, one beast's abilities on your own bar |
+
+### Arcane and artifice
 
 | Class | World verb | In combat | **Out of combat** | Primary attribute (primary-only) |
 | --- | --- | --- | --- | --- |
 | **Verdurist** ("green mage") | **Grows** — vines, brambles, grass, trellises | Control, area denial | Grows a climbable trellis on any tagged wall; reaches ledges nobody else reaches | *Rootedness* — your terrain lasts longer, regrows once |
 | **Emberwright** | **Ignites** — burns foliage, spreads fire | Damage over time, zoning | Burns away overgrowth sealing a path; lights dark areas | *Combustion* — fires spread one ring further |
 | **Tidecaller** | **Changes state** — floods, freezes, douses | Mobility surfaces, chain setup | Freezes a river into a bridge; floods a channel to float something | *Current* — refunds resource when a combo you set up triggers |
-| **Warden** | **Breaks** — shatters terrain, raises cover | Frontline, peel | Breaks sealed walls and collapsed rubble; carries heavy things | *Bulwark* — armor scales with adjacent blocked cells |
-| **Beastbinder** | **Inhabits** — beasts scout, flush, hold | Retinue depth, pressure | Beasts track scents to hidden things; some beasts are mounts or fit through gaps | *Kinship* — +2 retinue points, one beast's abilities on your own bar |
 | **Cogwright** | **Installs** — turrets, ziplines, drones | Siege, vision, infrastructure | Ziplines across gaps; drones scout ahead and map rooms | *Fabrication* — installations cost less, can be repaired |
+
+Eight classes give **56 ordered pairs**. That is the number the whole draw rests
+on, and it is why the roster grew rather than swapping a mage out: martial/arcane
+pairs in *both* directions are the richest part of the space. A
+`Reaver/Tidecaller` freezes the ground and shatters it under you; a
+`Tidecaller/Reaver` is a mage who has learned to shoulder-check.
 
 **Consequence to accept deliberately:** if builds gate exploration, a solo player
 sometimes cannot reach something. That is the price of pillar 2, and the answer is
@@ -163,9 +186,30 @@ The primary attribute is what stops "everyone runs the same secondary" and makes
 `Verdurist/Tidecaller` and `Tidecaller/Verdurist` genuinely different games out of
 identical skill access.
 
+### Two economies, and the trap between them
+
+Martial abilities run on **adrenaline** (built by connecting hits, spent in
+bursts, lost out of combat). Arcane abilities run on **energy** (a pool that
+regenerates). Every class has some of both, weighted heavily toward one.
+
+This is GW1's shape and it carries GW1's most famous failure with it: a martial
+primary with an arcane secondary had almost no energy, so half the pairs were
+dead on arrival. Given "no dead builds" is the stated balance goal, that is not
+acceptable here, and it needs an explicit answer rather than a shrug:
+
+- Every class has a small universal energy pool — enough for two or three
+  secondary-class utility casts per fight, never enough to be a mage.
+- Martial primary attributes convert: *Momentum* and *Stillness* both pay out in
+  a resource the other half of the bar can spend.
+- The Focus accessory slot can be spent on energy, at the cost of a sigil.
+
+A `Reaver/Emberwright` should be a real character who lands three strikes and
+spends them on one detonation — not a warrior who cannot afford their own second
+class.
+
 ### Named pairs
 
-**The cheapest, highest-leverage feature in this document.** All 30 ordered pairs
+**The cheapest, highest-leverage feature in this document.** All 56 ordered pairs
 get an authored in-world name, displayed under your character in hubs, with its
 own emote and a title card the first time you assemble one.
 
@@ -181,6 +225,12 @@ own emote and a title card the first time you assemble one.
 | Warden / Verdurist | **Bramblewarden** | A wall that grows more wall |
 | Warden / Emberwright | **Cinderguard** | Holds ground by making the ground unholdable |
 | Cogwright / Emberwright | **Boilerwright** | Oil, pressure, and things that should not be indoors |
+| Reaver / Tidecaller | **Frostbreaker** | Freezes the ground, then shatters it under you. The martial thesis in one build |
+| Reaver / Emberwright | **Pyreblade** | Oiled weapon, and it throws you into what it lit |
+| Veilblade / Verdurist | **Thornghost** | Grows its own hiding places and hunts from grass it planted |
+| Veilblade / Tidecaller | **Mistwalker** | Makes the steam, lives in it, leaves before it clears |
+| Warden / Reaver | **Breakwall** | Holds the line by moving it forward |
+| Beastbinder / Emberwright | **Emberpack** | Burning arrows and hounds that drive things into the fire |
 
 **Names are recognition, not rules.** A pair name describes an emergent
 playstyle; it grants nothing by itself. Mechanical pair identity comes from
@@ -235,6 +285,35 @@ Rules that fall out of the matrix:
   feature here.
 - **Fire spreads.** It is a cellular automaton over flammable surfaces, not an
   aura. You can start one you cannot control.
+
+### How martials touch the matrix
+
+The trap with a terrain-and-element core is that martial classes become
+stat-sticks who wait for the mages to finish decorating. Three verbs prevent it,
+all of which use machinery the matrix already has:
+
+**1. `Force` is the martial element.** It is already a row in the table, and
+martials are its primary wielders. A Reaver does not set the fire — a Reaver
+*throws you into it*, shatters the `Ice` under your feet, scatters a `Burning`
+cell into four, and flattens the `Foliage` you were hiding in. Displacement turns
+every surface an ally created into a weapon, which means a martial's power scales
+with how interesting the map is, not despite it.
+
+**2. Terrain that walls a caster is a road for a martial.** Martials buy
+traversal mastery rather than immunity: run across `Ice` without sliding, vault
+`Bramble` instead of pathing around, cross `Burning` at a stacking cost, climb
+where there is no `Trellis`. The Veilblade is the extreme case — its whole kit is
+*moving through the map other people made*.
+
+**3. Carried elements, not cast ones.** Weapon coatings, oils, and the
+Beastbinder's arrow preparations let a martial apply `Fire`, `Frost` or `Shock`
+by having *prepared*, not by casting. This is the mechanism that opens every
+matrix row to a pure martial build and makes martial/arcane pairs work in both
+directions.
+
+Read together: an arcane build asks "what should this ground become?" and a
+martial build asks "what is this ground already, and who can I put on it?" Same
+table, opposite grip.
 
 ## Sigils: where builds get weird
 
@@ -306,7 +385,7 @@ change what you do, not how big your numbers are.
 
 | Slot | What it decides |
 | --- | --- |
-| **Weapon** | Your attack's *shape* (staff = slow pierce line, scepter = fast single-target, bow = arcing, sword = melee arc) and **gates some abilities** — bow attacks need a bow. Carries 1 weapon-native skill |
+| **Weapon** | Your attack's *shape* — greatsword (wide arc), hammer (slow, knocks), spear (reach, pins), paired daggers (fast, off-hand triggers), bow (arcing, takes preparations), staff (slow pierce line), scepter (fast single-target). **Gates abilities** — hammer knockdowns need a hammer — and takes coatings and oils. Carries 1 weapon-native skill. This is the martial build's main expression slot, so its variety is not cosmetic |
 | **Armor** | Defense *profile*, not amount: trade-offs (+vs fire / −vs shock). 2 rune slots (capped attribute ranks) + 1 insignia (situational passive). **Armor is the class silhouette** and the main visual identity surface — dyeable, per-piece |
 | **Accessory ×2** | Sigils (above) and a Focus that shapes your resource economy |
 
@@ -400,9 +479,16 @@ authoritative state, replicated as deltas. Everything falls out of it:
    unreachable with your current character. Briefings make this an invitation
    rather than a wall, but it still needs a retinue that genuinely substitutes for
    a missing verb.
-5. **Dead builds, not overpowered ones.** With 30 pairs × hundreds of abilities,
+5. **Dead builds, not overpowered ones.** With 56 pairs × hundreds of abilities,
    the realistic failure is dozens of combinations nobody enjoys. Automated sweeps
    are spine, not polish.
+6. **Martial parity in a game about spellcraft.** The terrain system is a caster's
+   playground by default, and every system in this document had to be argued back
+   toward martials rather than naturally including them. That asymmetry does not
+   go away after launch: every new surface, volume and sigil will *want* to be
+   arcane, and someone has to keep insisting that `Force`, traversal and coatings
+   get the same attention. This is a standing organizational risk, not a design
+   task that finishes.
 
 ## Vertical slice
 
@@ -413,13 +499,18 @@ is the *second* question. The first is:
 
 **Target: three missions on two small maps, 1–2 players, ~8 weeks.**
 
-- **4 classes, not 3** — Verdurist, Emberwright, Tidecaller, Beastbinder. Four
-  gives 12 ordered pairs, which is enough to feel like a *space*; three does not,
-  and the Beastbinder is needed because the retinue is half the fantasy.
-- ~28 abilities (7 per class, 1 elite each), the full 8-slot bar, primary/secondary
-  and attributes. **The build economy is the thing under test — it ships first.**
+- **5 classes — Verdurist, Emberwright, Tidecaller, Reaver, Beastbinder.** Grown
+  from four specifically to carry a martial: "does a melee character feel like a
+  protagonist in a terrain-driven game, or like a spectator waiting for the mages
+  to finish?" is now a primary question of the slice, and no arrangement of four
+  casters answers it. Five gives 20 ordered pairs, both economies, and both grips
+  on the matrix. It costs perhaps two weeks.
+- ~35 abilities (7 per class, 1 elite each), the full 8-slot bar,
+  primary/secondary, attributes, and **both resource economies** including the
+  universal energy pool. **The build economy is the thing under test — it ships
+  first.**
 - ~8 sigils, deliberately including two that are near-useless on most builds.
-- Named pairs for all 12, on the nameplate, with the title card on first assembly.
+- Named pairs for all 20, on the nameplate, with the title card on first assembly.
 - Terrain grid with 5 surfaces: `Foliage`, `Burning`, `Scorched`, `Water`, `Ice`,
   fire spread on. No volumes, **no `Trellis` — verticality is slice 2**, tested
   alone so its cost is legible.
@@ -437,6 +528,9 @@ is the *second* question. The first is:
   This is the primary metric of the slice.
 - If they never reroll or rebuild across a session, the draw is not there and no
   content volume fixes it.
+- **If Reaver players report the good moments as things that happened *to* the
+  map rather than things they did**, the martial integration failed and `Force`
+  is not carrying enough weight.
 - If two people running the same pair end up with near-identical bars, the build
   space is fake.
 - If nobody asks another player what they are running, the expression layer failed.
@@ -464,7 +558,17 @@ instanced zones, and owned gear never matters competitively. What remains:
 5. **Arena modes at all in v1?** They are quarantined enough to cut, and cutting
    them buys a year. The counter-argument is that showing off needs an audience
    and PvP is the loudest one.
-6. **Does the terrain system survive its own cost?** It is the most expensive
+6. **Is there a support class, and does this game have healing at all?** GW1
+   made the Monk mandatory and every party formed around it. In 12-minute missions
+   a mandatory healer is a queue tax, but with no sustain at all, martials take a
+   disproportionate share of the damage and the tank fantasy has nothing to
+   protect. The likeliest answer is distributed sustain (every class has some) plus
+   a martial-support class as a ninth, which is a real scope decision.
+7. **Are eight classes too many for launch?** 56 pairs is the draw, but it is also
+   8 ability pools, 8 armor sets, 8 silhouettes and 56 authored names before a
+   single one is deep. Six deep classes may beat eight thin ones — and if it comes
+   to cutting, cut an *arcane* one, because the martial half was the gap.
+8. **Does the terrain system survive its own cost?** It is the most expensive
    pillar and the least connected to the restated draw. Worth asking honestly
    whether a cheaper world-verb system (traversal and utility without a full
    simulated surface grid) buys 80% of pillar 2 for 30% of the cost.
