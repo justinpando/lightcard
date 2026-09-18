@@ -302,7 +302,7 @@ analog; adjacent cells sharing a state render as one patch with an organic edge,
 so players see a burning *field*, never lit squares.
 
 > **Vocabulary rule:** "cell" is an engineering word and must never appear in
-> player-facing text. Ability and attribute descriptions speak in metres and plain
+> player-facing text. Ability and attribute descriptions speak in meters and plain
 > language — *"armor scales with the cover around you"*, not *"per adjacent
 > blocked cell"*. Designers count cells; players see ground.
 
