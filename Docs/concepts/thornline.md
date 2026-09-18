@@ -330,6 +330,19 @@ Rules that fall out of the matrix:
 - **Fire spreads.** It is a cellular automaton over flammable surfaces, not an
   aura. You can start one you cannot control.
 
+### Portable terrain is a required category
+
+Every terrain-adjacent class needs at least one cheap ability that **manufactures
+its preferred surface on demand** — Seedfall grows a patch of `Foliage` at range,
+Wellspring puts down water, Kindle lights a cell, Smokebomb makes a volume
+chemically, Rime Underfoot freezes what is already there.
+
+This is not flavor, it is what keeps terrain builds from being hostage to the
+briefing. Without portable surfaces, a `Drought` or `Ashfall` modifier does not
+*challenge* a build, it *deletes* one, and a player who brought their favorite
+character to the wrong map simply does not get to play. With them, the modifier
+becomes what it should be: your setup costs more slots and more time than usual.
+
 ### How martials touch the matrix
 
 The trap with a terrain-and-element core is that martial classes become
@@ -511,6 +524,14 @@ command charges, direct control of one beast, and that beast's abilities surface
 onto the player's own 6-slot bar, where they compete for slots like everything
 else.
 
+**Shouts are the real command surface.** A shout like *Hold Fast* (party gains
+Stability) or *Command: Screen* does honest combat work **and** redirects the
+squad, which is better than a dedicated command key for three reasons: retinue
+control competes for bar slots like everything else, a player who wants to
+command more can build for it, and a player who wants to ignore the squad can
+leave it on a stance and never think about it. The directed-command key stays as
+the floor; shouts are how you buy above it.
+
 ## Equipment
 
 Four slots: **Weapon · Armor · Accessory · Accessory**. All horizontal — they
@@ -555,6 +576,21 @@ cosmetic and makes the choice upstream of the bar.
 **Weapon mastery is how an arcane class buys into the martial half**, and the
 grapples-and-throws line on martial arts is a second home for `Force`, so the
 martial relationship to terrain does not live only on the Reaver.
+
+**Traps must be legible.** A Verdurist swinging a greatsword at Heavy Arms 6 is a
+bad build, and that is fine — an open combination space that contains no bad
+builds is not really open. But the loadout screen must say so *plainly and before
+the mission*: show the mastery you actually have against the weapon's expected
+rank, in words, not as a number the player has to know how to read. A trap you can
+see is build-crafting. A trap you cannot see is bad information wearing a costume.
+
+**And design primary attributes to be re-read by secondaries.** The Warden's
+*Bulwark* scales armor with adjacent blocked cells; the Verdurist manufactures
+blocked cells. Nobody authored that interaction — it fell out of two systems
+meeting, and it is the single most satisfying thing theorycrafting this roster
+produced. Authoring target: every primary attribute should have **at least two
+secondaries that give it a non-obvious reading**. That is where players find
+things and feel clever, and it costs nothing but care at design time.
 
 ## Beyond terrain: the ability vocabulary
 
@@ -846,3 +882,122 @@ instanced zones, and owned gear never matters competitively. What remains:
    pillar and the least connected to the restated draw. Worth asking honestly
    whether a cheaper world-verb system (traversal and utility without a full
    simulated surface grid) buys 80% of pillar 2 for 30% of the cost.
+
+## Appendix: ten builds
+
+Theorycrafted against the systems above, not balanced — the point is to show the
+*shape* of the space, and to prove that a six-slot bar with one elite and one heal
+can hold a character concept. Abilities here are invented to fill the slots;
+treat them as illustrative.
+
+Each is **1 elite + 1 heal + 4**, with a weapon and a named pair.
+
+### Frostbreaker — Reaver/Tidecaller · Heavy Arms
+
+**Glacier's Fault** *(elite)* — your next heavy-arms blow shatters all `Ice` in a
+radius; everyone on it is knocked down, damage scaling with how long the ice has
+existed · **Bloodwake** *(heal)* · Rime Underfoot · Overbear · Shatterstep ·
+Cold Grip
+
+*Build a rink nobody notices, then delete the floor.* Dies to any Emberwright, the
+`Ashfall` modifier, and knockdown-immune enemies.
+
+### Thornghost — Veilblade/Verdurist · Dagger
+
+**The Long Patience** *(elite)* — your first strike out of concealment applies
+Deep Wound and is unblockable; recharges only by re-entering concealment ·
+**Quiet the Wound** *(heal)* · Seedfall · Hamstring · Whisper Chain · Vanish
+
+*You bring your own bushes.* Seedfall is the build; without portable cover you are
+hostage to the map. Dies to fire and to `Force` reveals.
+
+### Breakwall — Warden/Reaver · Spear
+
+**Immovable** *(elite)* — stance; cannot be moved or knocked down, and every
+attack against you builds adrenaline; ends if you use a movement skill ·
+**Bracing Stance** *(heal)* · Pin · Shieldwall · Bellow: Hold Fast · Overbear
+
+*You are the door.* Touches terrain **zero** times — the proof that the
+non-terrain vocabulary carries a build alone. Dies to stacked conditions, and to
+being walked around.
+
+### Powdersmoke — Cogwright/Veilblade · Gun
+
+**Overclock** *(elite)* — instant reload for 6s; each shot costs you health ·
+**Quiet the Wound** *(heal)* · Smokebomb · Braced Shot · Scatterload · Caltrop Line
+
+*Concealment manufactured chemically rather than grown*, so a Veilblade heal that
+wants grass works on an iron deck. Same rule, different fiction — the cheapest
+kind of breadth there is.
+
+### Thornreaver — Verdurist/Reaver · Heavy Arms ⚠️
+
+**Heartwood** *(elite)* — root yourself, gain heavy armor, and grow `Bramble`
+outward each second · **Rootdraw** *(heal)* · Bramble Wall · Entangle · Overbear ·
+Wild Swing
+
+*An angry tree with a greatsword* — and a **deliberate trap**. Heavy Arms is a
+Reaver line, so every point spent swinging is a point not spent growing, and you
+end up a bad Reaver and a weak Verdurist. Kept in the appendix because the trap
+should be legible, not hidden.
+
+### Houndwright — Beastbinder/Cogwright · Bow
+
+**Pack Bond** *(elite)* — your retinue's abilities recharge twice as fast and they
+share your boons · **Tend** *(heal)* · Balm Arrows · Marking Shot ·
+Command: Screen · Field Repair
+
+*Support without a healer class.* Most of this build's power lives in the
+**companion loadout screen** — Pack Bond is only as good as the trigger conditions
+you programmed.
+
+### Ashgardener — Emberwright/Verdurist · Implement
+
+**Wildfire** *(elite)* — your `Burning` cells never stop spreading while you live;
+you take a stacking burn each second they do · **Cauterize** *(heal)* · Kindle ·
+Seedfall · Emberstep · Flashover
+
+*Plant the fuel, light it, walk through it, heal by eating it.* The elite is a
+commitment: if you cannot close the fight, it kills you.
+
+### Steamcaller — Tidecaller/Emberwright · Implement
+
+**Whiteout** *(elite)* — all water you control flashes to `Steam`; for 10s you see
+through steam and nobody else does · **Drink Deep** *(heal)* · Wellspring · Scald ·
+Chill Depths · Flashfreeze
+
+*A personal fog of war.* You fight an entire engagement where only you know where
+anyone is.
+
+### Galvanist — Tidecaller/Cogwright · Gun
+
+**Arc Column** *(elite)* — a stationary pylon; every `Water` cell connected to it
+chains shock continuously · **Drink Deep** *(heal)* · Wellspring · Conduct ·
+Grounding Rod · Braced Shot
+
+*Electrify a lake and stand in it safely.* Pure denial. Dies to being pulled off
+your own flooded ground.
+
+### Bramblewarden — Warden/Verdurist · Spear
+
+**Hedge Sovereign** *(elite)* — `Bramble` in range counts as your blocked cells,
+and allies inside it share your armor profile · **Bracing Stance** *(heal)* ·
+Bramble Wall · Pin · Shieldwall · Entangle
+
+**The best thing the exercise produced.** Warden's *Bulwark* scales armor with
+adjacent blocked cells; the Verdurist manufactures blocked cells; *Bracing Stance*
+scales off the same count. Three systems compound and nobody designed it. If the
+shipped game produces discoveries like this, the draw is real.
+
+### What the ten builds taught the design
+
+1. **The elite carries the build.** Every one of these is named by its elite.
+   Four flexible slots is plenty when one slot can be a whole thesis.
+2. **Portable terrain is mandatory**, or modifiers delete builds instead of
+   challenging them.
+3. **Shouts are the retinue's control surface**, not a dedicated key.
+4. **Same rule, different fiction** (grown cover vs. chemical smoke) is how the
+   catalog gets breadth cheaply.
+5. **The best builds were not designed, they were found.** Bramblewarden is three
+   systems compounding by accident. Protecting the conditions for that — broad
+   attributes, free pairing, legible rules — matters more than any single ability.
