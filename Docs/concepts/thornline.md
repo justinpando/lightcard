@@ -146,7 +146,7 @@ put people into it.**
 
 | Class | World verb | In combat | **Out of combat** | Primary attribute (primary-only) |
 | --- | --- | --- | --- | --- |
-| **Warden** | **Holds** — raises cover, body-blocks, anchors ground | Frontline, peel, objective soak | Braces collapsing structures; shields the party through a hazard; holds a gate open | *Bulwark* — armor scales with adjacent blocked cells |
+| **Warden** | **Holds** — raises cover, body-blocks, anchors ground | Frontline, peel, objective soak | Braces collapsing structures; shields the party through a hazard; holds a gate open | *Bulwark* — armor scales with how much cover and blocked ground surrounds you |
 | **Reaver** | **Displaces** — knocks, throws, charges, shatters | Aggressive melee, the `Force` specialist | Breaks sealed walls and rubble; carries heavy things; charges gaps | *Momentum* — your displacement distance scales, and moving builds adrenaline |
 | **Veilblade** | **Slips** — concealment, verticality, gaps | Burst, flanks, assassination | Free-climbs without a `Trellis`; squeezes through gaps; scouts unseen | *Stillness* — you conceal in any volume, and break concealment on your terms |
 | **Beastbinder** | **Inhabits** — beasts scout, flush, hold; bow and preparations | Ranged martial, retinue depth | Beasts track scents; some are mounts or fit through gaps | *Kinship* — +2 retinue points, one beast's abilities on your own bar |
@@ -156,7 +156,7 @@ put people into it.**
 | Class | World verb | In combat | **Out of combat** | Primary attribute (primary-only) |
 | --- | --- | --- | --- | --- |
 | **Verdurist** ("green mage") | **Grows** — vines, brambles, grass, trellises | Control, area denial | Grows a climbable trellis on any tagged wall; reaches ledges nobody else reaches | *Rootedness* — your terrain lasts longer, regrows once |
-| **Emberwright** | **Ignites** — burns foliage, spreads fire | Damage over time, zoning | Burns away overgrowth sealing a path; lights dark areas | *Combustion* — fires spread one ring further |
+| **Emberwright** | **Ignites** — burns foliage, spreads fire | Damage over time, zoning | Burns away overgrowth sealing a path; lights dark areas | *Combustion* — your fires spread noticeably further |
 | **Tidecaller** | **Changes state** — floods, freezes, douses | Mobility surfaces, chain setup | Freezes a river into a bridge; floods a channel to float something | *Current* — refunds resource when a combo you set up triggers |
 | **Cogwright** | **Installs** — turrets, ziplines, drones | Siege, vision, infrastructure | Ziplines across gaps; drones scout ahead and map rooms | *Fabrication* — installations cost less, can be repaired |
 
@@ -294,6 +294,17 @@ swap between them in a hub.
 
 The expression engine. Specified as a closed data table rather than per-ability
 special cases, so new content ships as data.
+
+**A cell** is one square of the terrain simulation grid, ~0.5 m across, holding
+one surface, an optional volume above it, timers, and who made it. **The grid is
+invisible** — it is a data substrate, not a tactics grid. Movement is free and
+analog; adjacent cells sharing a state render as one patch with an organic edge,
+so players see a burning *field*, never lit squares.
+
+> **Vocabulary rule:** "cell" is an engineering word and must never appear in
+> player-facing text. Ability and attribute descriptions speak in metres and plain
+> language — *"armor scales with the cover around you"*, not *"per adjacent
+> blocked cell"*. Designers count cells; players see ground.
 
 **Surfaces** (one per terrain cell, mutually exclusive):
 `Bare` · `Foliage` · `Bramble` · `Water` · `Ice` · `Oil` · `Mud` · `Burning` · `Scorched`
