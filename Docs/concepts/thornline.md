@@ -306,6 +306,29 @@ so players see a burning *field*, never lit squares.
 > language — *"armor scales with the cover around you"*, not *"per adjacent
 > blocked cell"*. Designers count cells; players see ground.
 
+### Areas rasterize; they do not snap
+
+An ability's footprint is computed from your exact position rather than snapped to
+the grid, so standing 20 cm to the left genuinely changes which ground is caught.
+Five things follow:
+
+- **Fine positioning matters.** This is what stops a 0.5 m simulation from
+  quietly flattening an action game's movement into a tactics game's steps.
+- **Not snapping is what keeps the grid invisible.** A snapped footprint would
+  draw the lattice for the player, one cast at a time, until they were effectively
+  reading tiles. Irregular, never-repeating edges mean nobody ever perceives a
+  grid — the invisibility is earned by the rule, not by the art.
+- **It must be previewed truthfully.** The targeting preview shows the real
+  rasterized footprint before you commit, so the variation is visible rather than
+  surprising. Same principle as telegraphing the terrain system: intricate is
+  fine, unpredictable is not.
+- **The server rasterizes.** The client preview is advisory; the authoritative
+  footprint comes from the server's copy of your position. Expect occasional
+  one-cell disagreement at the edge, and author abilities so that a single edge
+  cell never decides a fight.
+- **The headless sim must rasterize identically**, or balance sweeps and tests
+  measure a different game than the one that ships.
+
 **Surfaces** (one per terrain cell, mutually exclusive):
 `Bare` · `Foliage` · `Bramble` · `Water` · `Ice` · `Oil` · `Mud` · `Burning` · `Scorched`
 
