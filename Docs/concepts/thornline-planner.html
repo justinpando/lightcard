@@ -1,0 +1,757 @@
+<title>Thornline Loadout</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zilla+Slab:wght@400;500;600;700&family=Public+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+:root{
+  --ground:#F2F0E9; --surface:#FBFAF6; --sunk:#EAE8DE;
+  --ink:#1C211C; --muted:#5E665C; --faint:#868D82;
+  --line:#D5D3C8; --line-strong:#BEBCAF;
+  --accent:#2F6B4F; --accent-soft:#E2EDE5; --accent-ink:#245740;
+  --ember:#B2542A; --ember-soft:#F6E7DC;
+  --frost:#3A6B85; --frost-soft:#E0EAF0;
+  --martial:#8A5A2B; --arcane:#4A5E8C;
+  --shadow:0 1px 2px rgba(28,33,28,.06), 0 4px 14px rgba(28,33,28,.05);
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){ :root:not([data-theme="light"]){
+  --ground:#141815; --surface:#1C221D; --sunk:#10140F;
+  --ink:#E8E9E2; --muted:#9BA296; --faint:#7C8478;
+  --line:#2E362F; --line-strong:#3E483E;
+  --accent:#6FB08A; --accent-soft:#1E2E25; --accent-ink:#8CC6A3;
+  --ember:#E0925E; --ember-soft:#2E2119;
+  --frost:#7BAECA; --frost-soft:#16242C;
+  --martial:#C79A66; --arcane:#93A6D4;
+  --shadow:0 1px 2px rgba(0,0,0,.3), 0 4px 16px rgba(0,0,0,.25);
+  color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --ground:#141815; --surface:#1C221D; --sunk:#10140F;
+  --ink:#E8E9E2; --muted:#9BA296; --faint:#7C8478;
+  --line:#2E362F; --line-strong:#3E483E;
+  --accent:#6FB08A; --accent-soft:#1E2E25; --accent-ink:#8CC6A3;
+  --ember:#E0925E; --ember-soft:#2E2119;
+  --frost:#7BAECA; --frost-soft:#16242C;
+  --martial:#C79A66; --arcane:#93A6D4;
+  --shadow:0 1px 2px rgba(0,0,0,.3), 0 4px 16px rgba(0,0,0,.25);
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{
+  background:var(--ground); color:var(--ink);
+  font-family:"Public Sans",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+  font-size:15px; line-height:1.5; -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,h4{font-family:"Zilla Slab",Georgia,"Times New Roman",serif; margin:0; text-wrap:balance; font-weight:600; line-height:1.15}
+.mono{font-family:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace; font-variant-numeric:tabular-nums}
+.wrap{max-width:1360px; margin:0 auto; padding-inline:16px; padding-block:0 56px}
+
+/* header */
+header.top{
+  display:flex; flex-wrap:wrap; align-items:flex-end; gap:12px 24px;
+  padding-block:22px 16px; border-bottom:2px solid var(--ink); margin-bottom:22px;
+}
+header.top .brand{flex:1 1 320px; min-width:0}
+header.top h1{font-size:clamp(28px,4.4vw,40px); letter-spacing:-.015em}
+header.top .sub{color:var(--muted); font-size:13.5px; max-width:62ch; margin-top:5px}
+.eyebrow{font-size:10.5px; letter-spacing:.16em; text-transform:uppercase; color:var(--faint); font-weight:600}
+.hdr-actions{display:flex; gap:8px; flex-wrap:wrap; align-items:center}
+
+/* buttons */
+button{font:inherit; color:inherit; cursor:pointer}
+.btn{
+  background:var(--surface); border:1px solid var(--line-strong); border-radius:3px;
+  padding:7px 13px; font-size:13px; font-weight:500; transition:background .12s,border-color .12s;
+}
+.btn:hover{background:var(--sunk); border-color:var(--ink)}
+.btn.primary{background:var(--accent); border-color:var(--accent); color:#fff}
+:root[data-theme="dark"] .btn.primary,
+:root:not([data-theme="light"]) .btn.primary{color:#101410}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]) .btn.primary{color:#fff}}
+.btn.primary:hover{background:var(--accent-ink); border-color:var(--accent-ink)}
+.btn:focus-visible,select:focus-visible,input:focus-visible,.slot:focus-visible,.ab:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+
+/* bench */
+.bench{display:grid; grid-template-columns:270px minmax(0,1fr) 340px; gap:22px; align-items:start}
+@media (max-width:1100px){.bench{grid-template-columns:1fr 1fr}.col-cat{grid-column:1/-1}}
+@media (max-width:760px){.bench{grid-template-columns:1fr}}
+.panel{background:var(--surface); border:1px solid var(--line); border-radius:4px; box-shadow:var(--shadow)}
+.panel + .panel{margin-top:16px}
+.panel > h3{
+  font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--muted);
+  padding:11px 14px; border-bottom:1px solid var(--line); font-family:"Public Sans",sans-serif; font-weight:600;
+}
+.panel .body{padding:14px}
+
+/* character col */
+.field{display:block; margin-bottom:12px}
+.field label{display:block; font-size:11px; letter-spacing:.09em; text-transform:uppercase; color:var(--muted); font-weight:600; margin-bottom:5px}
+select{
+  width:100%; padding:8px 9px; font:inherit; font-size:13.5px; background:var(--ground);
+  color:var(--ink); border:1px solid var(--line-strong); border-radius:3px;
+}
+.pairname{
+  background:var(--accent-soft); border:1px solid var(--accent); border-radius:3px;
+  padding:12px 13px; margin-bottom:14px; text-align:center;
+}
+.pairname .nm{font-family:"Zilla Slab",serif; font-size:23px; font-weight:700; color:var(--accent-ink); letter-spacing:-.01em}
+.pairname .role{font-size:11.5px; color:var(--muted); margin-top:3px}
+
+/* attributes */
+.attr{display:grid; grid-template-columns:1fr auto auto; gap:6px; align-items:center; padding:5px 0; border-bottom:1px dotted var(--line)}
+.attr:last-child{border-bottom:0}
+.attr .an{font-size:12.5px; min-width:0}
+.attr .an em{font-style:normal; color:var(--accent); font-size:10px; letter-spacing:.08em; text-transform:uppercase; display:block; font-weight:600}
+.attr .rank{font-size:14px; font-weight:600; min-width:20px; text-align:right}
+.step{display:flex; gap:3px}
+.step button{width:22px; height:22px; line-height:1; padding:0; border:1px solid var(--line-strong); background:var(--ground); border-radius:2px; font-size:13px}
+.step button:disabled{opacity:.3; cursor:not-allowed}
+.ptsbar{display:flex; justify-content:space-between; font-size:12px; padding:9px 0 2px; color:var(--muted)}
+.ptsbar b{color:var(--ink); font-weight:600}
+
+/* mastery verdict */
+.verdict{font-size:12px; padding:9px 10px; border-radius:3px; margin-top:10px; line-height:1.4}
+.verdict.good{background:var(--accent-soft); color:var(--accent-ink)}
+.verdict.warn{background:var(--ember-soft); color:var(--ember)}
+
+/* slots */
+.slotgrid{display:grid; grid-template-columns:repeat(3,1fr); gap:10px}
+@media (max-width:900px){.slotgrid{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:420px){.slotgrid{grid-template-columns:1fr}}
+.slot{
+  position:relative; min-height:112px; background:var(--ground); border:1px dashed var(--line-strong);
+  border-radius:3px; padding:10px 11px; text-align:left; width:100%; display:flex; flex-direction:column; gap:4px;
+}
+.slot.filled{border-style:solid; background:var(--surface); border-color:var(--line-strong)}
+.slot.elite{border-color:var(--ember); background:var(--ember-soft)}
+.slot .sn{font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--faint); font-weight:600}
+.slot .st{font-family:"Zilla Slab",serif; font-size:16px; font-weight:600; line-height:1.15}
+.slot .sd{font-size:11.5px; color:var(--muted); line-height:1.35; flex:1}
+.slot .sm{display:flex; gap:7px; align-items:center; font-size:10.5px; color:var(--faint)}
+.slot.empty:hover{border-color:var(--accent); background:var(--accent-soft)}
+.chip{display:inline-block; font-size:9.5px; letter-spacing:.07em; text-transform:uppercase; font-weight:600; padding:2px 5px; border-radius:2px; background:var(--sunk); color:var(--muted)}
+.chip.mar{background:transparent; color:var(--martial); border:1px solid currentColor}
+.chip.arc{background:transparent; color:var(--arcane); border:1px solid currentColor}
+.chip.eli{background:var(--ember); color:#fff}
+:root[data-theme="dark"] .chip.eli, :root:not([data-theme="light"]) .chip.eli{color:#1a120c}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]) .chip.eli{color:#fff}}
+.chip.heal{border:1px solid var(--accent); color:var(--accent); background:transparent}
+
+/* readout */
+.readout{font-size:13.5px; line-height:1.55; color:var(--muted)}
+.readout b{color:var(--ink); font-weight:600}
+.warnline{font-size:12.5px; color:var(--ember); margin-top:8px; font-weight:500}
+
+/* catalog */
+.filters{display:flex; gap:6px; flex-wrap:wrap; margin-bottom:10px}
+.filters button{
+  font-size:11.5px; padding:4px 9px; border-radius:2px; border:1px solid var(--line-strong);
+  background:var(--ground); color:var(--muted);
+}
+.filters button[aria-pressed="true"]{background:var(--ink); color:var(--ground); border-color:var(--ink)}
+.ablist{max-height:620px; overflow-y:auto; display:flex; flex-direction:column; gap:7px; padding-right:2px}
+.ab{
+  text-align:left; width:100%; background:var(--ground); border:1px solid var(--line);
+  border-radius:3px; padding:9px 10px; display:flex; flex-direction:column; gap:3px;
+}
+.ab:hover:not(:disabled){border-color:var(--accent); background:var(--accent-soft)}
+.ab:disabled{opacity:.42; cursor:not-allowed}
+.ab .t{font-family:"Zilla Slab",serif; font-size:14.5px; font-weight:600; display:flex; justify-content:space-between; gap:8px; align-items:baseline}
+.ab .t .cost{font-size:11px; color:var(--faint); font-weight:400; white-space:nowrap}
+.ab .d{font-size:11.5px; color:var(--muted); line-height:1.35}
+.ab .r{font-size:10.5px; color:var(--faint); display:flex; gap:6px; flex-wrap:wrap; align-items:center}
+.ab.inbar{border-color:var(--accent); background:var(--accent-soft)}
+.tag-need{color:var(--frost)}
+.tag-block{color:var(--ember)}
+
+/* briefing */
+.brief .body{font-size:13px}
+.brief dl{display:grid; grid-template-columns:auto 1fr; gap:4px 10px; margin:0 0 10px}
+.brief dt{font-size:10.5px; letter-spacing:.09em; text-transform:uppercase; color:var(--faint); font-weight:600; padding-top:2px}
+.brief dd{margin:0; font-size:12.5px}
+.fit{border-top:1px solid var(--line); padding-top:9px; font-size:12.5px; line-height:1.5}
+.fit .ok{color:var(--accent); font-weight:600}
+.fit .bad{color:var(--ember); font-weight:600}
+
+/* gallery */
+.gal{display:flex; flex-direction:column; gap:8px; max-height:340px; overflow-y:auto}
+.gcard{text-align:left; width:100%; background:var(--ground); border:1px solid var(--line); border-radius:3px; padding:9px 10px}
+.gcard:hover{border-color:var(--accent)}
+.gcard .gn{font-family:"Zilla Slab",serif; font-size:14.5px; font-weight:600}
+.gcard .gm{font-size:11px; color:var(--faint); display:flex; gap:6px; flex-wrap:wrap; margin-top:2px}
+.empty-note{font-size:12.5px; color:var(--muted); font-style:italic; line-height:1.5}
+.codebox{display:flex; gap:6px; margin-top:10px}
+.codebox input{flex:1; min-width:0; padding:7px 8px; font-size:11.5px; background:var(--ground); color:var(--ink); border:1px solid var(--line-strong); border-radius:3px}
+.note{font-size:11.5px; color:var(--faint); margin-top:9px; line-height:1.45}
+.toast{
+  position:fixed; left:50%; transform:translateX(-50%); bottom:calc(20px + env(safe-area-inset-bottom,0px));
+  background:var(--ink); color:var(--ground); padding:9px 16px; border-radius:3px; font-size:13px;
+  box-shadow:var(--shadow); z-index:50; max-width:90vw;
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important; transition:none!important}}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <div class="eyebrow">Thornline · build planner</div>
+      <h1>Thornline Loadout</h1>
+      <p class="sub">Two classes, six slots, one elite. Pick a weapon you can actually use, spend 200 attribute points, and build something for the mission on the right. No combat — this is the part of the game you do between missions.</p>
+    </div>
+    <div class="hdr-actions">
+      <button class="btn" id="randomBtn">Surprise me</button>
+      <button class="btn" id="clearBtn">Clear bar</button>
+    </div>
+  </header>
+
+  <div class="bench">
+    <!-- CHARACTER -->
+    <section class="col-char">
+      <div class="panel">
+        <h3>Character</h3>
+        <div class="body">
+          <div class="pairname"><div class="nm" id="pairName">—</div><div class="role" id="pairRole">—</div></div>
+          <div class="field"><label for="selPrimary">Primary class</label><select id="selPrimary"></select></div>
+          <div class="field"><label for="selSecondary">Secondary class</label><select id="selSecondary"></select></div>
+          <div class="field" style="margin-bottom:4px"><label for="selWeapon">Weapon</label><select id="selWeapon"></select></div>
+          <div id="masteryVerdict"></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h3>Attributes</h3>
+        <div class="body">
+          <div id="attrList"></div>
+          <div class="ptsbar"><span>Points spent</span><span><b id="ptsSpent">0</b> / 200</span></div>
+          <p class="note">Costs escalate: ranks 1–9 are cheap, 10–12 are expensive. You can be deep in one line or broad across three, never both.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- BAR -->
+    <section class="col-bar">
+      <div class="panel">
+        <h3>The bar — six slots, at most one elite</h3>
+        <div class="body">
+          <div class="slotgrid" id="slotGrid"></div>
+          <div id="barWarn"></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h3>Readout</h3>
+        <div class="body"><div class="readout" id="readout"></div></div>
+      </div>
+
+      <div class="panel">
+        <h3>Share this character</h3>
+        <div class="body">
+          <p class="empty-note" style="font-style:normal;margin:0 0 4px">Post it to the barracks so other people can load it, or copy the build code.</p>
+          <div class="codebox">
+            <input id="codeInput" class="mono" aria-label="Build code" spellcheck="false">
+            <button class="btn" id="copyCode">Copy</button>
+            <button class="btn" id="loadCode">Load</button>
+          </div>
+          <div class="codebox">
+            <input id="buildName" placeholder="Name this character" aria-label="Character name" maxlength="40">
+            <button class="btn primary" id="postBtn">Post</button>
+          </div>
+          <p class="note" id="postNote">Posting shares the build with anyone who opens this page.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- CATALOG -->
+    <section class="col-cat">
+      <div class="panel brief">
+        <h3>Mission briefing</h3>
+        <div class="body">
+          <div class="field" style="margin-bottom:10px"><label for="selMission">Contract</label><select id="selMission"></select></div>
+          <div class="field" style="margin-bottom:12px"><label for="selModifier">Modifier</label><select id="selModifier"></select></div>
+          <dl id="briefDl"></dl>
+          <div class="fit" id="fitReadout"></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h3>Abilities</h3>
+        <div class="body">
+          <div class="filters" id="filters"></div>
+          <div class="ablist" id="abList"></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h3>The barracks</h3>
+        <div class="body"><div class="gal" id="gallery"></div></div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<script>
+/* ---------- DATA ---------- */
+const CLASSES = {
+  VER:{n:"Verdurist",kind:"arcane",verb:"Grows",pa:"Rootedness",lines:["Rootedness","Growth","Wildcraft"],
+       pad:"your grown terrain lasts longer and regrows once"},
+  EMB:{n:"Emberwright",kind:"arcane",verb:"Ignites",pa:"Combustion",lines:["Combustion","Pyromancy","Ashcraft"],
+       pad:"your fires spread noticeably further"},
+  TID:{n:"Tidecaller",kind:"arcane",verb:"Changes state",pa:"Current",lines:["Current","Tidework","Frost"],
+       pad:"refunds energy when a combo you set up triggers"},
+  COG:{n:"Cogwright",kind:"arcane",verb:"Installs",pa:"Fabrication",lines:["Fabrication","Machinery","Gunnery"],
+       pad:"installations cost less and can be repaired"},
+  WAR:{n:"Warden",kind:"martial",verb:"Holds",pa:"Bulwark",lines:["Bulwark","Guardianship","Spear"],
+       pad:"armor scales with how much cover surrounds you"},
+  REA:{n:"Reaver",kind:"martial",verb:"Displaces",pa:"Momentum",lines:["Momentum","Heavy Arms","Swordsmanship"],
+       pad:"displacement distance scales, and moving builds adrenaline"},
+  VEI:{n:"Veilblade",kind:"martial",verb:"Slips",pa:"Stillness",lines:["Stillness","Dagger Mastery","Martial Arts"],
+       pad:"you conceal in any volume and break concealment on your terms"},
+  BEA:{n:"Beastbinder",kind:"martial",verb:"Inhabits",pa:"Kinship",lines:["Kinship","Beastcraft","Marksmanship"],
+       pad:"+2 retinue points, and one beast's abilities on your own bar"}
+};
+const WEAPONS = {
+  sword:{n:"Sword",line:"Swordsmanship",owner:"REA",r:"Balanced three-hit chain; steady adrenaline"},
+  heavy:{n:"Heavy arms",line:"Heavy Arms",owner:"REA",r:"Slow, committed, wide arcs; adrenaline in lumps"},
+  spear:{n:"Spear",line:"Spear",owner:"WAR",r:"Mid-range thrusts, throwable; rewards spacing"},
+  dagger:{n:"Paired daggers",line:"Dagger Mastery",owner:"VEI",r:"Fastest; off-hand triggers on-hit effects"},
+  unarmed:{n:"Martial arts",line:"Martial Arts",owner:"VEI",r:"Flowing chains, high mobility, fastest adrenaline"},
+  bow:{n:"Bow",line:"Marksmanship",owner:"BEA",r:"Draw and release; takes elemental preparations"},
+  gun:{n:"Gun",line:"Gunnery",owner:"COG",r:"Burst, armor-piercing; reload is a rhythm"},
+  implement:{n:"Implement (staff, scepter, focus)",line:null,owner:null,r:"Cast-facing; scales off your arcane lines"}
+};
+// type: E elite, H heal, U utility. w: required weapon. needs: surface the ability wants.
+const AB = [
+ // VERDURIST
+ {id:"v1",n:"Rootdraw",c:"VER",l:"Rootedness",t:"H",cost:"5e",d:"Root yourself for 3s and heal rapidly. Healing rises sharply with the foliage and bramble around you.",needs:["foliage"]},
+ {id:"v2",n:"Bramble Wall",c:"VER",l:"Growth",t:"U",cost:"10e",d:"Grow a 6m wall of bramble. Blocks movement and tears anything that forces through."},
+ {id:"v3",n:"Seedfall",c:"VER",l:"Growth",t:"U",cost:"5e",d:"Throw a seed up to 15m. Grows a 4m patch of foliage on any ground that will take it.",portable:"foliage"},
+ {id:"v4",n:"Entangle",c:"VER",l:"Wildcraft",t:"U",cost:"8e",d:"Vines root a target for 3s. Two seconds longer on mud or foliage."},
+ {id:"v5",n:"Trellis",c:"VER",l:"Growth",t:"U",cost:"5e",d:"Grow a climbable trellis on a wall within 10m. Stands for 15s.",verb:"Grows"},
+ {id:"v6",n:"Thornskin",c:"VER",l:"Wildcraft",t:"U",cost:"10e",d:"Enchantment. Attackers within 2m take damage and gain Bleeding."},
+ {id:"v7",n:"Heartwood",c:"VER",l:"Rootedness",t:"E",cost:"15e",d:"Root yourself. Gain heavy armor and grow bramble outward every second you hold it. Ends the moment you move."},
+ {id:"v8",n:"Second Spring",c:"VER",l:"Growth",t:"E",cost:"10e",d:"For 20s your growth works on scorched ground and recharges twice as fast.",fixes:"scorched"},
+ // EMBERWRIGHT
+ {id:"e1",n:"Cauterize",c:"EMB",l:"Ashcraft",t:"H",cost:"5e",d:"Consume a burning area within 8m for a large instant heal. Nothing burning, nothing healed.",needs:["burning"]},
+ {id:"e2",n:"Kindle",c:"EMB",l:"Pyromancy",t:"U",cost:"5e",d:"Ignite a 3m area within 20m.",portable:"burning"},
+ {id:"e3",n:"Emberstep",c:"EMB",l:"Combustion",t:"U",cost:"8e",d:"Blink to any burning ground within 15m.",needs:["burning"]},
+ {id:"e4",n:"Flashover",c:"EMB",l:"Pyromancy",t:"U",cost:"12e",d:"Every burning area within 12m detonates at once and is consumed.",needs:["burning"]},
+ {id:"e5",n:"Scald",c:"EMB",l:"Ashcraft",t:"U",cost:"8e",d:"Steam within 10m sears everything inside it for 6s."},
+ {id:"e6",n:"Searing Mark",c:"EMB",l:"Pyromancy",t:"U",cost:"10e",d:"Hex. The target burns, and the burn spreads to ground they stand on."},
+ {id:"e7",n:"Wildfire",c:"EMB",l:"Combustion",t:"E",cost:"15e",d:"Your fires never stop spreading while you live. You take a stacking burn each second they do."},
+ {id:"e8",n:"Ashen Pact",c:"EMB",l:"Ashcraft",t:"E",cost:"10e",d:"For 15s you are immune to fire and heal steadily while standing in it."},
+ // TIDECALLER
+ {id:"t1",n:"Drink Deep",c:"TID",l:"Tidework",t:"H",cost:"5e",d:"Heal. Doubled standing in water; halved on dry ground.",needs:["water"]},
+ {id:"t2",n:"Wellspring",c:"TID",l:"Tidework",t:"U",cost:"8e",d:"Flood a 5m area within 15m.",portable:"water"},
+ {id:"t3",n:"Flashfreeze",c:"TID",l:"Frost",t:"U",cost:"8e",d:"Freeze water within 12m into ice. Anything on it is chilled.",needs:["water"]},
+ {id:"t4",n:"Chill Depths",c:"TID",l:"Frost",t:"U",cost:"10e",d:"Enchantment. Water you stand in applies Chilled to every enemy in it."},
+ {id:"t5",n:"Conduct",c:"TID",l:"Current",t:"U",cost:"10e",d:"Shock a target. Chains to everything touching the same water.",needs:["water"]},
+ {id:"t6",n:"Undertow",c:"TID",l:"Tidework",t:"U",cost:"12e",d:"Enemies in water within 10m are slowed and their next cast is interrupted."},
+ {id:"t7",n:"Whiteout",c:"TID",l:"Current",t:"E",cost:"15e",d:"All water you control flashes to steam. For 10s you see through steam and nobody else does."},
+ {id:"t8",n:"Arc Column",c:"TID",l:"Current",t:"E",cost:"15e",d:"Place a pylon. Every flooded area connected to it chains shock continuously for 20s."},
+ // COGWRIGHT
+ {id:"c1",n:"Field Repair",c:"COG",l:"Fabrication",t:"H",cost:"10e",d:"Deploy a beacon. Heals you, allies and retinue within 3m. Stationary and destructible."},
+ {id:"c2",n:"Smokebomb",c:"COG",l:"Machinery",t:"U",cost:"5e",d:"Throw a canister. A 5m cloud that conceals anyone inside it.",portable:"smoke"},
+ {id:"c3",n:"Caltrop Line",c:"COG",l:"Machinery",t:"U",cost:"8e",d:"Scatter an 8m line of caltrops. Cripples anything that crosses."},
+ {id:"c4",n:"Grounding Rod",c:"COG",l:"Fabrication",t:"U",cost:"8e",d:"Install a rod. You and allies within 5m ignore shock entirely."},
+ {id:"c5",n:"Oil Line",c:"COG",l:"Machinery",t:"U",cost:"8e",d:"Lay an 8m slick. Flammable, and slippery underfoot.",portable:"oil"},
+ {id:"c6",n:"Scatterload",c:"COG",l:"Gunnery",t:"U",cost:"4a",w:"gun",d:"Your next three shots blind on hit."},
+ {id:"c7",n:"Braced Shot",c:"COG",l:"Gunnery",t:"U",cost:"6a",w:"gun",d:"Long windup. Armor-piercing, and doubled against installations."},
+ {id:"c8",n:"Overclock",c:"COG",l:"Gunnery",t:"E",cost:"8a",w:"gun",d:"Reload instantly for 6s. Every shot costs you health."},
+ {id:"c9",n:"Assembly Line",c:"COG",l:"Fabrication",t:"E",cost:"12e",d:"For 10s your installations cost nothing and deploy the instant you place them."},
+ // WARDEN
+ {id:"w1",n:"Bracing Stance",c:"WAR",l:"Bulwark",t:"H",cost:"3a",d:"Stance. Heal steadily while you hold still. Healing rises with the cover around you."},
+ {id:"w2",n:"Pin",c:"WAR",l:"Spear",t:"U",cost:"4a",w:"spear",d:"Impale a target, holding them in place for 2s."},
+ {id:"w3",n:"Shieldwall",c:"WAR",l:"Guardianship",t:"U",cost:"5a",d:"Block projectiles in a 120° arc, for you and everyone behind you. 5s."},
+ {id:"w4",n:"Hold Fast",c:"WAR",l:"Guardianship",t:"U",cost:"4a",d:"Shout. Allies within 10m gain Stability, and your retinue switches to Screen.",shout:true},
+ {id:"w5",n:"Anchor",c:"WAR",l:"Bulwark",t:"U",cost:"5a",d:"Stance. You cannot be displaced, and melee attackers are slowed."},
+ {id:"w6",n:"Breach",c:"WAR",l:"Spear",t:"U",cost:"6a",w:"spear",d:"Hurl your spear. Pierces through, and destroys terrain it passes.",verb:"Breaks"},
+ {id:"w7",n:"Immovable",c:"WAR",l:"Bulwark",t:"E",cost:"8a",d:"Stance. You cannot be moved or knocked down, and every attack against you builds adrenaline. Ends if you use a movement skill."},
+ {id:"w8",n:"Hedge Sovereign",c:"WAR",l:"Guardianship",t:"E",cost:"10e",d:"For 20s bramble within 10m counts as your cover, and allies inside it share your armor profile."},
+ // REAVER
+ {id:"r1",n:"Bloodwake",c:"REA",l:"Momentum",t:"H",cost:"5a",d:"Spend adrenaline on a connecting hit to heal. Doubled if the target was displaced into a hazard."},
+ {id:"r2",n:"Overbear",c:"REA",l:"Momentum",t:"U",cost:"4a",d:"Charge 8m and shove your target 5m.",verb:"Breaks"},
+ {id:"r3",n:"Shatterstep",c:"REA",l:"Heavy Arms",t:"U",cost:"6a",w:"heavy",d:"Leap up to 10m. The landing shatters ice and knocks down.",needs:["ice"]},
+ {id:"r4",n:"Riposte",c:"REA",l:"Swordsmanship",t:"U",cost:"4a",w:"sword",d:"Stance. The next attack against you is blocked and answered."},
+ {id:"r5",n:"Sundering Blow",c:"REA",l:"Heavy Arms",t:"U",cost:"5a",w:"heavy",d:"Armor-break. The target takes more damage from every source for 8s."},
+ {id:"r6",n:"Wild Swing",c:"REA",l:"Heavy Arms",t:"U",cost:"4a",w:"heavy",d:"Wide arc. Hits everything within 3m and flattens foliage."},
+ {id:"r7",n:"Split",c:"REA",l:"Swordsmanship",t:"U",cost:"5a",w:"sword",d:"Chain-ender. Applies Deep Wound."},
+ {id:"r8",n:"Glacier's Fault",c:"REA",l:"Heavy Arms",t:"E",cost:"8a",w:"heavy",d:"Your next blow shatters all ice within 10m. Everything on it is knocked down, damage scaling with how long the ice has stood.",needs:["ice"]},
+ {id:"r9",n:"Unstoppable",c:"REA",l:"Momentum",t:"E",cost:"8a",d:"For 10s you cannot be slowed, blinded or immobilized, and every displacement you cause heals you."},
+ // VEILBLADE
+ {id:"b1",n:"Quiet the Wound",c:"VEI",l:"Stillness",t:"H",cost:"5e",d:"Regenerate while concealed. Ends the instant you are revealed.",needs:["foliage","smoke"]},
+ {id:"b2",n:"Vanish",c:"VEI",l:"Stillness",t:"U",cost:"8e",d:"Break line of sight and gain concealment for 3s, anywhere at all.",portable:"smoke"},
+ {id:"b3",n:"Hamstring",c:"VEI",l:"Dagger Mastery",t:"U",cost:"3a",w:"dagger",d:"Cripple. Lasts twice as long from behind."},
+ {id:"b4",n:"Whisper Chain",c:"VEI",l:"Dagger Mastery",t:"U",cost:"4a",w:"dagger",d:"Your off-hand strikes stack Bleeding for 8s."},
+ {id:"b5",n:"Throw",c:"VEI",l:"Martial Arts",t:"U",cost:"5a",w:"unarmed",d:"Grapple and throw a target 6m in any direction you choose.",verb:"Breaks"},
+ {id:"b6",n:"Flowing Guard",c:"VEI",l:"Martial Arts",t:"U",cost:"4a",w:"unarmed",d:"Stance. Evade the next two attacks, gaining adrenaline for each."},
+ {id:"b7",n:"Shadowmark",c:"VEI",l:"Stillness",t:"U",cost:"8e",d:"Hex. You always know where the target is, through smoke, foliage or wall."},
+ {id:"b8",n:"The Long Patience",c:"VEI",l:"Stillness",t:"E",cost:"10e",d:"Your first strike out of concealment applies Deep Wound and cannot be blocked. Recharges only by re-entering concealment.",needs:["foliage","smoke"]},
+ {id:"b9",n:"Hundred Hands",c:"VEI",l:"Martial Arts",t:"E",cost:"8a",w:"unarmed",d:"For 8s your unarmed chain never resets and every hit builds double adrenaline."},
+ // BEASTBINDER
+ {id:"k1",n:"Tend",c:"BEA",l:"Beastcraft",t:"H",cost:"5e",d:"Your beast returns to you and both of you heal over 5s. It cannot fight while tending."},
+ {id:"k2",n:"Balm Arrows",c:"BEA",l:"Marksmanship",t:"U",cost:"10e",w:"bow",d:"Preparation. Your arrows leave Regeneration on allies they pass through."},
+ {id:"k3",n:"Kindling Arrows",c:"BEA",l:"Marksmanship",t:"U",cost:"10e",w:"bow",d:"Preparation. Your arrows ignite whatever they strike.",portable:"burning"},
+ {id:"k4",n:"Marking Shot",c:"BEA",l:"Kinship",t:"U",cost:"4a",w:"bow",d:"A marked target takes a third more damage from your retinue."},
+ {id:"k5",n:"Command: Screen",c:"BEA",l:"Kinship",t:"U",cost:"3a",d:"Shout. Your retinue interposes between you and the nearest threat and gains Protection.",shout:true},
+ {id:"k6",n:"Flush",c:"BEA",l:"Beastcraft",t:"U",cost:"4a",d:"Your beast charges a target, revealing them and driving them 4m."},
+ {id:"k7",n:"Beast Sense",c:"BEA",l:"Beastcraft",t:"U",cost:"8e",d:"For 20s you see whatever your beast sees, at any range."},
+ {id:"k8",n:"Pack Bond",c:"BEA",l:"Kinship",t:"E",cost:"15e",d:"For 25s your retinue's abilities recharge twice as fast and they share every boon you hold."},
+ {id:"k9",n:"Ten Thousand Thorns",c:"BEA",l:"Marksmanship",t:"E",cost:"12e",w:"bow",d:"Your next five shots each plant foliage where they land.",portable:"foliage"}
+];
+const PAIRS = {
+ "VER/EMB":"Blightburner","VER/TID":"Fenwright","VER/COG":"Grafter","VER/WAR":"Hedgewarden","VER/REA":"Thornreaver","VER/VEI":"Nightgarden","VER/BEA":"Grovekeeper",
+ "EMB/VER":"Ashgardener","EMB/TID":"Kilnwright","EMB/COG":"Boilerpriest","EMB/WAR":"Forgewatch","EMB/REA":"Cinderhand","EMB/VEI":"Smokewright","EMB/BEA":"Houndfire",
+ "TID/VER":"Reedsinger","TID/EMB":"Steamcaller","TID/COG":"Galvanist","TID/WAR":"Breakwater","TID/REA":"Floodhammer","TID/VEI":"Mistcaller","TID/BEA":"Reedpack",
+ "COG/VER":"Hothouse","COG/EMB":"Boilerwright","COG/TID":"Condenser","COG/WAR":"Sapper","COG/REA":"Demolitionist","COG/VEI":"Powdersmoke","COG/BEA":"Menagerist",
+ "WAR/VER":"Bramblewarden","WAR/EMB":"Cinderguard","WAR/TID":"Seawall","WAR/COG":"Bulwright","WAR/REA":"Breakwall","WAR/VEI":"Shadowguard","WAR/BEA":"Kennelward",
+ "REA/VER":"Wildswing","REA/EMB":"Pyreblade","REA/TID":"Frostbreaker","REA/COG":"Ironmonger","REA/WAR":"Vanguard","REA/VEI":"Cutthroat","REA/BEA":"Houndmaster",
+ "VEI/VER":"Thornghost","VEI/EMB":"Ashwalker","VEI/TID":"Mistwalker","VEI/COG":"Tinkerblade","VEI/WAR":"Silentward","VEI/REA":"Backbreaker","VEI/BEA":"Poacher",
+ "BEA/VER":"Greenherd","BEA/EMB":"Emberpack","BEA/TID":"Frostpack","BEA/COG":"Houndwright","BEA/WAR":"Shieldpack","BEA/REA":"Bloodhound","BEA/VEI":"Stalker"
+};
+const MISSIONS = [
+ {id:"kiln",n:"The Drowned Kiln",terrain:"Marsh",surf:["water","mud","foliage"],
+  foe:"Drowned — resist fire, vulnerable to shock",haz:"A flood rising on a timer",opt:["Breaks","Grows"]},
+ {id:"terrace",n:"Ashfall Terrace",terrain:"Burnt hillside",surf:["scorched","bare"],
+  foe:"Cinderkin — immune to fire, vulnerable to frost",haz:"Falling ash that blinds",opt:["Changes state"]},
+ {id:"glass",n:"The Glasshouse",terrain:"Overgrown conservatory, indoors",surf:["foliage","bramble","bare"],
+  foe:"Verge-touched — vulnerable to fire",haz:"Close quarters, no roof to climb to",opt:["Slips","Grows"]},
+ {id:"deck",n:"Ironbound Deck",terrain:"A becalmed ship",surf:["bare","oil"],
+  foe:"Wreckers — heavily armored",haz:"Nothing grows, and the sea is over the rail",opt:["Installs"]},
+ {id:"weir",n:"The Winter Weir",terrain:"Frozen river works",surf:["ice","water","bare"],
+  foe:"Rimehounds — resist frost, vulnerable to shock",haz:"Ice that shatters under weight",opt:["Holds","Breaks"]}
+];
+const MODS = {
+ none:{n:"None",d:null},
+ drought:{n:"Drought",d:"No water surface persists.",strip:["water","ice"]},
+ bloom:{n:"Verdant Bloom",d:"Foliage regrows almost as fast as it burns.",add:["foliage"]},
+ tempest:{n:"Tempest",d:"Shock chains reach twice as far.",add:["water"]},
+ ashfall:{n:"Ashfall",d:"Everything starts scorched.",strip:["foliage","bramble"],add:["scorched"]}
+};
+const COSTS=[0,1,3,6,10,16,24,34,47,63,83,108,139]; // cumulative to rank 12
+const EXPECT=9; // expected mastery rank for a weapon to feel right
+
+/* ---------- STATE ---------- */
+let S = {p:"REA",s:"TID",w:"heavy",slots:[null,null,null,null,null,null],attrs:{},mission:"weir",mod:"none",filter:"all"};
+
+function lines(){ // available attribute lines: primary's all, secondary's minus its primary attribute
+  const out=[];
+  CLASSES[S.p].lines.forEach(l=>out.push({l,c:S.p,primaryOnly:l===CLASSES[S.p].pa}));
+  if(S.s!==S.p) CLASSES[S.s].lines.forEach(l=>{ if(l!==CLASSES[S.s].pa) out.push({l,c:S.s,primaryOnly:false}); });
+  return out;
+}
+function availableClasses(){ return S.s===S.p?[S.p]:[S.p,S.s]; }
+function rank(l){ return S.attrs[l]||0; }
+function spent(){ return Object.entries(S.attrs).reduce((a,[l,r])=>a+COSTS[r],0); }
+function weaponRank(){ const wl=WEAPONS[S.w].line; return wl?rank(wl):null; }
+function abAllowed(a){
+  if(!availableClasses().includes(a.c)) return "not your class";
+  if(a.t==="E" && a.c===S.s) return "elites are primary-only";
+  if(a.w && a.w!==S.w) return "needs "+WEAPONS[a.w].n.toLowerCase().split(" (")[0];
+  return null;
+}
+function activeSurfaces(){
+  const m=MISSIONS.find(x=>x.id===S.mission); let sf=[...m.surf]; const mod=MODS[S.mod];
+  if(mod.strip) sf=sf.filter(x=>!mod.strip.includes(x));
+  if(mod.add) mod.add.forEach(x=>{if(!sf.includes(x))sf.push(x)});
+  return sf;
+}
+function eliteCount(){ return S.slots.filter(x=>x&&x.t==="E").length; }
+function hasHeal(){ return S.slots.some(x=>x&&x.t==="H"); }
+
+/* ---------- RENDER ---------- */
+const $=id=>document.getElementById(id);
+
+function renderSelects(){
+  const opt=(k)=>`<option value="${k}">${CLASSES[k].n} · ${CLASSES[k].kind}</option>`;
+  $("selPrimary").innerHTML=Object.keys(CLASSES).map(opt).join("");
+  $("selSecondary").innerHTML=Object.keys(CLASSES).map(opt).join("");
+  $("selPrimary").value=S.p; $("selSecondary").value=S.s;
+  $("selWeapon").innerHTML=Object.entries(WEAPONS).map(([k,w])=>`<option value="${k}">${w.n}</option>`).join("");
+  $("selWeapon").value=S.w;
+  $("selMission").innerHTML=MISSIONS.map(m=>`<option value="${m.id}">${m.n}</option>`).join("");
+  $("selMission").value=S.mission;
+  $("selModifier").innerHTML=Object.entries(MODS).map(([k,m])=>`<option value="${k}">${m.n}</option>`).join("");
+  $("selModifier").value=S.mod;
+}
+function renderPair(){
+  const key=S.p+"/"+S.s;
+  const nm = S.p===S.s ? CLASSES[S.p].n+" pure" : (PAIRS[key]||"—");
+  $("pairName").textContent=nm;
+  $("pairRole").textContent = S.p===S.s
+    ? "No secondary — every slot comes from one pool"
+    : `${CLASSES[S.p].n} primary · ${CLASSES[S.s].n} secondary`;
+}
+function renderWeapon(){
+  const w=WEAPONS[S.w], r=weaponRank(), el=$("masteryVerdict");
+  if(!w.line){ el.innerHTML=`<div class="verdict good"><b>${w.r}.</b> Implements need no mastery line — they scale off your arcane attributes.</div>`; return; }
+  const owner=CLASSES[w.owner].n;
+  const canTrain = availableClasses().includes(w.owner);
+  if(!canTrain){
+    el.innerHTML=`<div class="verdict warn"><b>You cannot train this.</b> ${w.line} is a ${owner} line. You can carry it, but you will swing like someone who has never held one. Take ${owner} as a class to fix it.</div>`;
+  } else if(r<EXPECT){
+    el.innerHTML=`<div class="verdict warn"><b>${w.line} ${r}</b> — below what this weapon expects (about ${EXPECT}). Your attacks will land soft. Spend more points here, or carry something you have trained.</div>`;
+  } else {
+    el.innerHTML=`<div class="verdict good"><b>${w.line} ${r}</b> — trained. ${w.r}.</div>`;
+  }
+}
+function renderAttrs(){
+  const ls=lines(), sp=spent();
+  $("attrList").innerHTML=ls.map(({l,c,primaryOnly})=>{
+    const r=rank(l), up=COSTS[r+1]!==undefined?COSTS[r+1]-COSTS[r]:null;
+    const canUp=up!==null && sp+up<=200;
+    return `<div class="attr">
+      <div class="an">${l}${primaryOnly?`<em>${CLASSES[c].n} primary only</em>`:`<em style="color:var(--faint)">${CLASSES[c].n}</em>`}</div>
+      <div class="rank mono">${r}</div>
+      <div class="step">
+        <button data-attr-down="${l}" ${r===0?"disabled":""} aria-label="Lower ${l}">−</button>
+        <button data-attr-up="${l}" ${canUp?"":"disabled"} aria-label="Raise ${l}">+</button>
+      </div></div>`;
+  }).join("");
+  $("ptsSpent").textContent=sp;
+}
+function abChip(a){
+  const k=CLASSES[a.c].kind==="martial"?"mar":"arc";
+  return `<span class="chip ${k}">${CLASSES[a.c].n}</span>`
+   + (a.t==="E"?`<span class="chip eli">Elite</span>`:"")
+   + (a.t==="H"?`<span class="chip heal">Self-heal</span>`:"");
+}
+function renderSlots(){
+  const sf=activeSurfaces();
+  $("slotGrid").innerHTML=S.slots.map((a,i)=>{
+    if(!a) return `<button class="slot empty" data-slot="${i}"><span class="sn">Slot ${i+1}</span><span class="sd" style="color:var(--faint)">Empty. Pick an ability from the catalog.</span></button>`;
+    const weak=a.needs && !a.needs.some(x=>sf.includes(x));
+    return `<button class="slot filled ${a.t==="E"?"elite":""}" data-slot="${i}">
+      <span class="sn">${a.t==="E"?"Elite":a.t==="H"?"Self-heal":"Slot "+(i+1)}</span>
+      <span class="st">${a.n}</span>
+      <span class="sd">${a.d}</span>
+      <span class="sm">${abChip(a)}<span class="mono">${a.cost.replace("e"," energy").replace("a"," adr")}</span>${weak?`<span class="tag-block">weak here</span>`:""}</span>
+    </button>`;
+  }).join("");
+  const warn=[];
+  if(eliteCount()>1) warn.push("More than one elite — the bar allows one.");
+  if(!hasHeal() && S.slots.some(x=>x)) warn.push("No self-heal. That is a real choice, and an aggressive one.");
+  $("barWarn").innerHTML=warn.length?`<div class="warnline">${warn.join(" ")}</div>`:"";
+}
+function renderReadout(){
+  const filled=S.slots.filter(Boolean);
+  if(!filled.length){ $("readout").innerHTML=`<span style="font-style:italic">Nothing slotted yet. A character is six decisions — start with the elite, it is the sentence the build is trying to say.</span>`; return; }
+  const key=S.p+"/"+S.s, nm=S.p===S.s?CLASSES[S.p].n:(PAIRS[key]||"—");
+  const el=filled.find(a=>a.t==="E"), heal=filled.find(a=>a.t==="H");
+  const secondary=filled.filter(a=>a.c===S.s&&S.s!==S.p);
+  const deep=Object.entries(S.attrs).filter(([,r])=>r>0).sort((a,b)=>b[1]-a[1]);
+  let t=`A <b>${nm}</b> carrying ${WEAPONS[S.w].n.toLowerCase().split(" (")[0]}`;
+  t+= el?`, built around <b>${el.n}</b>`:`, with no elite yet`;
+  t+= heal?` and healing through <b>${heal.n}</b>`:` and no way to heal`;
+  t+=`. `;
+  if(deep.length) t+=`Deepest in <b>${deep[0][0]} ${deep[0][1]}</b>${deep[1]?`, then ${deep[1][0]} ${deep[1][1]}`:""}. `;
+  if(S.s!==S.p) t+= secondary.length
+    ? `The ${CLASSES[S.s].n} half contributes ${secondary.length} skill${secondary.length>1?"s":""} — ${secondary.map(a=>a.n).join(", ")}.`
+    : `The ${CLASSES[S.s].n} secondary is contributing nothing yet, which makes it decoration.`;
+  t+= ` ${6-filled.length} slot${6-filled.length===1?"":"s"} left.`;
+  $("readout").innerHTML=t;
+}
+function renderBrief(){
+  const m=MISSIONS.find(x=>x.id===S.mission), mod=MODS[S.mod], sf=activeSurfaces();
+  $("briefDl").innerHTML=`
+    <dt>Ground</dt><dd>${m.terrain}</dd>
+    <dt>Surfaces</dt><dd class="mono">${sf.join(" · ")||"bare only"}</dd>
+    <dt>Enemies</dt><dd>${m.foe}</dd>
+    <dt>Hazard</dt><dd>${m.haz}</dd>
+    <dt>Optional</dt><dd>Needs ${m.opt.join(" ×1, ")} ×1</dd>
+    ${mod.d?`<dt>Modifier</dt><dd>${mod.d}</dd>`:""}`;
+  const filled=S.slots.filter(Boolean);
+  const weak=filled.filter(a=>a.needs && !a.needs.some(x=>sf.includes(x)));
+  const port=filled.filter(a=>a.portable);
+  const verbs=[...new Set(filled.filter(a=>a.verb).map(a=>a.verb))];
+  let f="";
+  if(!filled.length){ f=`<span style="color:var(--muted)">Slot some abilities and this will tell you how they read against the contract.</span>`; }
+  else{
+    const rows=[];
+    if(weak.length){
+      const covered=weak.filter(a=>port.some(p=>a.needs.includes(p.portable)));
+      rows.push(`<span class="bad">${weak.length} ability${weak.length>1?"ies":""} find nothing to work with here</span> — ${weak.map(a=>a.n).join(", ")}.`);
+      if(covered.length) rows.push(`<span class="ok">${covered.length} of those you can supply yourself</span> with ${port.map(p=>p.n).join(", ")}.`);
+      else if(port.length) rows.push(`You carry ${port.map(p=>p.n).join(", ")}, but not the surface those abilities want.`);
+      else rows.push(`You carry nothing that makes its own ground. Bring a portable surface or bring a different character.`);
+    } else {
+      rows.push(`<span class="ok">Every ability has ground to work with.</span>`);
+    }
+    const missing=MISSIONS.find(x=>x.id===S.mission).opt.filter(v=>!verbs.includes(v));
+    if(missing.length) rows.push(`Optional objectives you cannot reach: <b>${missing.join(", ")}</b>. Bring a friend, or come back as someone else.`);
+    else rows.push(`<span class="ok">You can reach every optional objective.</span>`);
+    f=rows.join("<br>");
+  }
+  $("fitReadout").innerHTML=f;
+}
+function renderFilters(){
+  const cs=availableClasses();
+  const fs=[["all","All"],["E","Elites"],["H","Self-heals"]].concat(cs.map(c=>[c,CLASSES[c].n]));
+  $("filters").innerHTML=fs.map(([k,l])=>`<button data-filter="${k}" aria-pressed="${S.filter===k}">${l}</button>`).join("");
+}
+function renderCatalog(){
+  const sf=activeSurfaces();
+  let list=AB.filter(a=>availableClasses().includes(a.c));
+  if(S.filter==="E") list=list.filter(a=>a.t==="E");
+  else if(S.filter==="H") list=list.filter(a=>a.t==="H");
+  else if(S.filter!=="all") list=list.filter(a=>a.c===S.filter);
+  list.sort((a,b)=> (a.t==="E"?0:a.t==="H"?1:2)-(b.t==="E"?0:b.t==="H"?1:2) || a.n.localeCompare(b.n));
+  $("abList").innerHTML=list.map(a=>{
+    const block=abAllowed(a);
+    const inbar=S.slots.some(x=>x&&x.id===a.id);
+    const weak=a.needs && !a.needs.some(x=>sf.includes(x));
+    return `<button class="ab ${inbar?"inbar":""}" data-ab="${a.id}" ${block?"disabled":""}>
+      <span class="t">${a.n}<span class="cost mono">${a.cost.replace("e"," energy").replace("a"," adr")}</span></span>
+      <span class="d">${a.d}</span>
+      <span class="r">${abChip(a)}<span>${a.l}</span>
+        ${block?`<span class="tag-block">${block}</span>`:""}
+        ${!block&&weak?`<span class="tag-need">nothing to work with here</span>`:""}
+        ${a.portable?`<span class="tag-need">makes its own ground</span>`:""}
+        ${inbar?`<span style="color:var(--accent)">in your bar</span>`:""}</span>
+    </button>`;
+  }).join("") || `<p class="empty-note">Nothing matches that filter.</p>`;
+}
+function renderCode(){ $("codeInput").value=encode(); }
+function renderAll(){ renderPair(); renderWeapon(); renderAttrs(); renderSlots(); renderReadout(); renderBrief(); renderFilters(); renderCatalog(); renderCode(); }
+
+/* ---------- BUILD CODE ---------- */
+function encode(){
+  const a=lines().map(({l})=>rank(l)).join(".");
+  return `TL1-${S.p}${S.s}-${S.w}-${S.slots.map(x=>x?x.id:"_").join(",")}-${a}`;
+}
+function decode(str){
+  try{
+    const p=String(str).trim().split("-");
+    if(p[0]!=="TL1") return false;
+    const pr=p[1].slice(0,3), se=p[1].slice(3,6);
+    if(!CLASSES[pr]||!CLASSES[se]||!WEAPONS[p[2]]) return false;
+    S.p=pr; S.s=se; S.w=p[2];
+    S.slots=p[3].split(",").map(id=>id==="_"?null:(AB.find(x=>x.id===id)||null));
+    while(S.slots.length<6) S.slots.push(null);
+    S.slots=S.slots.slice(0,6);
+    S.attrs={}; const rs=(p[4]||"").split("."); lines().forEach(({l},i)=>{ const r=parseInt(rs[i]||0,10); if(r>0) S.attrs[l]=Math.min(12,r); });
+    return true;
+  }catch(e){ return false; }
+}
+
+/* ---------- INTERACTION ---------- */
+function toast(msg){
+  const prev=document.querySelector(".toast"); if(prev) prev.remove();
+  const el=document.createElement("div"); el.className="toast"; el.textContent=msg;
+  el.setAttribute("role","status"); document.body.appendChild(el);
+  setTimeout(()=>el.remove(),2600);
+}
+function pruneForClasses(){
+  const cs=availableClasses();
+  S.slots=S.slots.map(a=>{ if(!a) return null; if(!cs.includes(a.c)) return null; if(a.t==="E"&&a.c===S.s) return null; if(a.w&&a.w!==S.w) return null; return a; });
+  const valid=new Set(lines().map(x=>x.l));
+  Object.keys(S.attrs).forEach(l=>{ if(!valid.has(l)) delete S.attrs[l]; });
+}
+function addAbility(a){
+  if(S.slots.some(x=>x&&x.id===a.id)){ S.slots=S.slots.map(x=>x&&x.id===a.id?null:x); renderAll(); return; }
+  if(a.t==="E"&&eliteCount()>=1){ toast("One elite per bar. Remove the one you have first."); return; }
+  const i=S.slots.findIndex(x=>!x);
+  if(i<0){ toast("All six slots are full. Clear one to make room."); return; }
+  S.slots[i]=a; renderAll();
+}
+document.addEventListener("click",ev=>{
+  const ab=ev.target.closest("[data-ab]");
+  if(ab && !ab.disabled){ const a=AB.find(x=>x.id===ab.dataset.ab); if(a) addAbility(a); return; }
+  const sl=ev.target.closest("[data-slot]");
+  if(sl){ S.slots[+sl.dataset.slot]=null; renderAll(); return; }
+  const up=ev.target.closest("[data-attr-up]");
+  if(up){ const l=up.dataset.attrUp; S.attrs[l]=(S.attrs[l]||0)+1; renderAll(); return; }
+  const dn=ev.target.closest("[data-attr-down]");
+  if(dn){ const l=dn.dataset.attrDown; S.attrs[l]=Math.max(0,(S.attrs[l]||0)-1); if(!S.attrs[l]) delete S.attrs[l]; renderAll(); return; }
+  const f=ev.target.closest("[data-filter]");
+  if(f){ S.filter=f.dataset.filter; renderFilters(); renderCatalog(); return; }
+  const g=ev.target.closest("[data-code]");
+  if(g){ if(decode(g.dataset.code)){ renderSelects(); renderAll(); toast("Loaded "+(g.dataset.name||"build")); } return; }
+});
+$("selPrimary").addEventListener("change",e=>{S.p=e.target.value; if(S.filter!=="all"&&!["E","H"].includes(S.filter))S.filter="all"; pruneForClasses(); renderAll();});
+$("selSecondary").addEventListener("change",e=>{S.s=e.target.value; if(S.filter!=="all"&&!["E","H"].includes(S.filter))S.filter="all"; pruneForClasses(); renderAll();});
+$("selWeapon").addEventListener("change",e=>{S.w=e.target.value; pruneForClasses(); renderAll();});
+$("selMission").addEventListener("change",e=>{S.mission=e.target.value; renderAll();});
+$("selModifier").addEventListener("change",e=>{S.mod=e.target.value; renderAll();});
+$("clearBtn").addEventListener("click",()=>{S.slots=[null,null,null,null,null,null]; renderAll();});
+$("randomBtn").addEventListener("click",()=>{
+  const ks=Object.keys(CLASSES);
+  S.p=ks[Math.floor(Math.random()*ks.length)];
+  do{ S.s=ks[Math.floor(Math.random()*ks.length)]; }while(S.s===S.p);
+  const wk=Object.keys(WEAPONS); S.w=wk[Math.floor(Math.random()*wk.length)];
+  S.slots=[null,null,null,null,null,null]; S.attrs={};
+  const pool=AB.filter(a=>!abAllowed(a));
+  const el=pool.filter(a=>a.t==="E"), he=pool.filter(a=>a.t==="H"), ut=pool.filter(a=>a.t==="U");
+  if(el.length) S.slots[0]=el[Math.floor(Math.random()*el.length)];
+  if(he.length) S.slots[1]=he[Math.floor(Math.random()*he.length)];
+  const shuffled=ut.sort(()=>Math.random()-.5);
+  for(let i=2;i<6&&shuffled[i-2];i++) S.slots[i]=shuffled[i-2];
+  const ls=lines(); if(ls[0]) S.attrs[ls[0].l]=10; if(ls[1]) S.attrs[ls[1].l]=8;
+  const wl=WEAPONS[S.w].line; if(wl && lines().some(x=>x.l===wl)) S.attrs[wl]=Math.max(S.attrs[wl]||0,9);
+  while(spent()>200){ const k=Object.keys(S.attrs).sort((a,b)=>S.attrs[b]-S.attrs[a])[0]; S.attrs[k]--; if(!S.attrs[k])delete S.attrs[k]; }
+  renderSelects(); renderAll();
+});
+$("copyCode").addEventListener("click",async()=>{
+  const v=$("codeInput").value;
+  try{ await navigator.clipboard.writeText(v); toast("Build code copied"); }
+  catch(e){ $("codeInput").select(); toast("Press copy on your keyboard — the text is selected"); }
+});
+$("loadCode").addEventListener("click",()=>{
+  if(decode($("codeInput").value)){ renderSelects(); renderAll(); toast("Build loaded"); }
+  else toast("That is not a Thornline build code.");
+});
+
+/* ---------- SHARED BARRACKS (db + user) ---------- */
+let DB=null, USER=null;
+function galleryEmpty(msg){ $("gallery").innerHTML=`<p class="empty-note">${msg}</p>`; }
+galleryEmpty("Loading posted characters…");
+
+(async()=>{
+  try{ DB=await claude.use("db"); }catch(e){ DB=null; }
+  try{ USER=await claude.use("user"); }catch(e){ USER=null; }
+  if(!DB){
+    galleryEmpty("Sharing is not available in this view. The planner, the build codes and everything else still work — paste a code to load someone else's character.");
+    $("postBtn").disabled=true; $("postBtn").style.opacity=".45"; $("postBtn").style.cursor="not-allowed";
+    $("postNote").textContent="Posting needs a signed-in view. Use the build code instead — it carries the whole character.";
+    return;
+  }
+  try{
+    DB.collection("builds").orderBy("createdAt","desc").limit(40).onSnapshot(async docs=>{
+      const rows=(docs||[]).map(d=>d.data?d.data():d).filter(Boolean);
+      if(!rows.length){ galleryEmpty("Nobody has posted a character yet. Make one and be first."); return; }
+      let names={};
+      if(USER){ try{ names=await USER.profiles([...new Set(rows.map(r=>r.authorId).filter(Boolean))])||{}; }catch(e){ names={}; } }
+      $("gallery").innerHTML=rows.map(r=>{
+        const who=(names[r.authorId]&&names[r.authorId].name)||"Someone";
+        return `<button class="gcard" data-code="${String(r.code||"").replace(/"/g,"&quot;")}" data-name="${String(r.name||"").replace(/"/g,"&quot;")}">
+          <span class="gn">${esc(r.name||"Unnamed")}</span>
+          <span class="gm"><span>${esc(r.pair||"")}</span><span>·</span><span>${esc(r.weapon||"")}</span><span>·</span><span>${esc(who)}</span></span>
+        </button>`;
+      }).join("");
+    });
+  }catch(e){ galleryEmpty("Could not load posted characters."); }
+})();
+function esc(s){ return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
+
+$("postBtn").addEventListener("click",async()=>{
+  if(!DB){ toast("Sharing is unavailable here."); return; }
+  const nm=$("buildName").value.trim();
+  if(!nm){ toast("Give the character a name first."); $("buildName").focus(); return; }
+  if(!S.slots.some(Boolean)){ toast("Slot at least one ability before posting."); return; }
+  const key=S.p+"/"+S.s;
+  const id="b"+Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+  try{
+    let authorId=null; if(USER){ try{ authorId=await USER.id(); }catch(e){} }
+    await DB.doc("builds/"+id).set({
+      name:nm, code:encode(), pair:(S.p===S.s?CLASSES[S.p].n:(PAIRS[key]||"")),
+      weapon:WEAPONS[S.w].n.split(" (")[0], authorId, createdAt:Date.now()
+    });
+    toast("Posted to the barracks");
+    $("buildName").value="";
+  }catch(e){ toast("Could not post — you may not have write access here."); }
+});
+
+/* ---------- BOOT ---------- */
+// Open on a real character, not an empty shell: the Frostbreaker from the design doc.
+S.slots=[AB.find(a=>a.id==="r8"),AB.find(a=>a.id==="r1"),AB.find(a=>a.id==="t3"),AB.find(a=>a.id==="r2"),AB.find(a=>a.id==="r3"),AB.find(a=>a.id==="t4")];
+S.attrs={"Heavy Arms":10,"Momentum":9,"Frost":8};
+renderSelects(); renderAll();
+</script>
