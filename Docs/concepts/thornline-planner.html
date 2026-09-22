@@ -81,12 +81,12 @@ select{font:inherit;font-size:13.5px;padding:6px 8px;background:var(--surface);c
 /* ---- layout ---- */
 .layout{display:grid;gap:26px;align-items:start;
   grid-template-columns:300px minmax(0,1fr) 290px;
-  grid-template-areas:"hero work social" "id work social" "attr work social";grid-template-rows:auto auto 1fr}
+  grid-template-areas:"hero work social" "id work social";grid-template-rows:auto 1fr}
 .layout > section{min-width:0}
 .a-hero + .a-id{margin-top:-12px}
-@media (max-width:1180px){.layout{grid-template-columns:300px minmax(0,1fr);grid-template-areas:"hero work" "id work" "attr work" "social work";grid-template-rows:auto auto auto 1fr}}
-@media (max-width:820px){.layout{grid-template-columns:1fr;grid-template-areas:"hero" "work" "id" "attr" "social";grid-template-rows:auto}.a-hero + .a-id{margin-top:0}}
-.a-hero{grid-area:hero}.a-id{grid-area:id}.a-work{grid-area:work}.a-attr{grid-area:attr}.a-social{grid-area:social}
+@media (max-width:1180px){.layout{grid-template-columns:300px minmax(0,1fr);grid-template-areas:"hero work" "id work" "social work";grid-template-rows:auto auto 1fr}}
+@media (max-width:820px){.layout{grid-template-columns:1fr;grid-template-areas:"hero" "work" "id" "social";grid-template-rows:auto}.a-hero + .a-id{margin-top:0}}
+.a-hero{grid-area:hero}.a-id{grid-area:id}.a-work{grid-area:work}.a-social{grid-area:social}
 .jump{display:none;margin-top:8px}
 @media (max-width:820px){.jump{display:inline-flex}}
 .section + .section{margin-top:22px;padding-top:18px;border-top:1px solid var(--line)}
@@ -188,27 +188,10 @@ details.locked summary::before{content:"▸";font-size:10px;transition:transform
 details.locked[open] summary::before{transform:rotate(90deg)}
 details.locked .opts{margin-top:9px}
 
-/* ---- attributes ---- */
-.pts{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-bottom:10px}
-.pts .big{font-family:"IBM Plex Mono",monospace;font-size:22px;font-weight:500}
-.pts .big small{font-size:12px;color:var(--faint);font-weight:400}
-.attr{padding:8px 0;border-top:1px solid var(--line)}
-.attr-top{display:flex;align-items:center;gap:8px}
-.attr-n{flex:1;min-width:0;font-size:13.5px;font-weight:600;line-height:1.2}
-.attr-n small{display:block;font-size:10.5px;font-weight:500;color:var(--faint);letter-spacing:.02em}
-.attr-n small.pa{color:var(--accent)}
-.attr-r{font-family:"IBM Plex Mono",monospace;font-size:15px;min-width:22px;text-align:right}
-.step{display:flex;gap:3px}
-.step button{width:26px;height:26px;border:1px solid var(--line-strong);background:var(--surface);border-radius:2px;font-size:14px;line-height:1;padding:0}
-.step button:hover:not(:disabled){border-color:var(--ink)}
-.step button:disabled{opacity:.3}
-.meter{display:grid;grid-template-columns:repeat(12,1fr);gap:2px;margin:6px 0 4px}
-.meter span{height:5px;background:var(--sunk);border-radius:1px}
-.meter span.on{background:var(--accent)}
-.meter span.hi{background:var(--accent-ink)}
-.attr-u{font-size:11.5px;color:var(--muted);line-height:1.4}
-.attr-u.warn{color:var(--ember);font-weight:500}
-.attr-u .nx{color:var(--faint)}
+/* ---- passive ---- */
+.passive{margin-top:12px;font-size:13px;line-height:1.45;color:var(--muted)}
+.passive b{display:block;font-family:"Zilla Slab",serif;font-size:14.5px;color:var(--ink);font-weight:600;margin-bottom:1px}
+.passive b small{font-family:"Public Sans",sans-serif;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);font-weight:600;margin-left:6px}
 
 /* ---- social ---- */
 .field{display:flex;gap:6px;margin-top:8px}
@@ -259,6 +242,7 @@ details.locked .opts{margin-top:9px}
       <div class="hero">
         <div class="pair" id="pairName">—</div>
         <div class="sub" id="pairSub">—</div>
+        <div class="passive" id="pairPassive"></div>
         <a class="btn jump" href="#classes">Change classes or weapon</a>
       </div>
     </section>
@@ -293,13 +277,6 @@ details.locked .opts{margin-top:9px}
       <div class="picker" id="picker"></div>
     </section>
 
-    <!-- ATTRIBUTES -->
-    <section class="a-attr">
-      <div class="sec-h"><h2>Attributes</h2><button class="btn" id="autoBtn">Auto-assign</button></div>
-      <div class="pts"><span class="hint">Points left</span><span class="big" id="ptsLeft">0<small> / 200</small></span></div>
-      <div id="attrs"></div>
-      <p class="hint" style="margin-top:10px">Each rank costs more than the last. Ranks power the skills on your bar and your weapon.</p>
-    </section>
 
     <!-- SOCIAL -->
     <section class="a-social">
@@ -349,10 +326,18 @@ const CLASSES={
  BEA:{n:"Beastbinder",kind:"martial",verb:"Inhabits",obj:"Tracks",pa:"Kinship",lines:["Kinship","Beastcraft","Marksmanship"],
       blurb:"A bow, a beast, and a crew that listens."}
 };
-const PA_TEXT={Rootedness:"your grown terrain lasts longer and regrows once",Combustion:"your fires spread noticeably further",
- Current:"refunds energy when a combo you set up triggers",Fabrication:"installations cost less and can be repaired",
- Bulwark:"armor scales with the cover around you",Momentum:"moving builds adrenaline and your shoves go further",
- Stillness:"you conceal in any cover and choose when to break it",Kinship:"more retinue, and one beast's skills on your bar"};
+// Every primary passive reads the secondary: {S} is replaced with the secondary class.
+const PASSIVE={
+ Bulwark:"Your armor scales with the cover around you — including cover your {S} skills raise, grow or install.",
+ Momentum:"Shove someone into ground your {S} skills made and it triggers at once, at full strength.",
+ Stillness:"Anything your {S} skills create is cover you can vanish into.",
+ Kinship:"Your beast learns one skill from the {S}.",
+ Rootedness:"You can grow on any surface your {S} skills make.",
+ Combustion:"Surfaces your {S} skills create burn hotter and longer when you light them.",
+ Current:"Effects your {S} skills apply to someone standing in your water spread to everyone in it.",
+ Fabrication:"Your installations take on the {S}'s trait."
+};
+const passiveText=(p,s)=>PASSIVE[CLASSES[p].pa].replace("{S}",CLASSES[s].n);
 const WEAPONS={
  heavy:{n:"Heavy arms",line:"Heavy Arms",owner:"REA",r:"slow, committed, wide arcs"},
  sword:{n:"Sword",line:"Swordsmanship",owner:"REA",r:"a balanced three-hit chain"},
@@ -459,22 +444,14 @@ const MODS={
  tempest:{n:"Tempest",d:"rain pools on every surface",add:["water"]},
  ashfall:{n:"Ashfall",d:"everything starts scorched",strip:["foliage","bramble"],add:["scorched"]}
 };
-const COSTS=[0,1,3,6,10,16,24,34,47,63,83,108,139];
-const POOL=200, EXPECT=9;
 
 /* ================= STATE ================= */
-let S={p:"REA",s:"TID",w:"heavy",slots:[null,null,null,null,null,null],attrs:{},mission:"weir",mod:"none",target:0};
+let S={p:"REA",s:"TID",w:"heavy",slots:[null,null,null,null,null,null],mission:"weir",mod:"none",target:0};
 const hist=[];
 const byId=id=>AB.find(a=>a.id===id)||null;
 const classes=()=>[S.p,S.s];
 const pairName=(p,s)=>PAIRS[p+"/"+s]||"—";
-function lines(){
-  const out=CLASSES[S.p].lines.map(l=>({l,c:S.p,pa:l===CLASSES[S.p].pa}));
-  CLASSES[S.s].lines.forEach(l=>{ if(l!==CLASSES[S.s].pa) out.push({l,c:S.s,pa:false}); });
-  return out;
-}
-const rank=l=>S.attrs[l]||0;
-const spent=()=>Object.entries(S.attrs).reduce((t,[,r])=>t+COSTS[r],0);
+const trains=w=>!WEAPONS[w].owner||classes().includes(WEAPONS[w].owner);
 function surfaces(){
   const m=MISSIONS.find(x=>x.id===S.mission), mod=MODS[S.mod]; let sf=[...m.surf];
   if(mod.strip) sf=sf.filter(x=>!mod.strip.includes(x));
@@ -504,9 +481,9 @@ function fitOf(a){
 }
 
 /* ================= HISTORY + PERSISTENCE ================= */
-function snap(){ return JSON.stringify({p:S.p,s:S.s,w:S.w,slots:S.slots.map(a=>a?a.id:null),attrs:S.attrs,mission:S.mission,mod:S.mod,target:S.target}); }
-function restore(j){ const o=JSON.parse(j); Object.assign(S,o,{slots:o.slots.map(id=>id?byId(id):null),attrs:{...o.attrs}}); }
-function save(){ try{ localStorage.setItem("thornline-loadout",snap()); }catch(e){} }
+function snap(){ return JSON.stringify({p:S.p,s:S.s,w:S.w,slots:S.slots.map(a=>a?a.id:null),mission:S.mission,mod:S.mod,target:S.target}); }
+function restore(j){ const o=JSON.parse(j); S.p=o.p; S.s=o.s; S.w=o.w; S.mission=o.mission; S.mod=o.mod; S.target=o.target; S.slots=o.slots.map(id=>id?byId(id):null); }
+function save(){ try{ localStorage.setItem("thornline-loadout-v2",snap()); }catch(e){} }
 function commit(mutate,msg){
   hist.push(snap()); if(hist.length>40) hist.shift();
   mutate(); save(); renderAll();
@@ -537,25 +514,26 @@ function renderContract(){
 function renderIdentity(){
   $("pairName").textContent=pairName(S.p,S.s);
   $("pairSub").textContent=`${CLASSES[S.p].n} primary · ${CLASSES[S.s].n} secondary · ${WEAPONS[S.w].n}`;
+  $("pairPassive").innerHTML=`<b>${CLASSES[S.p].pa}<small>Primary passive</small></b>${esc(passiveText(S.p,S.s))}`;
   const keys=Object.keys(CLASSES);
   $("gridPrimary").innerHTML=keys.map(k=>`<button class="cbtn ${CLASSES[k].kind}" data-primary="${k}" aria-pressed="${S.p===k}">
       <span class="cn">${CLASSES[k].n}</span><span class="cv">${CLASSES[k].verb}</span></button>`).join("");
   const P=CLASSES[S.p];
-  $("primaryBlurb").innerHTML=`${esc(P.blurb)} Primary gives you its elites and <b>${P.pa}</b> — ${PA_TEXT[P.pa]}.`;
+  $("primaryBlurb").innerHTML=`${esc(P.blurb)} Your primary gives you its elites and its passive, <b>${P.pa}</b>, which changes with your secondary.`;
   $("gridSecondary").innerHTML=keys.map(k=>k===S.p
     ? `<button class="cbtn ${CLASSES[k].kind}" disabled aria-pressed="false"><span class="cn">${CLASSES[k].n}</span><span class="cv">your primary</span></button>`
     : `<button class="cbtn ${CLASSES[k].kind}" data-secondary="${k}" aria-pressed="${S.s===k}" title="${CLASSES[k].blurb}">
       <span class="cn">${CLASSES[k].n}</span><span class="cv">→ <b>${pairName(S.p,k)}</b></span></button>`).join("");
+  $("gridSecondary").querySelectorAll("[data-secondary]").forEach(b=>b.title=passiveText(S.p,b.dataset.secondary));
   $("gridWeapon").innerHTML=Object.entries(WEAPONS).map(([k,w])=>{
-    const st=!w.line?["any","Any class"]:classes().includes(w.owner)?["own","Your class trains it"]:["not","No training"];
+    const st=!w.owner?["any","Any class"]:classes().includes(w.owner)?["own","Your class trains it"]:["not","Untrained"];
     return `<button class="wbtn" data-weapon="${k}" aria-pressed="${S.w===k}"><span class="wn">${w.n}</span><span class="ws ${st[0]}">${st[1]}</span></button>`;
   }).join("");
-  const w=WEAPONS[S.w], r=w.line?rank(w.line):0;
+  const w=WEAPONS[S.w];
   let v;
-  if(!w.line) v=`<div class="verdict good">An implement is ${w.r}. No mastery line to train.</div>`;
-  else if(!classes().includes(w.owner)) v=`<div class="verdict warn"><b>You can carry it, but you can't train it.</b> ${w.line} belongs to the ${CLASSES[w.owner].n}. You'll swing like someone who has never held one.</div>`;
-  else if(r<EXPECT) v=`<div class="verdict warn"><b>${w.line} is at ${r}.</b> This weapon wants about ${EXPECT}. Raise it below, or your attacks land soft.</div>`;
-  else v=`<div class="verdict good"><b>${w.line} ${r} — trained.</b> ${w.n}: ${w.r}.</div>`;
+  if(!w.owner) v=`<div class="verdict good">An implement is ${w.r}. Any class can use one.</div>`;
+  else if(!classes().includes(w.owner)) v=`<div class="verdict warn"><b>Neither of your classes trains this.</b> You can carry it, but you'll swing like someone who has never held one. The ${CLASSES[w.owner].n} trains it.</div>`;
+  else v=`<div class="verdict good"><b>Trained by your ${CLASSES[w.owner].n}.</b> ${w.n}: ${w.r}.</div>`;
   $("weaponVerdict").innerHTML=v;
 }
 function renderBar(){
@@ -588,12 +566,11 @@ function renderReadout(){
   const el=S.slots[0], heal=filled.find(a=>a.t==="H");
   const sec=filled.filter(a=>a.c===S.s);
   const bad=filled.filter(a=>{const f=fitOf(a);return f&&f.k==="bad";});
-  const zero=[...new Set(filled.map(a=>a.l))].filter(l=>rank(l)===0);
   const parts=[];
   parts.push(`A <b>${pairName(S.p,S.s)}</b> with ${WEAPONS[S.w].n.toLowerCase()}, ${el?`built around <b>${esc(el.n)}</b>`:`<span class="flag">with no elite yet</span>`}, ${heal?`healing through <b>${esc(heal.n)}</b>.`:`and <span class="flag">no self-heal</span> — a real choice, and an aggressive one.`}`);
   parts.push(sec.length?`The ${CLASSES[S.s].n} half brings ${sec.map(a=>`<b>${esc(a.n)}</b>`).join(", ")}.`:`<span class="flag">Nothing on the bar comes from your ${CLASSES[S.s].n} secondary</span> — right now it's only a name.`);
   if(bad.length) parts.push(`<span class="flag">${bad.map(a=>esc(a.n)).join(" and ")} ${bad.length>1?"have":"has"} nothing to work with on this contract.</span>`);
-  if(zero.length) parts.push(`<span class="flag">${zero.join(", ")} ${zero.length>1?"are":"is"} at rank 0</span> — the skills that use ${zero.length>1?"them":"it"} will be weak.`);
+  if(!trains(S.w)) parts.push(`<span class="flag">Neither class trains your ${WEAPONS[S.w].n.toLowerCase()}</span> — every swing lands soft.`);
   $("readout").innerHTML=parts.join(" ");
 }
 function optCard(a,{disabled,label}={}){
@@ -647,33 +624,8 @@ function renderPicker(){
   }
   el.innerHTML=html;
 }
-function renderAttrs(){
-  const left=POOL-spent();
-  $("ptsLeft").innerHTML=`${left}<small> / ${POOL}</small>`;
-  const weaponLine=WEAPONS[S.w].line;
-  $("attrs").innerHTML=lines().map(({l,c,pa})=>{
-    const r=rank(l), next=r<12?COSTS[r+1]-COSTS[r]:null;
-    const users=S.slots.filter(a=>a&&a.l===l).map(a=>a.n);
-    if(weaponLine===l) users.push("your "+WEAPONS[S.w].n.toLowerCase());
-    let u;
-    if(users.length&&r===0) u=`<div class="attr-u warn">Powers ${users.map(esc).join(", ")} — at 0 they're weak.</div>`;
-    else if(users.length) u=`<div class="attr-u">Powers ${users.map(esc).join(", ")}${next?` <span class="nx">· next rank ${next} pts</span>`:` <span class="nx">· maxed</span>`}</div>`;
-    else u=`<div class="attr-u"><span class="nx">Nothing on your bar uses this${next&&r>0?` · next rank ${next} pts`:""}</span></div>`;
-    const meter=Array.from({length:12},(_,k)=>`<span class="${k<r?(k>=9?"hi":"on"):""}"></span>`).join("");
-    return `<div class="attr">
-      <div class="attr-top">
-        <div class="attr-n">${l}<small class="${pa?"pa":""}">${pa?CLASSES[c].n+" primary only":CLASSES[c].n}</small></div>
-        <span class="attr-r">${r}</span>
-        <div class="step">
-          <button data-down="${esc(l)}" ${r===0?"disabled":""} aria-label="Lower ${esc(l)}">−</button>
-          <button data-up="${esc(l)}" ${next!==null&&next<=left?"":"disabled"} aria-label="Raise ${esc(l)}">+</button>
-        </div>
-      </div>
-      <div class="meter" aria-hidden="true">${meter}</div>${u}</div>`;
-  }).join("");
-}
 function renderShare(){ $("codeText").textContent=encode(); }
-function renderAll(){ renderContract(); renderIdentity(); renderBar(); renderPicker(); renderAttrs(); renderShare(); $("undoBtn").disabled=!hist.length; }
+function renderAll(){ renderContract(); renderIdentity(); renderBar(); renderPicker(); renderShare(); $("undoBtn").disabled=!hist.length; }
 
 /* ================= RULE-KEEPING ================= */
 function prune(){
@@ -683,8 +635,6 @@ function prune(){
     if(blocker(a)||(i===0&&a.t!=="E")||(i>0&&a.t==="E")){ gone.push(a.n); return null; }
     return a;
   });
-  const ok=new Set(lines().map(x=>x.l));
-  Object.keys(S.attrs).forEach(l=>{ if(!ok.has(l)) delete S.attrs[l]; });
   return gone;
 }
 function nextTarget(from){
@@ -692,33 +642,18 @@ function nextTarget(from){
   return null;
 }
 function firstEmpty(){ const j=S.slots.findIndex(x=>!x); return j<0?null:j; }
-function autoAssign(){
-  S.attrs={};
-  const demand={};
-  lines().forEach(({l,pa})=>{ demand[l]=S.slots.filter(a=>a&&a.l===l).length+(pa?1:0); });
-  const wl=WEAPONS[S.w].line; if(wl&&demand[wl]!==undefined) demand[wl]+=2;
-  for(;;){
-    const left=POOL-spent();
-    const c=Object.keys(demand).filter(l=>demand[l]>0&&rank(l)<12&&COSTS[rank(l)+1]-COSTS[rank(l)]<=left)
-      .sort((a,b)=>demand[b]/(rank(b)+1)-demand[a]/(rank(a)+1));
-    if(!c.length) break;
-    S.attrs[c[0]]=rank(c[0])+1;
-  }
-}
 
 /* ================= BUILD CODE ================= */
-function encode(){ return `TL1-${S.p}${S.s}-${S.w}-${S.slots.map(a=>a?a.id:"_").join(",")}-${lines().map(({l})=>rank(l)).join(".")}`; }
+function encode(){ return `TL2-${S.p}${S.s}-${S.w}-${S.slots.map(a=>a?a.id:"_").join(",")}`; }
+// Reads TL2 and older TL1 codes (TL1 carried attribute ranks, which are ignored now).
 function decode(str){
-  const p=String(str).trim().split("-"); if(p[0]!=="TL1"||p.length<4) return false;
+  const p=String(str).trim().split("-"); if(!/^TL[12]$/.test(p[0])||p.length<4) return false;
   const pr=p[1].slice(0,3), se=p[1].slice(3,6);
   if(!CLASSES[pr]||!CLASSES[se]||pr===se||!WEAPONS[p[2]]) return false;
   S.p=pr; S.s=se; S.w=p[2];
   const abs=p[3].split(",").map(byId).filter(Boolean);
   const el=abs.find(a=>a.t==="E"), rest=abs.filter(a=>a.t!=="E").slice(0,5);
   S.slots=[el||null,...rest]; while(S.slots.length<6) S.slots.push(null);
-  S.attrs={}; const rs=(p[4]||"").split(".");
-  lines().forEach(({l},i)=>{ const r=Math.min(12,parseInt(rs[i]||"0",10)||0); if(r) S.attrs[l]=r; });
-  while(spent()>POOL){ const k=Object.keys(S.attrs).sort((a,b)=>S.attrs[b]-S.attrs[a])[0]; S.attrs[k]--; if(!S.attrs[k]) delete S.attrs[k]; }
   prune(); S.target=firstEmpty();
   return true;
 }
@@ -759,8 +694,6 @@ document.addEventListener("click",e=>{
     commit(()=>{ S.w=k; pendingMsg=prune(); if(S.target===null) S.target=firstEmpty(); });
     flushPruneMsg(); return;
   }
-  if(d.up){ commit(()=>{ S.attrs[d.up]=rank(d.up)+1; }); return; }
-  if(d.down){ commit(()=>{ S.attrs[d.down]=rank(d.down)-1; if(!S.attrs[d.down]) delete S.attrs[d.down]; }); return; }
   if(d.code){ const code=d.code, nm=d.name; const before=snap();
     if(decode(code)){ hist.push(before); save(); renderAll(); toast(`Loaded ${nm||"character"}`,true); }
     else toast("That build is from an older planner and couldn't be read."); return; }
@@ -773,14 +706,13 @@ function flushPruneMsg(){
 $("selMission").addEventListener("change",e=>commit(()=>{S.mission=e.target.value;}));
 $("selModifier").addEventListener("change",e=>commit(()=>{S.mod=e.target.value;}));
 $("undoBtn").addEventListener("click",undo);
-$("autoBtn").addEventListener("click",()=>commit(autoAssign,"Points assigned to what your bar uses"));
 document.addEventListener("keydown",e=>{
   if((e.metaKey||e.ctrlKey)&&!e.shiftKey&&e.key.toLowerCase()==="z"&&!/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)){ e.preventDefault(); undo(); }
 });
 $("randomBtn").addEventListener("click",()=>commit(()=>{
   const ks=Object.keys(CLASSES), pick=a=>a[Math.floor(Math.random()*a.length)];
   S.p=pick(ks); do{ S.s=pick(ks); }while(S.s===S.p);
-  const trainable=Object.keys(WEAPONS).filter(k=>!WEAPONS[k].line||classes().includes(WEAPONS[k].owner));
+  const trainable=Object.keys(WEAPONS).filter(trains);
   S.w=pick(trainable);
   S.slots=[null,null,null,null,null,null];
   const ok=AB.filter(a=>!blocker(a));
@@ -788,7 +720,7 @@ $("randomBtn").addEventListener("click",()=>commit(()=>{
   if(els.length) S.slots[0]=pick(els);
   if(hs.length) S.slots[1]=pick(hs);
   for(let i=2;i<6&&us.length;i++) S.slots[i]=us.shift();
-  autoAssign(); S.target=firstEmpty();
+  S.target=firstEmpty();
 },"New random character"));
 $("copyBtn").addEventListener("click",async()=>{
   const v=encode();
@@ -798,7 +730,7 @@ $("copyBtn").addEventListener("click",async()=>{
 $("loadForm").addEventListener("submit",e=>{
   e.preventDefault(); const before=snap();
   if(decode($("loadInput").value)){ hist.push(before); save(); renderAll(); $("loadInput").value=""; toast("Build loaded",true); }
-  else toast("That isn't a Thornline build code — they start with TL1.");
+  else toast("That isn't a Thornline build code — they start with TL2 or TL1.");
 });
 
 /* ================= BARRACKS (db + user) ================= */
@@ -851,11 +783,10 @@ $("postForm").addEventListener("submit",async e=>{
 /* ================= BOOT ================= */
 (function boot(){
   let restored=false;
-  try{ const j=localStorage.getItem("thornline-loadout"); if(j){ restore(j); prune(); restored=true; } }catch(e){}
+  try{ const j=localStorage.getItem("thornline-loadout-v2"); if(j){ restore(j); prune(); restored=true; } }catch(e){}
   if(!restored){
     // Open on a real character mid-build: the Frostbreaker, one slot left to fill.
     S.slots=[byId("r8"),byId("r1"),byId("t3"),byId("r2"),byId("r3"),null];
-    S.attrs={"Heavy Arms":10,"Momentum":8,"Frost":8};
     S.target=5;
   }
   renderAll();

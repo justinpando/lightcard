@@ -144,21 +144,21 @@ put people into it.**
 
 ### Martial
 
-| Class | World verb | In combat | **Out of combat** | Primary attribute (primary-only) |
+| Class | World verb | In combat | **Out of combat** | Primary passive — reads your secondary |
 | --- | --- | --- | --- | --- |
-| **Warden** | **Holds** — raises cover, body-blocks, anchors ground | Frontline, peel, objective soak | Braces collapsing structures; shields the party through a hazard; holds a gate open | *Bulwark* — armor scales with how much cover and blocked ground surrounds you |
-| **Reaver** | **Displaces** — knocks, throws, charges, shatters | Aggressive melee, the `Force` specialist | Breaks sealed walls and rubble; carries heavy things; charges gaps | *Momentum* — your displacement distance scales, and moving builds adrenaline |
-| **Veilblade** | **Slips** — concealment, verticality, gaps | Burst, flanks, assassination | Free-climbs without a `Trellis`; squeezes through gaps; scouts unseen | *Stillness* — you conceal in any volume, and break concealment on your terms |
-| **Beastbinder** | **Inhabits** — beasts scout, flush, hold; bow and preparations | Ranged martial, retinue depth | Beasts track scents; some are mounts or fit through gaps | *Kinship* — +2 retinue points, one beast's abilities on your own bar |
+| **Warden** | **Holds** — raises cover, body-blocks, anchors ground | Frontline, peel, objective soak | Braces collapsing structures; shields the party through a hazard; holds a gate open | *Bulwark* — armor scales with the cover around you, including anything your secondary raises, grows or installs |
+| **Reaver** | **Displaces** — knocks, throws, charges, shatters | Aggressive melee, the `Force` specialist | Breaks sealed walls and rubble; carries heavy things; charges gaps | *Momentum* — shove someone into ground your secondary made and it triggers at once, at full strength |
+| **Veilblade** | **Slips** — concealment, verticality, gaps | Burst, flanks, assassination | Free-climbs without a `Trellis`; squeezes through gaps; scouts unseen | *Stillness* — anything your secondary creates is cover you can vanish into: bramble, steam, smoke, a turret, your own beast |
+| **Beastbinder** | **Inhabits** — beasts scout, flush, hold; bow and preparations | Ranged martial, retinue depth | Beasts track scents; some are mounts or fit through gaps | *Kinship* — your beast learns one skill from your secondary: a hound that burns, a wolf that freezes, a hawk that carries smoke |
 
 ### Arcane and artifice
 
-| Class | World verb | In combat | **Out of combat** | Primary attribute (primary-only) |
+| Class | World verb | In combat | **Out of combat** | Primary passive — reads your secondary |
 | --- | --- | --- | --- | --- |
-| **Verdurist** ("green mage") | **Grows** — vines, brambles, grass, trellises | Control, area denial | Grows a climbable trellis on any tagged wall; reaches ledges nobody else reaches | *Rootedness* — your terrain lasts longer, regrows once |
-| **Emberwright** | **Ignites** — burns foliage, spreads fire | Damage over time, zoning | Burns away overgrowth sealing a path; lights dark areas | *Combustion* — your fires spread noticeably further |
-| **Tidecaller** | **Changes state** — floods, freezes, douses | Mobility surfaces, chain setup | Freezes a river into a bridge; floods a channel to float something | *Current* — refunds resource when a combo you set up triggers |
-| **Cogwright** | **Installs** — turrets, ziplines, drones | Siege, vision, infrastructure | Ziplines across gaps; drones scout ahead and map rooms | *Fabrication* — installations cost less, can be repaired |
+| **Verdurist** ("green mage") | **Grows** — vines, brambles, grass, trellises | Control, area denial | Grows a climbable trellis on any tagged wall; reaches ledges nobody else reaches | *Rootedness* — you can grow on any surface your secondary makes: ice, oil, ash, rubble |
+| **Emberwright** | **Ignites** — burns foliage, spreads fire | Damage over time, zoning | Burns away overgrowth sealing a path; lights dark areas | *Combustion* — surfaces your secondary creates burn hotter and longer when you light them |
+| **Tidecaller** | **Changes state** — floods, freezes, douses | Mobility surfaces, chain setup | Freezes a river into a bridge; floods a channel to float something | *Current* — effects your secondary applies to someone in your water spread to everyone in it |
+| **Cogwright** | **Installs** — turrets, ziplines, drones | Siege, vision, infrastructure | Ziplines across gaps; drones scout ahead and map rooms | *Fabrication* — your installations carry your secondary's trait: ember turrets, overgrown beacons, spiked barricades |
 
 Eight classes give **56 ordered pairs**. That is the number the whole draw rests
 on, and it is why the roster grew rather than swapping a mage out: martial/arcane
@@ -177,12 +177,45 @@ The alternative, making every verb universally available, deletes the pillar.
   of them is almost always your self-heal — see [Healing](#healing).
 - **At most 1 elite.** GW1's best limiter: it makes 6 slots a budget instead of a
   list of favorites, and it forces the build to have a *thesis*.
-- **Attributes**: a shared ~200-point pool across both classes' lines, with
-  escalating costs so ranks 1–9 are cheap and 10–12 are expensive. Broad and
-  shallow, or narrow and deep — never both.
+- **No attribute points.** Every skill works at full strength, whichever class
+  it came from. The bar is the budget — see
+  [Why there are no attribute points](#why-there-are-no-attribute-points).
 - **Primary** grants: full skill pool including elites, armor class, and the
-  primary attribute. **Secondary** grants: non-elite skills and attribute lines
-  only. Secondary is swappable freely out of combat; primary is per character.
+  primary passive. **Secondary** grants: non-elite skills only. Secondary is
+  swappable freely out of combat; primary is per character.
+
+### Why there are no attribute points
+
+GW1's attributes were the channel its leveling reward flowed through: points
+arrived as you leveled to 20, plus a few from quests. Its PvP-only characters,
+created at maximum level with every point already granted, show what was left
+once leveling ended — an allocation puzzle with no progression in it. This game
+has no leveling curve by design, so keeping attributes would mean keeping the pipe
+after removing what flowed through it.
+
+They also fail on their own terms here, in two ways:
+
+- **They duplicate the bar.** Six slots already make depth-versus-breadth the
+  central decision: every secondary skill costs a slot a primary skill could have
+  had. Charging that decision again in points — secondary skills come out weaker
+  because their line is low — double-taxes multiclassing, which is the thing the
+  game exists to make attractive.
+- **Any bonus scoped to a group of skills makes stacking that group the dominant
+  move.** This rules out the obvious simplifications too. A single "Focus" line
+  that empowers its skills would push every build toward five skills from one
+  line, because off-line skills become a tax.
+
+The only bonuses that do not reward stacking are none at all, or one scoped to a
+single skill — and the design already has two of those: **the elite**, and
+**sigils**, which each modify one ability. That is where "my character is
+*really* good at this" lives now.
+
+What survives, with no numbers:
+
+- **Weapon training is yes/no.** A class you have trains the weapon, or it does
+  not.
+- **The primary passive is automatic**, and must read your secondary — see
+  [the authoring rule](#primary-passives-must-read-your-secondary).
 
 ### Why six and not eight
 
@@ -226,9 +259,10 @@ Effective capability is therefore closer to six-plus-two than to six, while the
 thing you *tune* stays six. Whether four discretionary slots is enough room to
 feel like build-crafting is a primary question for the slice.
 
-The primary attribute is what stops "everyone runs the same secondary" and makes
-`Verdurist/Tidecaller` and `Tidecaller/Verdurist` genuinely different games out of
-identical skill access.
+The primary passive is what stops "everyone runs the same secondary", and because
+every passive reads the secondary, `Verdurist/Tidecaller` and
+`Tidecaller/Verdurist` are genuinely different characters out of identical skill
+access.
 
 ### Two economies, and the trap between them
 
@@ -243,8 +277,9 @@ acceptable here, and it needs an explicit answer rather than a shrug:
 
 - Every class has a small universal energy pool — enough for two or three
   secondary-class utility casts per fight, never enough to be a mage.
-- Martial primary attributes convert: *Momentum* and *Stillness* both pay out in
-  a resource the other half of the bar can spend.
+- Secondary skills cost what they cost. With no attribute penalty, a martial
+  primary's arcane utility is limited by its energy pool, never by a weak rank on
+  top of it.
 - The Focus accessory slot can be spent on energy, at the cost of a sigil.
 
 A `Reaver/Emberwright` should be a real character who lands three strikes and
@@ -277,13 +312,14 @@ own emote and a title card the first time you assemble one.
 | Beastbinder / Emberwright | **Emberpack** | Burning arrows and hounds that drive things into the fire |
 
 **Names are recognition, not rules.** A pair name describes an emergent
-playstyle; it grants nothing by itself. Mechanical pair identity comes from
-**sigils** instead, so there are never 30 hardcoded special cases in the balance
-surface — the discipline LT Cards already applies to card text.
+playstyle; it grants nothing by itself. Mechanical pair identity comes from the
+**primary passive reading the secondary**, and from **sigils**, so there are never
+56 hardcoded special cases in the balance surface — the discipline LT Cards
+already applies to card text.
 
 ### Build codes
 
-A build (class pair, 6 skills, attributes, equipment template) serializes to a
+A build (class pair, 6 skills, weapon, equipment template) serializes to a
 short shareable text code, paste-able in chat and in hubs. Trying someone else's
 character should take ten seconds. If the draw is combinations, **friction on
 trying a new one is the primary enemy** — so unlocks are account-wide, alts are
@@ -302,7 +338,7 @@ analog; adjacent cells sharing a state render as one patch with an organic edge,
 so players see a burning *field*, never lit squares.
 
 > **Vocabulary rule:** "cell" is an engineering word and must never appear in
-> player-facing text. Ability and attribute descriptions speak in meters and plain
+> player-facing text. Ability and passive descriptions speak in meters and plain
 > language — *"armor scales with the cover around you"*, not *"per adjacent
 > blocked cell"*. Designers count cells; players see ground.
 
@@ -421,7 +457,7 @@ louder statement than GW1 ever allowed.
 **2. Nobody is obligated, and nobody is a tax.** A mandatory healer in a
 12-minute mission is a queue tax and a person who did not get to pick their
 fantasy. Distributed sustain means any four characters form a viable party. The
-healer *fantasy* survives as a **build, not a class**: attribute lines and sigils
+healer *fantasy* survives as a **build, not a class**: pair choice and sigils
 let a Cogwright specialize into field repair or a Verdurist into healing groves,
 so someone who wants to play support can — and nobody has to.
 
@@ -574,7 +610,7 @@ change what you do, not how big your numbers are.
 | Slot | What it decides |
 | --- | --- |
 | **Weapon** | Your attack's rhythm and shape, the abilities you can slot, and one weapon-native skill outside your six. See [Weapon families](#weapon-families) — this is the martial build's main expression surface, so its variety is not cosmetic |
-| **Armor** | Defense *profile*, not amount: trade-offs (+vs fire / −vs shock). 2 rune slots (capped attribute ranks) + 1 insignia (situational passive). **Armor is the class silhouette** and the main visual identity surface — dyeable, per-piece |
+| **Armor** | Defense *profile*, not amount: trade-offs (+vs fire / −vs shock). 2 rune slots (resistances and small utility effects) + 1 insignia (situational passive). **Armor is the class silhouette** and the main visual identity surface — dyeable, per-piece |
 | **Accessory ×2** | Sigils (above) and a Focus that shapes your resource economy |
 
 ### Weapon families
@@ -584,7 +620,7 @@ number with a model on it — each family has its own rhythm, its own resource
 quirk, and its own gated abilities, so **changing weapon changes how the character
 plays before a single skill slot changes.**
 
-| Family | Rhythm | Resource quirk | Gates | Mastery line |
+| Family | Rhythm | Resource quirk | Gates | Trained by |
 | --- | --- | --- | --- | --- |
 | **Sword** | Balanced 3-hit chain; reliable, interruptible at known points | Steady adrenaline | Ripostes, parries, chain-enders | **Reaver** |
 | **Heavy arms** (axe, hammer, greatsword) | Slow, committed, wide arcs | Adrenaline in big lumps; whiffing hurts | Knockdowns, armor-breaks, the biggest `Force` | **Reaver** |
@@ -593,38 +629,52 @@ plays before a single skill slot changes.**
 | **Martial arts** (unarmed) | Flowing chains, high mobility | Fastest adrenaline in the game | Grapples, throws, stance transitions | **Veilblade** |
 | **Bow** | Draw-and-release, arcing, distance | Draw time is the cost | **Preparations** — elemental arrows | **Beastbinder** |
 | **Gun** | Burst, flat trajectory, armor-piercing | **Reload** — a real rhythm, not a cooldown | Ammunition types, braced shots | **Cogwright** |
-| *Implements* (staff, scepter, focus) | Cast-facing; the caster's stat surface | Energy | Nothing martial; scales off casting attributes | *none — scales off the arcane lines* |
+| *Implements* (staff, scepter, focus) | Cast-facing; the caster's stat surface | Energy | Nothing martial | *any class* |
 
 Three rules make this carry real weight:
 
-**Anyone can hold anything; mastery is an attribute line.** A Verdurist can carry
-a greatsword. They will be bad with it — Heavy Arms is a Reaver line, and
-investing in it means taking points out of growth. So *"I want to actually swing
+**Anyone can hold anything; only a class that trains it wields it well.** A
+Verdurist can carry a greatsword. Unless one of their classes is the Reaver, they
+will swing it like someone who has never held one. So *"I want to actually swing
 this"* becomes a reason to take a martial secondary, which is exactly the kind of
-decision the pair system exists to produce.
+decision the pair system exists to produce — and taking that secondary is enough,
+with no points to spend on top.
 
 **Weapons gate abilities.** Hammer knockdowns need a hammer, off-hand chains need
 daggers, preparations need a bow. That is what stops the weapon from being
 cosmetic and makes the choice upstream of the bar.
 
-**Weapon mastery is how an arcane class buys into the martial half**, and the
+**Weapon training is how an arcane class buys into the martial half**, and the
 grapples-and-throws line on martial arts is a second home for `Force`, so the
 martial relationship to terrain does not live only on the Reaver.
 
-**Traps must be legible.** A Verdurist swinging a greatsword at Heavy Arms 6 is a
-bad build, and that is fine — an open combination space that contains no bad
-builds is not really open. But the loadout screen must say so *plainly and before
-the mission*: show the mastery you actually have against the weapon's expected
-rank, in words, not as a number the player has to know how to read. A trap you can
-see is build-crafting. A trap you cannot see is bad information wearing a costume.
+**Traps must be legible.** A Verdurist/Tidecaller swinging a greatsword is a bad
+build, and that is fine — an open combination space that contains no bad builds
+is not really open. But the loadout screen must say so *plainly and before the
+mission*, in words: *"neither of your classes trains this."* A trap you can see is
+build-crafting. A trap you cannot see is bad information wearing a costume.
 
-**And design primary attributes to be re-read by secondaries.** The Warden's
-*Bulwark* scales armor with adjacent blocked cells; the Verdurist manufactures
-blocked cells. Nobody authored that interaction — it fell out of two systems
+### Primary passives must read your secondary
+
+The Warden's *Bulwark* scales armor with the cover around you; the Verdurist
+manufactures cover. Nobody authored that interaction — it fell out of two systems
 meeting, and it is the single most satisfying thing theorycrafting this roster
-produced. Authoring target: every primary attribute should have **at least two
-secondaries that give it a non-obvious reading**. That is where players find
-things and feel clever, and it costs nothing but care at design time.
+produced.
+
+That started as an authoring target and is now a requirement: **every primary
+passive is written in terms of what your secondary class makes or does.** Two
+reasons:
+
+- A passive that improves your own class ("your fires spread further") rewards
+  stacking your primary — the same dominant-strategy trap that ruled out
+  attributes, reintroduced through the back door.
+- A passive that reads the secondary gives all 56 pairs a mechanical identity from
+  **eight rules instead of 56 special cases**. A `Reaver/Tidecaller` shoving
+  someone onto ice and a `Reaver/Emberwright` shoving someone into fire are the
+  same sentence, *Momentum*, producing two different characters.
+
+Test for every new passive: read it aloud with each of the seven possible
+secondaries substituted in. If it means the same thing for all seven, rewrite it.
 
 ## Beyond terrain: the ability vocabulary
 
@@ -666,7 +716,7 @@ right and playing right is self-defeating.
 
 - **Power ceiling reachable in ~10 hours.** Everything past it is horizontal:
   abilities, sigils, beasts, companions, cosmetics.
-- **Arenas normalize** gear, attributes and access to maximum, so the PvP wing
+- **Arenas normalize** gear and access to maximum, so the PvP wing
   never becomes a grind gate.
 - **Abilities are found, not purchased.** You learn a Verdurist elite by running
   the mission where it happens and doing the thing, and missions advertise what
@@ -836,7 +886,7 @@ is the *second* question. The first is:
   casters answers it. Five gives 20 ordered pairs, both economies, and both grips
   on the matrix. It costs perhaps two weeks.
 - ~35 abilities (7 per class, 1 elite each), the full 6-slot bar,
-  primary/secondary, attributes, and **both resource economies** including the
+  primary/secondary with passives, and **both resource economies** including the
   universal energy pool. **The build economy is the thing under test — it ships
   first.**
 - **All five self-heals**, since the heal slot is both the most-pressured slot on
@@ -964,16 +1014,20 @@ being walked around.
 wants grass works on an iron deck. Same rule, different fiction — the cheapest
 kind of breadth there is.
 
-### Thornreaver — Verdurist/Reaver · Heavy Arms ⚠️
+### Thornreaver — Verdurist/Reaver · Heavy Arms
 
 **Heartwood** *(elite)* — root yourself, gain heavy armor, and grow `Bramble`
 outward each second · **Rootdraw** *(heal)* · Bramble Wall · Entangle · Overbear ·
 Wild Swing
 
-*An angry tree with a greatsword* — and a **deliberate trap**. Heavy Arms is a
-Reaver line, so every point spent swinging is a point not spent growing, and you
-end up a bad Reaver and a weak Verdurist. Kept in the appendix because the trap
-should be legible, not hidden.
+*An angry tree with a greatsword.* This was the appendix's example trap while
+attribute points existed: every point spent swinging was a point not spent
+growing, so you ended up a bad Reaver and a weak Verdurist. With points gone, the
+Reaver secondary trains heavy arms outright and nothing is taxed twice — it is now
+a real build, and the clearest picture of what removing the double tax bought.
+*Rootedness* reads the Reaver too: you can grow on the rubble your swings leave.
+The trap still exists, just elsewhere: the same character as a
+Verdurist/Tidecaller, carrying a greatsword neither class trains.
 
 ### Houndwright — Beastbinder/Cogwright · Bow
 
@@ -1034,4 +1088,4 @@ shipped game produces discoveries like this, the draw is real.
    catalog gets breadth cheaply.
 5. **The best builds were not designed, they were found.** Bramblewarden is three
    systems compounding by accident. Protecting the conditions for that — broad
-   attributes, free pairing, legible rules — matters more than any single ability.
+   passives that read the secondary, free pairing, legible rules — matters more than any single ability.
