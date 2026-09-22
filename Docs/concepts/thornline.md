@@ -187,13 +187,16 @@ The alternative, making every verb universally available, deletes the pillar.
 ### Why there are no attribute points
 
 GW1's attributes were the channel its leveling reward flowed through: points
-arrived as you leveled to 20, plus a few from quests. Its PvP-only characters,
-created at maximum level with every point already granted, show what was left
-once leveling ended — an allocation puzzle with no progression in it. This game
-has no leveling curve by design, so keeping attributes would mean keeping the pipe
-after removing what flowed through it.
+arrived as you leveled to 20, plus a few from quests. GW1's own PvP-only
+characters, created at maximum level with every point already granted, show what
+attributes became once leveling was done — an allocation puzzle with no
+progression left in it.
 
-They also fail on their own terms here, in two ways:
+This game levels too, but its leveling rewards have to be ones that favor no
+group of skills (see [Leveling, unlocks and gear](#leveling-unlocks-and-gear)),
+and attributes are the opposite: a reward aimed at groups of skills. So leveling
+gets different rewards, and attributes go. They also fail on their own terms
+here, in two ways:
 
 - **They duplicate the bar.** Six slots already make depth-versus-breadth the
   central decision: every secondary skill costs a slot a primary skill could have
@@ -604,8 +607,10 @@ the floor; shouts are how you buy above it.
 
 ## Equipment
 
-Four slots: **Weapon · Armor · Accessory · Accessory**. All horizontal — they
-change what you do, not how big your numbers are.
+Four slots: **Weapon · Armor · Accessory · Accessory**. Gear climbs in tier on the
+way to the level cap (see [Leveling, unlocks and gear](#leveling-unlocks-and-gear));
+what the four slots *decide* is always horizontal — what you do, not how big your
+numbers are.
 
 | Slot | What it decides |
 | --- | --- |
@@ -712,12 +717,68 @@ Appearance is decoupled from stats (transmog by default, not as an unlock).
 If the draw is being a specific character, making players choose between looking
 right and playing right is self-defeating.
 
-## Progression as discovery
+## Leveling, unlocks and gear
 
-- **Power ceiling reachable in ~10 hours.** Everything past it is horizontal:
-  abilities, sigils, beasts, companions, cosmetics.
-- **Arenas normalize** gear and access to maximum, so the PvP wing
-  never becomes a grind gate.
+The game levels. An earlier draft of this doc said it did not; that was wrong. What
+survives from that draft is the *shape*: **a short vertical climb to a cap, then
+horizontal progression.** It is GW1's own shape — level 20 came early, and
+everything after it was new skills, new places and better-looking armor.
+
+### The rule: leveling rewards favor no build
+
+Nothing earned by leveling may make one group of skills stronger than another. A
+reward like that brings back the stacking trap that ruled out attribute points —
+just more slowly. That excludes attribute points, per-line bonuses and talent
+trees. It leaves plenty:
+
+| Level | Unlock | Why it's here |
+| --- | --- | --- |
+| 1 | Primary class, three skill slots, a weapon | You learn one class's verbs before you learn to combine them |
+| 3 | First companion | The retinue arrives while fights are still simple |
+| 5 | **Secondary class** — a story beat: someone from another discipline takes you on | Multiclassing arrives once you know what your primary is for. Your pair gets its name here |
+| 7 | Fourth skill slot | |
+| 10 | Fifth skill slot; retinue budget grows | |
+| 14 | **Elite slot** — your first elite is captured from a boss, never bought | The build's thesis arrives once you know what builds are |
+| 16 | Retinue budget full | |
+| 20 | Cap. Full bar, full retinue | From here, progression is horizontal |
+| Every level | A little more health and energy | Flat and universal: sturdier, without favoring any skill |
+
+**Leveling is the tutorial.** That is the strongest argument for this shape. The
+bar grows in the order a new player can absorb it — one class, then a second, then
+a thesis — so nobody meets 56 pairs and an elite on their first evening.
+
+### Skills: found, and gated by where you can go
+
+Skills are still found in missions, never bought. Leveling gates them indirectly:
+mission tiers open with level, and higher tiers carry the rarer skills and the
+elites. There is no skill-point currency to spend.
+
+### Gear: vertical until the cap, horizontal after
+
+Gear has tiers that rise with level. A level-12 sword hits harder than a level-4
+one, and upgrades are a steady stream of mission rewards on the way up. Two rules
+keep that from becoming the grind this design exists to avoid:
+
+- **Cap-tier gear is common.** Reaching the top tier is a matter of playing to the
+  cap, not farming it. GW1's lesson: max-stat armor was cheap; the expensive armor
+  was the armor that *looked* better.
+- **After the cap, gear changes what you do, never how big your numbers are.** A
+  rare item carries a fixed, unusual sigil, a rune combination, or a look — never
+  a higher tier. The chase moves to options and appearance.
+
+### Playing with friends at different levels
+
+Missions sync you to their level: health, energy and gear tier scale to the
+mission, but you keep every skill and slot you have unlocked. A level-20 veteran
+joining a level-6 friend arrives with more options, not bigger numbers. (Whether
+slots should sync too is an open question below.)
+
+### The power ceiling
+
+- **The ceiling is the level cap, and the cap comes early.** Everything past it is
+  horizontal: abilities, sigils, beasts, companions, cosmetics.
+- **Arenas normalize** level, gear and access to maximum, so the PvP wing never
+  becomes a grind gate.
 - **Abilities are found, not purchased.** You learn a Verdurist elite by running
   the mission where it happens and doing the thing, and missions advertise what
   they can drop — so chasing the piece that completes a build concept is a
@@ -728,8 +789,9 @@ right and playing right is self-defeating.
   payoff for the roleplay half of the draw.
 
 Stated as a rule because it will be under permanent pressure: every retention
-pass will propose a small vertical exception. The concept does not survive one —
-the instant playtime buys *numbers*, build choice becomes build *obligation*.
+pass will propose raising the cap or adding a gear tier above it. The concept does
+not survive that — the instant playtime *past the cap* buys numbers, build choice
+becomes build *obligation*.
 
 ## Legibility
 
@@ -801,7 +863,7 @@ that single shift.
 | Build expression migrated into trait grids and gear stat-combinations | Legibility. A build became percentage modifiers instead of eight nameable verbs | **Expression stays in named verbs** |
 | Combo fields and finishers — the same idea as terrain combos | Nothing, because almost nobody noticed them | **Telegraph loudly or don't build it** |
 | Trinity removed; everyone self-heals, damages, supports | Role fantasy. Open-world combat became undifferentiated | *(Already handled: distributed self-heals, but support as a real build)* |
-| Level 80 and ascended gear above exotic | The "skill, not time" promise | *(Already handled: the power ceiling law)* |
+| Level 80 and ascended gear above exotic | The "skill, not time" promise | *(Handled: a short climb to an early cap, then horizontal)* |
 
 ### The four guardrails, and how each gets crossed
 
@@ -966,6 +1028,14 @@ instanced zones, and owned gear never matters competitively. What remains:
    pillar and the least connected to the restated draw. Worth asking honestly
    whether a cheaper world-verb system (traversal and utility without a full
    simulated surface grid) buys 80% of pillar 2 for 30% of the cost.
+10. **How long is the climb to the cap?** Too short and leveling stops teaching;
+    too long and the tutorial overstays its welcome, and co-op across levels
+    strains. A starting guess, not a decision: the end of the first campaign arc,
+    somewhere around 20–30 hours of missions. Set it by how fast playtesters
+    absorb the bar, not by retention targets.
+11. **Should level sync reduce slots too?** Keeping the full bar lets a veteran
+    help a friend with options rather than numbers — but it puts an elite into a
+    mission tuned for players who do not have one yet.
 
 ## Appendix: ten builds
 
