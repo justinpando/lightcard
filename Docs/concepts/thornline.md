@@ -114,27 +114,39 @@ player one **upgrade** to spend on one of their six skills. Match level resets
 every match; it has nothing to do with your character level, which is persistent
 and decides who you're matched against.
 
-- **Every skill has one upgrade, and it is a verb, not a number.** Bramble Wall's
-  upgrade makes the wall climbable from your side. Kindle's makes the fire spread
-  the instant it lands. Overbear's carries you through with the target. Tend's
-  heals your whole retinue, not just your beast. "+20% damage" is not an upgrade —
-  the same rule as sigils: a verb, or nothing.
+- **Every skill has one upgrade axis, and an upgrade makes it about 30% better
+  along that axis.** Area, duration, recharge, range, distance, charges, windup.
+  Bramble Wall grows longer; Entangle holds longer; Kindle burns wider; Overbear
+  shoves further; Braced Shot winds up faster; Tend recharges sooner; Vanish
+  conceals longer. The axis is a data field on the skill, not a second version of
+  it, so upgrades add almost no authoring.
+- **The axis is never raw damage or healing.** Those are the one number that is
+  always worth more, which would make the upgrade order automatic. Pick each
+  skill's axis so it matters more in some matches than others: a wider Kindle
+  matters against a team that groups up, a longer Entangle against a team that
+  runs.
 - **You can't upgrade everything.** Around four upgrades a match, for six skills.
   Which skills you upgrade, and in what order, is the in-match decision: it's how
   a build adapts to what the other team brought and what the map has become.
 - **The elite has an upgrade too**, often the one worth waiting for. The elite
   still works from the first second either way.
 - **Persistent progression can widen it.** Over time, some skills unlock a second
-  upgrade to choose between, so a veteran's decision at match level 3 is which
-  upgrade as well as which skill. That is horizontal progression — more options,
-  not bigger numbers — and ranked play at the cap grants all of them anyway.
+  axis to choose between, so a veteran's decision at match level 3 is which axis
+  as well as which skill. Still data, not new content — and ranked play at the
+  cap grants all of them anyway.
 
 Why this fits where attribute points didn't: it is the one form of "putting points
 into things" that survives the reasons attributes were cut. It is scoped to a
 single skill, so it cannot reward stacking a group of skills; it happens in the
-match, so it doesn't re-tax the build you made before it; and it is a verb, so it
-never becomes a spreadsheet. It gives matches Dota's weak-to-strong arc with no
-gold, no shop and no last hits.
+match, so it doesn't re-tax the build you made before it; and it resets every
+match, so the numbers never accumulate into a character sheet. It gives matches
+Dota's weak-to-strong arc with no gold, no shop and no last hits.
+
+Upgrades are the one place this design allows a plain number, and it's
+deliberate. **Sigils stay verbs** — they are permanent, they define what a build
+*is*, and a sigil with a percentage and no verb is still rejected. An upgrade is
+temporary, scoped to one skill, and exists to make the match's second half feel
+different from its first.
 
 ### Companions are how a team splits
 
@@ -1080,9 +1092,9 @@ more than the rotation does, and where a fight still rewards you for moving well
    and a population to keep. One or two maps with rotating modifiers is the
    affordable launch.
 2. **Content volume is the whole design.** Hundreds of abilities and sigils are
-   not polish here; they *are* the product — and every ability also carries an
-   in-match upgrade, which roughly doubles the authoring per skill. A thin version
-   of this game has no draw at all. This is the risk that should scare you most.
+   not polish here; they *are* the product. (In-match upgrades barely add to it:
+   each skill carries an upgrade axis as a data field, not a second version.) A
+   thin version of this game has no draw at all. This is the risk that should scare you most.
 3. **Dynamic verticality.** Player-created climbable surfaces invalidate most
    pathing and level-design assumptions. Most likely to be cut — so validate it
    early, alone, where its cost is visible.
@@ -1126,7 +1138,7 @@ than launch's 5v5 so a few testers plus phantoms can fill it.
   economy ships first.**
 - **All five self-heals**, since the heal slot is both the most-pressured slot and
   the cheapest source of combination identity.
-- **Match level and one upgrade per skill**, since the upgrade order is the
+- **Match level and an upgrade axis per skill**, since the upgrade order is the
   match's main in-play decision.
 - **One companion each, with 3 trigger-conditioned ability slots**, usable on
   `Hold` to guard a point.
@@ -1150,8 +1162,9 @@ than launch's 5v5 so a few testers plus phantoms can fill it.
   the primary metric.
 - If no one ever leaves a companion to hold a point, splitting is not real.
 - If players never rebuild between matches, the draw is not there.
-- **If everyone upgrades their skills in the same order every match**, the
-  upgrades are numbers in disguise.
+- **If players of the same build upgrade in the same order every match**,
+  whatever the map and the opponents, the axes aren't situational enough — pick
+  axes that matter more in some matches than others.
 - **If Reaver players describe the good moments as things that happened *to* the
   map rather than things they did**, `Force` is not carrying enough weight.
 - If two people running the same pair end up with near-identical bars, the build
