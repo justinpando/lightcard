@@ -50,7 +50,7 @@ consequences, stated up front:
 
 | Layer | What it is | Why it's here |
 | --- | --- | --- |
-| **Matches** | Online team PvP: 4v4, each player with a companion, ~15–20 minutes, matched by level and skill | The game |
+| **Matches** | Online team PvP: 5v5, each player with a companion, ~15–20 minutes, matched by level and skill | The game |
 | **The hub** | The social space between matches. Your character stands here with **your retinue visibly around you**; inspect anyone, copy their build | Where the fantasy is *worn*. Without a place to be seen, build-crafting has no second half |
 | **PvE missions** *(later)* | Instanced co-op runs | Deferred, not cut — see [PvE missions (later)](#pve-missions-later) |
 
@@ -62,8 +62,11 @@ before the match, and nothing during the match turns into a spreadsheet.
 
 **The map is the economy.** Nothing is bought during a match: no gold, no items,
 no last-hitting. Your loadout — six skills, a weapon, a companion — is the whole
-build, locked when the match starts. What changes over the match is the map, and
-the match is the story of who changed it.
+build, locked when the match starts and **live from the first second — elite
+included**. The elite is often the lynchpin a build is designed around, not a
+flourish at the end of it, so nothing on your bar is ever switched off to
+manufacture a turning point. Turning points come from the map. What changes over
+the match is the map, and the match is the story of who changed it.
 
 There are two precedents. *Heroes of the Storm* removed items and gold, shared
 experience across the team, and made the map's objectives the game. And GW1's own
@@ -100,18 +103,11 @@ system earns its cost:
 - **The win condition is the enemy's Keeper** — a named NPC in their base,
   guarded by NPC wardens. Held sites weaken the guard. Nobody wins on kills.
 
-### Your elite comes online at the turning point
-
-Elites are locked for the first few minutes and unlock for everyone at once, at a
-fixed time — Dota's level-6 ultimate, without the farming. It gives every match an
-opening and a pivot, and makes your build's thesis the thing the pivot is about.
-Fixed rather than earned, so a team that lost the opening still gets its thesis.
-
 ### Companions are how a team splits
 
 A companion on `Hold` guards a point while its player is elsewhere. That turns the
-retinue from a combat add-on into a macro tool: four players with four companions
-can split more ways than four players alone, and *"who do we leave the Well to?"*
+retinue from a combat add-on into a macro tool: five players with five companions
+can split more ways than five players alone, and *"who do we leave the Well to?"*
 becomes a real decision. Companions hold; they cannot capture. A real split still
 needs people.
 
@@ -128,8 +124,8 @@ take the next one. Three controls:
 
 ### Shape
 
-- **4v4, each player with one companion.** Up from the earlier 3v3, because
-  splitting needs bodies; companions add holders, not decision-makers.
+- **5v5, each player with one companion.** Splitting needs bodies, and five is
+  where macro play gets rich; companions add holders, not decision-makers.
 - **~15–20 minutes.** Long enough for a map to change; short enough that the
   loadout decision comes around several times an evening.
 - **Rotating map modifiers** — *Drought*, *Verdant Bloom*, *Tempest*,
@@ -583,7 +579,7 @@ louder statement than GW1 ever allowed.
 
 **2. Nobody is obligated, and nobody is a tax.** A mandatory healer in a
 15-minute match is a queue tax and a person who did not get to pick their
-fantasy. Distributed sustain means any four characters form a viable party. The
+fantasy. Distributed sustain means any five characters form a viable team. The
 healer *fantasy* survives as a **build, not a class**: pair choice and sigils
 let a Cogwright specialize into field repair or a Verdurist into healing groves,
 so someone who wants to play support can — and nobody has to.
@@ -664,7 +660,7 @@ Retinue points scale with context, so field clutter stays bounded:
 
 | Context | Points | Typical squad |
 | --- | --- | --- |
-| Matches (4v4) | 3 each | one beast, or three drones — enough to hold a point while you're elsewhere |
+| Matches (5v5) | one companion each | any kind, including your named companion — enough to hold a point while you're elsewhere |
 | PvE missions, solo *(later)* | 8 | a real squad; fills the party |
 | PvE missions, 4-player *(later)* | 3 each | one companion each |
 
@@ -933,8 +929,8 @@ Four answers:
 - **Terrain is honest.** The most decisive actions — the burning field, the
   bramble wall, the flooded lowland — are large, visible and lasting. The
   unreadable part of a build is never the part that decides the map.
-- **Elites are announced.** When elites come online, each one is named on the
-  opposing team's screen the first time it is used.
+- **Elites are announced.** Each elite is named on the opposing team's screen the
+  first time it is used.
 
 The expressive version still matters too — **your build should be legible enough
 to be admired**: named pair on the nameplate, and inspect plus build codes in the
@@ -961,7 +957,7 @@ authoritative state, replicated as deltas. Everything falls out of it:
 
 | Concern | Approach | Risk |
 | --- | --- | --- |
-| Networking | Server-authoritative, fixed ~30 Hz tick. Matches are 8 players plus companions, instanced, ~15–20 minutes — instances recycle, and nothing persists but results | Moderate |
+| Networking | Server-authoritative, fixed ~30 Hz tick. Matches are 10 players plus companions, instanced, ~15–20 minutes — instances recycle, and nothing persists but results | Moderate |
 | Matchmaking and ranking | Level brackets, skill rating within them, phantom backfill, party rules | Moderate: well understood, but it is a live service to run, not a feature to ship |
 | Hubs | Higher player count, **no terrain simulation, no combat** — a separate, much cheaper server path | Low, if kept genuinely combat-free |
 | Vision / concealment | Server-side visibility culling; hidden enemies are not sent to the client | Non-negotiable: ambushes are a core story, and client-side fog is a wallhack |
@@ -1055,7 +1051,7 @@ more than the rotation does, and where a fight still rewards you for moving well
    early, alone, where its cost is visible.
 4. **Build-gated routes.** Pillar 2 means some routes exist only for some builds —
    a frozen river, a burned-through thicket. In PvP that is strategy, but a team
-   whose four builds share no verbs will find parts of the map closed to them.
+   whose five builds share no verbs will find parts of the map closed to them.
 5. **Dead builds and dominant ones.** With 56 pairs × hundreds of abilities, the
    realistic failures are dozens of combinations nobody enjoys and a few everyone
    is forced into. Automated sweeps are spine, not polish.
@@ -1082,7 +1078,7 @@ Two questions, in order:
 > **Do players want to make another character?**
 
 **Target: one map, 3v3 with companions, phantoms filling empty seats.** Smaller
-than launch's 4v4 so a few testers plus phantoms can fill it.
+than launch's 5v5 so a few testers plus phantoms can fill it.
 
 - **5 classes — Verdurist, Emberwright, Tidecaller, Reaver, Beastbinder.** Enough
   for both resource economies, both grips on the terrain matrix, and a martial —
@@ -1103,7 +1099,6 @@ than launch's 4v4 so a few testers plus phantoms can fill it.
   slice 2**).
 - Terrain grid with 5 surfaces: `Foliage`, `Burning`, `Scorched`, `Water`, `Ice`,
   fire spread on.
-- Elites unlock at a fixed time.
 - A lobby that shows opposing pairs and weapons; a small hub to inspect builds.
 - **Everyone at the cap.** No leveling, no brackets, no ranking — progression is
   not what's under test.
@@ -1123,8 +1118,9 @@ than launch's 4v4 so a few testers plus phantoms can fill it.
 
 ## Open questions
 
-Answered since earlier drafts: PvP first, matched by level; no in-match economy;
-the game levels, with gear that climbs to an early cap. What remains:
+Answered since earlier drafts: PvP first, 5v5, matched by level; no in-match
+economy; the whole bar is live from the first second; boss captures go to the
+whole team; the game levels, with gear that climbs to an early cap. What remains:
 
 1. **Does any category become compulsory at six slots?** Not "is six too few" —
    the elite is a wildcard and carries enormous expression on its own. The risk is
@@ -1134,43 +1130,36 @@ the game levels, with gear that climbs to an early cap. What remains:
 2. **Is 15–20 minutes the right match length?** Long enough for the map to change
    and for a split to matter; short enough that the loadout decision comes around
    often. Macro play pulls longer, the build-crafting draw pulls shorter.
-3. **4v4 or 5v5?** Splitting needs bodies, and Dota's 5v5 has the richest macro
-   play — but five players plus five companions is a lot to read. 4v4 is the
-   current bet.
-4. **Is the Beastbinder a class or an axis?** "Bring beasts" and "bring robots"
+3. **Is the Beastbinder a class or an axis?** "Bring beasts" and "bring robots"
    could be retinue unlocks available to everyone, with Beastbinder and Cogwright
    being *better commanders* rather than the gate. Probably healthier, and it
    widens the fantasy for every pair — but it costs those two classes their
    headline identity.
-5. **How much authored narrative?** In PvP it is mostly the hub, the announcer
+4. **How much authored narrative?** In PvP it is mostly the hub, the announcer
    and pair reactivity — cheap and worth a lot. A campaign belongs to the PvE
    layer, and is the single largest cost in this document.
-6. **When does PvE come back?** It is where strange, overpowered builds get to be
+5. **When does PvE come back?** It is where strange, overpowered builds get to be
    fun and where solo players live. The earliest cheap version: the map's bosses
    as a standalone co-op mode.
-7. **Does support-as-a-build actually hold up?** Distributed self-heals settle
+6. **Does support-as-a-build actually hold up?** Distributed self-heals settle
    that nobody is *obligated* to heal, but not whether someone who *wants* to play
    a healer has enough to work with. If the answer turns out to be no, the fix is a
    ninth class — and reintroducing a dedicated healer risks reintroducing the
    obligation, which is the whole thing this design avoided.
-8. **Are eight classes too many for launch?** 56 pairs is the draw, but it is also
+7. **Are eight classes too many for launch?** 56 pairs is the draw, but it is also
    8 ability pools, 8 armor sets, 8 silhouettes and 56 authored names before a
    single one is deep. Six deep classes may beat eight thin ones — and if it comes
    to cutting, cut an *arcane* one, because the martial half was the gap.
-9. **Does the terrain system survive its own cost?** It is the most expensive
+8. **Does the terrain system survive its own cost?** It is the most expensive
    pillar and the least connected to the restated draw. Worth asking honestly
    whether a cheaper world-verb system (traversal and utility without a full
    simulated surface grid) buys 80% of pillar 2 for 30% of the cost.
-10. **How long is the climb to the cap?** Too short and leveling stops teaching;
-    too long and the tutorial overstays its welcome, and co-op across levels
-    strains. A starting guess, not a decision: the end of the first campaign arc,
-    somewhere around 20–30 hours of matches. Set it by how fast playtesters
-    absorb the bar, not by retention targets.
-11. **Is boss capture per-player or per-team?** Per-team rewards everyone who
-    fought; per-player creates a last-hit scramble — exactly the micro-economy
-    this design removed. Per-team is the current bet, but either way it risks
-    teams chasing the boss over the win.
-12. **How much should objectives snowball?** Too little and early play doesn't
+9. **How long is the climb to the cap?** Too short and leveling stops teaching;
+   too long and the tutorial overstays its welcome, and co-op across levels
+   strains. A starting guess, not a decision: the end of the first campaign arc,
+   somewhere around 20–30 hours of matches. Set it by how fast playtesters
+   absorb the bar, not by retention targets.
+10. **How much should objectives snowball?** Too little and early play doesn't
     matter; too much and a lost opening ends the match at minute five.
 
 ## Appendix: ten builds
