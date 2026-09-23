@@ -133,6 +133,14 @@ modifier** — *Drought*, *Verdant Bloom*, *Tempest*, *Ashfall* — that rewrite
 profile. The lobby shows map and modifier before lock-in, so they are part of what
 you build for.
 
+**Scale is set by two ratios, not by meters.** In established MOBAs, crossing base
+to base takes about a minute, and the map is roughly 20 ability ranges and 9–11
+vision radii across. Splits, ambushes and detours all depend on the second ratio:
+if a fight's reach covers half the map, there is nowhere to split to and no room
+to hide. With ability ranges of 15–20 m and a run speed around 6 m/s, that puts a
+5v5 map at **about 350 m on a side**. Greybox it and walk it before trusting the
+number.
+
 ### Skills level up during the match
 
 Your bar is fixed at lock-in, but it grows over the match. The team shares one
@@ -747,8 +755,10 @@ admired** — pair name on the nameplate, inspect and build codes in the hub.
 ### The terrain grid is the architecture
 
 A uniform grid of ~0.5 m cells carrying `{surface, volume, timers, owner}`, about
-2 bytes per cell. A 200 m × 200 m map is 160,000 cells — ~320 KB of authoritative
-state, replicated as deltas. Everything falls out of it:
+2 bytes per cell. A 350 m × 350 m map is ~490,000 cells — about 1 MB of
+authoritative state, replicated as deltas. Only cells that are changing (burning,
+spreading, timing out) simulate each tick, so map size mostly costs memory, not
+simulation time. Everything falls out of it:
 
 - **Combos** are a lookup into the matrix, per cell.
 - **Fire spread** is a cellular automaton at ~5 Hz over the same grid.
