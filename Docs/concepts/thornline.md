@@ -120,10 +120,12 @@ and decides who you're matched against.
   shoves further; Braced Shot winds up faster; Tend recharges sooner; Vanish
   conceals longer. The axis is a data field on the skill, not a second version of
   it, so upgrades add almost no authoring.
-- **The axis is never raw damage or healing.** Those are the one number that is
-  always worth more, which would make the upgrade order automatic. Pick each
-  skill's axis so it matters more in some matches than others: a wider Kindle
-  matters against a team that groups up, a longer Entangle against a team that
+- **Damage and healing can be axes too, tuned to be worth no more than the
+  alternatives.** They matter in every match, so they usually want a smaller
+  percentage than a situational axis to come out even — a balance question, not a
+  ban. The slice's kill criterion (the same upgrade order every match) is the
+  check. Prefer axes that matter more in some matches than others: a wider Kindle
+  pays off against a team that groups up, a longer Entangle against a team that
   runs.
 - **You can't upgrade everything.** Around four upgrades a match, for six skills.
   Which skills you upgrade, and in what order, is the in-match decision: it's how
