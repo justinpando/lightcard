@@ -21,16 +21,16 @@ showing someone.
 That is a narrow, unfashionable target, and it excludes things. Named
 consequences, stated up front:
 
-- **It is not a MOBA.** MOBA structure — session-based team objective play — is
-  borrowed as *one mode*, not as the game's shape. A 25-minute competitive
-  instance with no world, no downtime, no NPCs and no persistence gives a
-  self-authored character nowhere to *be*. See
-  [The shape of the game](#the-shape-of-the-game).
-- **PvE is primary, PvP is a wing.** This is the single biggest reversal from an
-  arena-first design, and it is also what makes the combinatorial build space
-  affordable — see [Why PvE-primary makes the build space possible](#why-pve-primary-makes-the-build-space-possible).
-- **Balance means "no dead builds", not "no strong builds".** The failure state
-  is a combination that is *boring*, not one that is 8% above the curve.
+- **It is a MOBA without the economy.** Online team PvP with real macro play —
+  routes, splits, ambushes, objective races — on a map that changes as you fight
+  over it. But no gold, no items, no last-hitting: your loadout is the whole
+  build. See [The match](#the-match).
+- **PvP first, matched by level.** You level a persistent character and face
+  opponents at a similar level. PvE missions are a later layer, not a cut one —
+  see [PvE missions (later)](#pve-missions-later).
+- **Balance means "no dead builds" and "no dominant builds".** PvP-first brings
+  back the second half. The failure states are a combination nobody enjoys, and a
+  combination everybody is forced into.
 
 ## Design pillars
 
@@ -43,23 +43,164 @@ consequences, stated up front:
 3. **The map remembers.** Terrain is a system builds can *lean into* — not a tax
    every ability pays. A fight in the right place should leave a scar; a fight in
    a stone corridor is still a good fight.
+4. **The map is the economy.** Nothing is bought during a match. Objectives change
+   the battlefield instead, and a match is the story of who changed it and how.
 
 ## The shape of the game
 
-Guild Wars 1's structure, because it is the only shipped structure that supports
-both halves of the draw:
-
 | Layer | What it is | Why it's here |
 | --- | --- | --- |
-| **Hubs** | Persistent social towns. Your character stands here with **your retinue visibly around you** | Where the fantasy is *worn*. Without a place to be seen, build-crafting has no second half |
-| **Missions** | Short instanced co-op runs, 1–4 players, the retinue filling empty party slots | The primary game. Where abilities are discovered, beasts tamed, sigils found |
-| **Arenas** | Instanced PvP, including the objective/lane mode from the MOBA idea | A proving ground and a second use for your build, not the point of the build |
+| **Matches** | Online team PvP: 4v4, each player with a companion, ~15–20 minutes, matched by level and skill | The game |
+| **The hub** | The social space between matches. Your character stands here with **your retinue visibly around you**; inspect anyone, copy their build | Where the fantasy is *worn*. Without a place to be seen, build-crafting has no second half |
+| **PvE missions** *(later)* | Instanced co-op runs | Deferred, not cut — see [PvE missions (later)](#pve-missions-later) |
 
-Instanced, not a shared open world. That is a deliberate cost decision, and the
-terrain system requires it: a map whose surfaces are being rewritten by players
-needs to be able to *reset*.
+An earlier draft put PvE first and PvP in a side wing. That is reversed. What
+survived the reversal is the thing PvE-first was protecting: the build is authored
+before the match, and nothing during the match turns into a spreadsheet.
 
-## Missions
+## The match
+
+**The map is the economy.** Nothing is bought during a match: no gold, no items,
+no last-hitting. Your loadout — six skills, a weapon, a companion — is the whole
+build, locked when the match starts. What changes over the match is the map, and
+the match is the story of who changed it.
+
+There are two precedents. *Heroes of the Storm* removed items and gold, shared
+experience across the team, and made the map's objectives the game. And GW1's own
+**Guild vs Guild** got there first: NPC guards, a guild lord to kill, flag-running,
+and whole team builds designed around splitting up.
+
+### What the match is built to produce
+
+Four stories, and what the map has to provide for each:
+
+| The story | What the map needs |
+| --- | --- |
+| *"We went here and did this"* | Several objectives spread across the map, each worth something different, so where you go is a choice |
+| *"We split up, then came together"* | Objectives that spawn in pairs on opposite sides, and companions that can hold a point without you |
+| *"We ambushed them"* | Fog of war; concealment (foliage, smoke, steam); routes some builds open and others can't see; and objective timers both teams know — an ambush needs the enemy to be predictable |
+| *"We beat the boss first"* | Neutral PvE challenges both teams race for, worth fighting over |
+
+### Objectives change the battlefield, not the scoreboard
+
+With no gold, rewards are expressed as map changes — which is where the terrain
+system earns its cost:
+
+- **Sites** — a Grove, a Well, a Forge — are captured by putting the right surface
+  around them, not by standing on them. Holding one reshapes a region for your
+  team: the Grove grows cover across the east woods, the Well floods the
+  lowlands, the Forge lights the bridges.
+- **Neutral bosses** grant something you can see: a temporary extra companion (a
+  captured beast or construct that fights for you until it dies), a map event, or
+  vision.
+- **Capture.** Bosses are also where skills come from. GW1's elites were captured
+  from bosses; here, a team that brings one down captures its skill as a
+  permanent unlock for everyone who was there. The race for the boss is a race
+  for the match *and* for your collection.
+- **The win condition is the enemy's Keeper** — a named NPC in their base,
+  guarded by NPC wardens. Held sites weaken the guard. Nobody wins on kills.
+
+### Your elite comes online at the turning point
+
+Elites are locked for the first few minutes and unlock for everyone at once, at a
+fixed time — Dota's level-6 ultimate, without the farming. It gives every match an
+opening and a pivot, and makes your build's thesis the thing the pivot is about.
+Fixed rather than earned, so a team that lost the opening still gets its thesis.
+
+### Companions are how a team splits
+
+A companion on `Hold` guards a point while its player is elsewhere. That turns the
+retinue from a combat add-on into a macro tool: four players with four companions
+can split more ways than four players alone, and *"who do we leave the Well to?"*
+becomes a real decision. Companions hold; they cannot capture. A real split still
+needs people.
+
+### Keeping it from snowballing
+
+The standing risk of macro play is the snowball: take an objective, get stronger,
+take the next one. Three controls:
+
+- **Map rewards are temporary and local.** Regions regrow, floods drain, captured
+  beasts die.
+- **The Keeper's guard regenerates**, so an early lead has to be converted, not
+  banked.
+- **Objectives spawn biased toward the side holding fewer sites.**
+
+### Shape
+
+- **4v4, each player with one companion.** Up from the earlier 3v3, because
+  splitting needs bodies; companions add holders, not decision-makers.
+- **~15–20 minutes.** Long enough for a map to change; short enough that the
+  loadout decision comes around several times an evening.
+- **Rotating map modifiers** — *Drought*, *Verdant Bloom*, *Tempest*,
+  *Ashfall* — announced in the lobby before lock-in, so building for the match is
+  still the puzzle the mission briefing was.
+- **The lobby shows the other team's pairs and weapons** before lock-in. You
+  can't see their bars, but you can build against their shape.
+
+## Matchmaking
+
+You level a persistent character and face opponents at a similar level. The
+proven version is *World of Tanks*, not Dota: a long persistent climb, and
+matchmaking that puts you against tanks within a tier or two of yours.
+
+### Level brackets, then skill
+
+- **Few, wide brackets:** 1–5, 6–10, 11–15, 16–19, and the cap. Narrow brackets
+  fragment the queue.
+- **Skill rating inside each bracket.** Level says what you've unlocked; rating
+  says how good you are. Matching on level alone lets a veteran's new character
+  stomp real beginners.
+- **Gear scales to the bracket's baseline.** Otherwise you get the WoW
+  battleground problem: "twinks" parked at the top of a bracket in the best
+  possible gear, farming newer players — Blizzard's eventual fix was giving them
+  their own queue. The simpler fix is not letting gear *numbers* vary within a
+  bracket. Gear's *options* — sigils, looks — still come with you.
+- **Parties queue in their highest member's bracket.** Everyone is scaled to that
+  bracket's baseline numbers, but brings only the slots and skills they have. A
+  low-level member is a real handicap, and the party chose it.
+
+### Low brackets are a smaller game
+
+A level-4 match is everyone with three slots, one class and a small catalog. New
+players learn against other new players, in a simpler version of the game —
+leveling-as-tutorial, carried into PvP. And the full combination space, 56 pairs ×
+hundreds of skills, only exists at the cap, which is where balance effort goes.
+
+### Ranked at the cap
+
+In PvP, options are power: more unlocked skills means more ways to counter-build.
+So **ranked play at the cap grants every player the full catalog and cap-tier
+gear**. That is GW1's own answer — its PvP characters started at maximum level
+with every skill the account had unlocked. Unranked and bracket play use your own
+unlocks.
+
+### Phantoms fill the queue
+
+Brackets × ratings divide the player base, and an indie-sized population can leave
+brackets empty. The answer is already designed in this repo:
+[LT Cards' phantoms](../design/phantom-ai.md), AI-piloted snapshots of real
+players' decks. Here, a phantom is a real player's posted character piloted by the
+heuristic agent, filling an empty seat — always labeled as a phantom, never passed
+off as a person.
+
+### What PvP-first costs
+
+The earlier PvE-first draft was partly about affordability: in co-op, a build only
+has to be viable. PvP brings back the other half — no *dominant* builds — and
+with it a balance surface no team can fully cover. Brackets pay part of that back,
+because the space stays small until the cap. Phantom-vs-phantom sweeps (the repo's
+`MatchRunner`) test the rest. And the old quarantine now runs the other way: when
+PvE returns, it becomes the place where strong, strange, over-the-top builds are
+allowed.
+
+## PvE missions (later)
+
+**Deferred for now, not cut.** Everything below was designed when PvE came first,
+and two of its ideas already carry into PvP: the build is a puzzle solved against
+information published before you commit (now the lobby's map, modifier and
+opposing pairs), and modifiers multiply how many builds a map is interesting for.
+When PvE returns, it comes back as this.
 
 **The loop:** Hub (build) → Briefing (read the profile) → Mission (8–15 min) →
 Reward → Hub.
@@ -110,23 +251,6 @@ A rotating set of mission modifiers rewrites the profile of an existing map:
 This is the direct answer to the content-volume risk: a modifier multiplies how
 many builds a map is interesting for, and costs no new art. A small map count
 with a deep modifier table is the affordable version of this game.
-
-### Why PvE-primary makes the build space possible
-
-An arena-first game with hundreds of abilities across 56 class pairs has a
-balance surface no team can cover, and every patch invalidates someone's
-character. That pressure is what forces competitive games toward small, legible,
-homogenized kits — the exact opposite of this draw.
-
-Going PvE-primary buys the build space directly:
-
-- A build only has to be **viable and expressive**, not tournament-valid.
-- Strong, weird, situational and over-the-top are all *features* in co-op.
-- PvP lives in arenas with normalization, so competitive concerns stay quarantined
-  in the mode that asked for them.
-
-This is the trade being made on purpose: give up esports legitimacy, buy the
-combinatorial toybox.
 
 ## Classes
 
@@ -225,7 +349,7 @@ What survives, with no numbers:
 Six is tighter than GW1's eight, on purpose, and the arguments are mostly about
 this game's specific shape rather than about bars in general:
 
-- **Missions are 8–15 minutes.** A bar you can fully express inside one fight
+- **Matches are 15–20 minutes.** A bar you can fully express inside one fight
   beats a bar you are still discovering at minute nine.
 - **Six is a gamepad.** Four face buttons plus two shoulders, or one clean radial.
   Eight is not, and this is a real platform decision disguised as a number.
@@ -411,7 +535,7 @@ Wellspring puts down water, Kindle lights a cell, Smokebomb makes a volume
 chemically, Rime Underfoot freezes what is already there.
 
 This is not flavor, it is what keeps terrain builds from being hostage to the
-briefing. Without portable surfaces, a `Drought` or `Ashfall` modifier does not
+map. Without portable surfaces, a `Drought` or `Ashfall` modifier does not
 *challenge* a build, it *deletes* one, and a player who brought their favorite
 character to the wrong map simply does not get to play. With them, the modifier
 becomes what it should be: your setup costs more slots and more time than usual.
@@ -458,7 +582,7 @@ six slots it costs a **sixth of your character**, which makes skipping it a much
 louder statement than GW1 ever allowed.
 
 **2. Nobody is obligated, and nobody is a tax.** A mandatory healer in a
-12-minute mission is a queue tax and a person who did not get to pick their
+15-minute match is a queue tax and a person who did not get to pick their
 fantasy. Distributed sustain means any four characters form a viable party. The
 healer *fantasy* survives as a **build, not a class**: pair choice and sigils
 let a Cogwright specialize into field repair or a Verdurist into healing groves,
@@ -484,8 +608,8 @@ counterplay with no new machinery.
 | **Cogwright** | *Field Repair* — a deployable that heals anyone inside it | Stationary, destructible, slow | None — the only party-facing heal, and the seed of support-without-a-healer |
 
 **Every heal has a floor that works on `Bare` ground.** Terrain is the amplifier,
-never the prerequisite — otherwise a mission with the wrong surfaces is simply
-unplayable for your character. Briefings advertise surfaces, so *"this map is dry,
+never the prerequisite — otherwise a map with the wrong surfaces is simply
+unplayable for your character. The lobby announces the map and modifier, so *"this map is dry,
 my Tidecaller heal will be weak"* is a planning input, not an ambush.
 
 ### The heal slot is a combination engine
@@ -505,7 +629,7 @@ more of: a small closed set whose *combinations* carry the expression.
 
 ### Between fights
 
-Out-of-combat regeneration is fast and free. In 8–15 minute missions, downtime as
+Out-of-combat regeneration is fast and free. In 15–20 minute matches, downtime as
 a resource tax is pure friction — the heal slot is meant to matter *during* a
 fight, not to make you sit down after one.
 
@@ -526,7 +650,7 @@ stay interesting past month two": each sigil is data, rewrites one ability, and
 the combo matrix stays the only global system. Sigils are also **where the named
 pairs get mechanical teeth** without hardcoding 30 exceptions.
 
-Sigils are found and earned in missions, never bought. Acquiring the
+Sigils are found and earned in play — match rewards and boss captures — never bought. Acquiring the
 piece that completes a build concept *is* the progression curve.
 
 ## The Retinue
@@ -540,10 +664,9 @@ Retinue points scale with context, so field clutter stays bounded:
 
 | Context | Points | Typical squad |
 | --- | --- | --- |
-| Missions (solo) | 8 | a real squad; fills the party |
-| Missions (4-player) | 3 each | one companion each |
-| Arena 3v3 | 5 | a beast + a scout, or one heavy construct |
-| Arena 5v5 | 3 | one beast, or three drones |
+| Matches (4v4) | 3 each | one beast, or three drones — enough to hold a point while you're elsewhere |
+| PvE missions, solo *(later)* | 8 | a real squad; fills the party |
+| PvE missions, 4-player *(later)* | 3 each | one companion each |
 
 Costs: scout drone 1 · beast or skirmisher 2 · heavy construct 3 · named
 companion 4.
@@ -578,11 +701,11 @@ This is the piece that makes 3 slots × 4 units tractable instead of an RTS, and
 it is a direct lift of the Condition/Trigger grammar already built in this repo's
 card engine — the same data shape, aimed at squad behavior. It also puts retinue
 expression where the rest of the game puts it: in the loadout screen, as a puzzle
-you solve before the mission and get graded on during it.
+you solve before the match and get graded on during it.
 
 **Named companions** (cost 4) are the roleplay slot: they have a name you give
 them, a persistent appearance, dyeable barding, and they level a small trait tree
-across missions. This is the beast-tamer fantasy's real home — not raw power, but
+across matches. This is the beast-tamer fantasy's real home — not raw power, but
 *that specific animal, that you trained.*
 
 ### Control
@@ -656,7 +779,7 @@ martial relationship to terrain does not live only on the Reaver.
 **Traps must be legible.** A Verdurist/Tidecaller swinging a greatsword is a bad
 build, and that is fine — an open combination space that contains no bad builds
 is not really open. But the loadout screen must say so *plainly and before the
-mission*, in words: *"neither of your classes trains this."* A trap you can see is
+match*, in words: *"neither of your classes trains this."* A trap you can see is
 build-crafting. A trap you cannot see is bad information wearing a costume.
 
 ### Primary passives must read your secondary
@@ -704,13 +827,13 @@ quarter to a third of the catalog.** The reasons are concrete, not stylistic:
   characters stop being different from each other.
 - Builds would homogenize toward terrain setup, because setup would be the only
   thing the system rewards.
-- Missions indoors, on stone, on ships, in workshops and at night would all be
+- Maps indoors, on stone, on ships, in workshops and at night would all be
   dead content — and cutting those out narrows the world badly.
 - A player who wants to be a duelist with a spear and a grudge should never be
   told the game is about gardening.
 
 The matrix is spice. It should be the reason a *particular* build feels
-extraordinary in a *particular* mission, not a checklist every ability passes
+extraordinary on a *particular* map, not a checklist every ability passes
 through.
 
 Appearance is decoupled from stats (transmog by default, not as an unlock).
@@ -747,16 +870,17 @@ trees. It leaves plenty:
 bar grows in the order a new player can absorb it — one class, then a second, then
 a thesis — so nobody meets 56 pairs and an elite on their first evening.
 
-### Skills: found, and gated by where you can go
+### Skills: never bought
 
-Skills are still found in missions, never bought. Leveling gates them indirectly:
-mission tiers open with level, and higher tiers carry the rarer skills and the
-elites. There is no skill-point currency to spend.
+Skills come from level milestones, match rewards, and capture from the map's
+bosses (see [The match](#the-match)). Higher brackets field bosses carrying rarer
+skills, so leveling gates the catalog indirectly. There is no skill-point
+currency to spend.
 
 ### Gear: vertical until the cap, horizontal after
 
 Gear has tiers that rise with level. A level-12 sword hits harder than a level-4
-one, and upgrades are a steady stream of mission rewards on the way up. Two rules
+one, and upgrades are a steady stream of match rewards on the way up. Two rules
 keep that from becoming the grind this design exists to avoid:
 
 - **Cap-tier gear is common.** Reaching the top tier is a matter of playing to the
@@ -768,24 +892,24 @@ keep that from becoming the grind this design exists to avoid:
 
 ### Playing with friends at different levels
 
-Missions sync you to their level: health, energy and gear tier scale to the
-mission, but you keep every skill and slot you have unlocked. A level-20 veteran
-joining a level-6 friend arrives with more options, not bigger numbers. (Whether
-slots should sync too is an open question below.)
+A party queues in the bracket of its highest-level member (see
+[Matchmaking](#matchmaking)). When PvE missions return, they sync the other way:
+a veteran scales down to the mission's level and keeps their full bar, arriving
+with more options rather than bigger numbers.
 
 ### The power ceiling
 
 - **The ceiling is the level cap, and the cap comes early.** Everything past it is
   horizontal: abilities, sigils, beasts, companions, cosmetics.
-- **Arenas normalize** level, gear and access to maximum, so the PvP wing never
-  becomes a grind gate.
-- **Abilities are found, not purchased.** You learn a Verdurist elite by running
-  the mission where it happens and doing the thing, and missions advertise what
-  they can drop — so chasing the piece that completes a build concept is a
-  concrete plan, not a loot-table lottery. Horizontal progression *is* the
+- **Ranked play at the cap normalizes** gear and access to the full catalog (see
+  [Matchmaking](#matchmaking)), so the competitive game never becomes a grind gate.
+- **Abilities are found, not purchased.** You capture a Verdurist elite by
+  bringing down the boss that carries it, and maps advertise which bosses carry
+  what — so chasing the piece that completes a build concept is a concrete plan,
+  not a loot-table lottery. Horizontal progression *is* the
   content, which is how "more options" avoids being a shop menu.
-- **The world reacts to your pair.** Hub NPCs, faction greetings and mission
-  briefing dialogue key off your named pair. Cheap authored content, disproportionate
+- **The world reacts to your pair.** Hub NPCs, faction greetings and the match
+  announcer key off your named pair. Cheap authored content, disproportionate
   payoff for the roleplay half of the draw.
 
 Stated as a rule because it will be under permanent pressure: every retention
@@ -795,17 +919,27 @@ becomes build *obligation*.
 
 ## Legibility
 
-The competitive framing of this problem ("hidden 6-slot builds destroy
-counterplay") mostly evaporates once PvP is a wing. What remains is the
-*expressive* version of it: **your build should be legible enough to be admired.**
+With PvP first, the competitive version of this problem is back: **hidden six-slot
+builds can destroy counterplay.** In Dota you know what every hero does. Here you
+know someone is a Frostbreaker, which narrows it to a few hundred possibilities.
+Four answers:
 
-- **Silhouette telegraphs concept** — class armor, weapon, and your visible
-  retinue say most of it before you act.
-- **Named pair on your nameplate** says the rest.
-- **Inspect and build codes** in hubs: looking at someone's character and getting
-  their build is a social feature, not a security leak.
-- In arenas only: abilities used on or near you are logged to a per-opponent
-  panel, so counterplay is learnable in the mode that needs it.
+- **The lobby shows pairs and weapons before lock-in.** Class, pair name, weapon
+  and armor silhouette constrain the space hard — a staff Verdurist is not doing
+  melee burst.
+- **Seen skills are logged.** Any ability used on or near you is added to a
+  per-opponent panel for the rest of the match. Scouting is a mechanic, and a
+  scout drone can buy information.
+- **Terrain is honest.** The most decisive actions — the burning field, the
+  bramble wall, the flooded lowland — are large, visible and lasting. The
+  unreadable part of a build is never the part that decides the map.
+- **Elites are announced.** When elites come online, each one is named on the
+  opposing team's screen the first time it is used.
+
+The expressive version still matters too — **your build should be legible enough
+to be admired**: named pair on the nameplate, and inspect plus build codes in the
+hub, where looking at someone's character and taking their build is a social
+feature, not a leak.
 
 ## Technical spine
 
@@ -827,9 +961,10 @@ authoritative state, replicated as deltas. Everything falls out of it:
 
 | Concern | Approach | Risk |
 | --- | --- | --- |
-| Networking | Server-authoritative, fixed ~30 Hz tick. Short instanced missions keep peak player counts low and sessions short-lived — far cheaper than an open world, and instances recycle | Low to moderate |
+| Networking | Server-authoritative, fixed ~30 Hz tick. Matches are 8 players plus companions, instanced, ~15–20 minutes — instances recycle, and nothing persists but results | Moderate |
+| Matchmaking and ranking | Level brackets, skill rating within them, phantom backfill, party rules | Moderate: well understood, but it is a live service to run, not a feature to ship |
 | Hubs | Higher player count, **no terrain simulation, no combat** — a separate, much cheaper server path | Low, if kept genuinely combat-free |
-| Vision / concealment | Server-side visibility culling; hidden enemies are not sent to the client | Non-negotiable in arenas; client-side fog is a wallhack |
+| Vision / concealment | Server-side visibility culling; hidden enemies are not sent to the client | Non-negotiable: ambushes are a core story, and client-side fog is a wallhack |
 | Climbing | Traversal volumes spawned from `Trellis` cells, with authored wall tagging | **High.** Dynamic verticality is where animation, pathing and level design all get expensive at once |
 | Content pipeline | Abilities, sigils and the matrix as data with an editor and a headless test suite | The whole design depends on non-engineers shipping build-space content |
 | Engine | Unity 6 matches existing team knowledge; a networked action game still needs a real netcode stack on top | Unreal is stronger for traversal/animation; team familiarity is the honest tiebreaker |
@@ -842,6 +977,7 @@ authoritative state, replicated as deltas. Everything falls out of it:
 | Headless sim with no engine references | Headless combat sim for build sweeps and squad AI |
 | `CoreTests/` standalone runner | The combo matrix is exactly the system that needs a few hundred cheap assertions |
 | `HeuristicAgent` (simulate-and-score over cloned states) + `AgentPersonality` | Retinue AI, and zone enemy AI. Stance-based squad behavior is an easier target than a card opponent |
+| Phantom AI ([design](../design/phantom-ai.md)) | Queue backfill: real players' posted characters piloted by the agent |
 | `MatchRunner` headless sweeps | **Dead-build detection**: run every class pair against standard encounters and find combinations that cannot clear. Given the draw, this is the balance tool that matters — not tuning outliers down, but finding builds that are *boring* |
 
 ## Lessons from Guild Wars 2
@@ -907,23 +1043,22 @@ more than the rotation does, and where a fight still rewards you for moving well
 
 ## What is actually hard
 
-1. **Scope.** Still large, but mission structure is the biggest cut available:
-   short instanced maps with modifiers replace an authored open world, and that
-   alone removes most of the content and streaming cost. Hubs + missions + terrain
-   + squad AI is an achievable target in a way hubs + open world never was.
+1. **Scope.** PvP-first removes the most expensive content — authored missions —
+   but adds the costs of a service: matchmaking, ranking, anti-cheat, live balance
+   and a population to keep. One or two maps with rotating modifiers is the
+   affordable launch.
 2. **Content volume is the whole design.** Hundreds of abilities and sigils are
    not polish here; they *are* the product. A thin version of this game has no
    draw at all. This is the risk that should scare you most.
 3. **Dynamic verticality.** Player-created climbable surfaces invalidate most
    pathing and level-design assumptions. Most likely to be cut — so validate it
    early, alone, where its cost is visible.
-4. **Build-gated content.** Pillar 2 means some optional objectives are
-   unreachable with your current character. Briefings make this an invitation
-   rather than a wall, but it still needs a retinue that genuinely substitutes for
-   a missing verb.
-5. **Dead builds, not overpowered ones.** With 56 pairs × hundreds of abilities,
-   the realistic failure is dozens of combinations nobody enjoys. Automated sweeps
-   are spine, not polish.
+4. **Build-gated routes.** Pillar 2 means some routes exist only for some builds —
+   a frozen river, a burned-through thicket. In PvP that is strategy, but a team
+   whose four builds share no verbs will find parts of the map closed to them.
+5. **Dead builds and dominant ones.** With 56 pairs × hundreds of abilities, the
+   realistic failures are dozens of combinations nobody enjoys and a few everyone
+   is forced into. Automated sweeps are spine, not polish.
 6. **Martial parity in a game about spellcraft.** The terrain system is a caster's
    playground by default, and every system in this document had to be argued back
    toward martials rather than naturally including them. That asymmetry does not
@@ -931,90 +1066,88 @@ more than the rotation does, and where a fight still rewards you for moving well
    arcane, and someone has to keep insisting that `Force`, traversal and coatings
    get the same attention. This is a standing organizational risk, not a design
    task that finishes.
+7. **Snowballing.** The standing risk of every objective-driven game. The controls
+   in [The match](#keeping-it-from-snowballing) are a starting point; only
+   playtests show whether a lost opening feels recoverable.
+8. **Population.** Level-matched PvP needs enough players in each bracket at each
+   hour. Phantoms cover the gaps, but an online-only game still lives or dies on
+   having people in it.
 
 ## Vertical slice
 
-The old slice asked "is terrain-combo combat fun?" Given the restated draw, that
-is the *second* question. The first is:
+Two questions, in order:
 
+> **Does a match produce a story — and does the story come from the builds?**
+>
 > **Do players want to make another character?**
 
-**Target: three missions on two small maps, 1–2 players, ~8 weeks.**
+**Target: one map, 3v3 with companions, phantoms filling empty seats.** Smaller
+than launch's 4v4 so a few testers plus phantoms can fill it.
 
-- **5 classes — Verdurist, Emberwright, Tidecaller, Reaver, Beastbinder.** Grown
-  from four specifically to carry a martial: "does a melee character feel like a
-  protagonist in a terrain-driven game, or like a spectator waiting for the mages
-  to finish?" is now a primary question of the slice, and no arrangement of four
-  casters answers it. Five gives 20 ordered pairs, both economies, and both grips
-  on the matrix. It costs perhaps two weeks.
+- **5 classes — Verdurist, Emberwright, Tidecaller, Reaver, Beastbinder.** Enough
+  for both resource economies, both grips on the terrain matrix, and a martial —
+  "does a melee character feel like a protagonist in a terrain-driven game?" is
+  still a primary question.
 - ~35 abilities (7 per class, 1 elite each), the full 6-slot bar,
-  primary/secondary with passives, and **both resource economies** including the
-  universal energy pool. **The build economy is the thing under test — it ships
-  first.**
-- **All five self-heals**, since the heal slot is both the most-pressured slot on
-  the bar and the cheapest source of combination identity — a slice without it
-  tests a bar with a hole in it. At six slots this is also the sharpest test of
-  whether the bar is too tight.
-- **One companion with 3 trigger-conditioned ability slots**, to test whether
-  programming a companion reads as build-crafting or as homework.
-- **Three weapon families** — heavy arms, dagger and bow — so the slice tests
-  whether changing weapon changes the character before any skill does.
-- Abilities weighted the way the catalog should be: roughly a third touching
-  terrain, the rest conditions, stances, hexes and weapon techniques.
+  primary/secondary with passives, and both resource economies. **The build
+  economy ships first.**
+- **All five self-heals**, since the heal slot is both the most-pressured slot and
+  the cheapest source of combination identity.
+- **One companion each, with 3 trigger-conditioned ability slots**, usable on
+  `Hold` to guard a point.
+- **Three weapon families** — heavy arms, dagger and bow.
 - ~8 sigils, deliberately including two that are near-useless on most builds.
-- Named pairs for all 20, on the nameplate, with the title card on first assembly.
+- **The map:** two capture sites that spawn together on opposite sides, one
+  neutral boss, a Keeper to win on, fog of war, and two routes only some builds
+  open (a freezable river and a burnable thicket — **no `Trellis`; verticality is
+  slice 2**).
 - Terrain grid with 5 surfaces: `Foliage`, `Burning`, `Scorched`, `Water`, `Ice`,
-  fire spread on. No volumes, **no `Trellis` — verticality is slice 2**, tested
-  alone so its cost is legible.
-- One named companion each, `Hold`/`Follow`, with a name and dye.
-- **Three missions, two maps, with real briefings** — the third mission is the
-  second map under a modifier, to test whether a modifier actually changes the
-  loadout decision or just the scenery.
-- One small hub room where you can see another player and inspect their build.
-- No progression systems, no matchmaking, no arenas, no economy.
+  fire spread on.
+- Elites unlock at a fixed time.
+- A lobby that shows opposing pairs and weapons; a small hub to inspect builds.
+- **Everyone at the cap.** No leveling, no brackets, no ranking — progression is
+  not what's under test.
 
 **Kill criteria, written before building:**
 
-- If testers finish a mission and go straight into the next one **without
-  stopping in the hub**, the loadout decision is not real and the loop is hollow.
-  This is the primary metric of the slice.
-- If they never reroll or rebuild across a session, the draw is not there and no
-  content volume fixes it.
-- **If Reaver players report the good moments as things that happened *to* the
-  map rather than things they did**, the martial integration failed and `Force`
-  is not carrying enough weight.
+- **After a match, ask each player what happened.** If every answer is about one
+  teamfight — no route taken, no split, no ambush, no race for the boss — the map
+  is not the economy and the design has collapsed into an arena brawler. This is
+  the primary metric.
+- If no one ever leaves a companion to hold a point, splitting is not real.
+- If players never rebuild between matches, the draw is not there.
+- **If Reaver players describe the good moments as things that happened *to* the
+  map rather than things they did**, `Force` is not carrying enough weight.
 - If two people running the same pair end up with near-identical bars, the build
   space is fake.
-- If nobody asks another player what they are running, the expression layer failed.
 
 ## Open questions
 
-Questions 1 and 3 from the first draft are now answered — persistent hubs with
-instanced zones, and owned gear never matters competitively. What remains:
+Answered since earlier drafts: PvP first, matched by level; no in-match economy;
+the game levels, with gear that climbs to an early cap. What remains:
 
 1. **Does any category become compulsory at six slots?** Not "is six too few" —
    the elite is a wildcard and carries enormous expression on its own. The risk is
    narrower: if every viable build ends up spending a slot on mobility or a
    defensive cooldown, the flexible budget silently drops to three. The fix is kit
    authoring (bundle mobility into damage skills for some builds), not more slots.
-2. **Is 8–15 minutes the right mission length?** Short enough that a bad build
-   costs nothing, long enough that terrain setup pays off. Below ~8 minutes the
-   terrain pillar has no time to matter; above ~20 the loadout decision stops
-   recurring often enough to *be* the game. The two pillars pull in opposite
-   directions here, and only the slice settles it.
-3. **How solo-able is it?** Retinue-fills-party makes it fully solo; a co-op
-   requirement makes the world verbs interlock more, at the cost of a much harder
-   launch.
+2. **Is 15–20 minutes the right match length?** Long enough for the map to change
+   and for a split to matter; short enough that the loadout decision comes around
+   often. Macro play pulls longer, the build-crafting draw pulls shorter.
+3. **4v4 or 5v5?** Splitting needs bodies, and Dota's 5v5 has the richest macro
+   play — but five players plus five companions is a lot to read. 4v4 is the
+   current bet.
 4. **Is the Beastbinder a class or an axis?** "Bring beasts" and "bring robots"
    could be retinue unlocks available to everyone, with Beastbinder and Cogwright
    being *better commanders* rather than the gate. Probably healthier, and it
    widens the fantasy for every pair — but it costs those two classes their
    headline identity.
-5. **How much authored narrative?** Class-pair reactivity is cheap and pays a lot;
-   a full campaign is the single largest cost in this document. Where between?
-6. **Arena modes at all in v1?** They are quarantined enough to cut, and cutting
-   them buys a year. The counter-argument is that showing off needs an audience
-   and PvP is the loudest one.
+5. **How much authored narrative?** In PvP it is mostly the hub, the announcer
+   and pair reactivity — cheap and worth a lot. A campaign belongs to the PvE
+   layer, and is the single largest cost in this document.
+6. **When does PvE come back?** It is where strange, overpowered builds get to be
+   fun and where solo players live. The earliest cheap version: the map's bosses
+   as a standalone co-op mode.
 7. **Does support-as-a-build actually hold up?** Distributed self-heals settle
    that nobody is *obligated* to heal, but not whether someone who *wants* to play
    a healer has enough to work with. If the answer turns out to be no, the fix is a
@@ -1031,11 +1164,14 @@ instanced zones, and owned gear never matters competitively. What remains:
 10. **How long is the climb to the cap?** Too short and leveling stops teaching;
     too long and the tutorial overstays its welcome, and co-op across levels
     strains. A starting guess, not a decision: the end of the first campaign arc,
-    somewhere around 20–30 hours of missions. Set it by how fast playtesters
+    somewhere around 20–30 hours of matches. Set it by how fast playtesters
     absorb the bar, not by retention targets.
-11. **Should level sync reduce slots too?** Keeping the full bar lets a veteran
-    help a friend with options rather than numbers — but it puts an elite into a
-    mission tuned for players who do not have one yet.
+11. **Is boss capture per-player or per-team?** Per-team rewards everyone who
+    fought; per-player creates a last-hit scramble — exactly the micro-economy
+    this design removed. Per-team is the current bet, but either way it risks
+    teams chasing the boss over the win.
+12. **How much should objectives snowball?** Too little and early play doesn't
+    matter; too much and a lost opening ends the match at minute five.
 
 ## Appendix: ten builds
 
