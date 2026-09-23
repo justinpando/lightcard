@@ -144,12 +144,6 @@ match, so it doesn't re-tax the build you made before it; and it resets every
 match, so the numbers never accumulate into a character sheet. It gives matches
 Dota's weak-to-strong arc with no gold, no shop and no last hits.
 
-Upgrades are the one place this design allows a plain number, and it's
-deliberate. **Sigils stay verbs** — they are permanent, they define what a build
-*is*, and a sigil with a percentage and no verb is still rejected. An upgrade is
-temporary, scoped to one skill, and exists to make the match's second half feel
-different from its first.
-
 ### Companions are how a team splits
 
 A companion on `Hold` guards a point while its player is elsewhere. That turns the
@@ -201,7 +195,7 @@ matchmaking that puts you against tanks within a tier or two of yours.
   battleground problem: "twinks" parked at the top of a bracket in the best
   possible gear, farming newer players — Blizzard's eventual fix was giving them
   their own queue. The simpler fix is not letting gear *numbers* vary within a
-  bracket. Gear's *options* — sigils, looks — still come with you.
+  bracket. Gear's *options* — runes, insignia, looks — still come with you.
 - **Parties queue in their highest member's bracket.** Everyone is scaled to that
   bracket's baseline numbers, but brings only the slots and skills they have. A
   low-level member is a real handicap, and the party chose it.
@@ -281,7 +275,7 @@ So the pre-mission screen is a real decision with real information: a
 `Tidecaller/Cogwright` reads that and sees a chain-shock playground; a
 `Blightburner` reads it and knows their fire does nothing until something dries
 the ground out — which is either a reason to bring a different character, or a
-reason to bring the *Kindling* sigil and make it work anyway.
+reason to slot a skill that makes its own ground and make it work anyway.
 
 This also converts pillar 2's build-gating from a wall into an invitation:
 optional objectives name the world verbs they want, up front, so a verb you lack
@@ -379,9 +373,9 @@ here, in two ways:
   line, because off-line skills become a tax.
 
 The only bonuses that do not reward stacking are none at all, or one scoped to a
-single skill — and the design already has two of those: **the elite**, and
-**sigils**, which each modify one ability. That is where "my character is
-*really* good at this" lives now.
+single skill — and the design has two of those: **the elite**, and
+[in-match upgrades](#skills-level-up-during-the-match), each scoped to one skill.
+That is where "my character is *really* good at this" lives now.
 
 What survives, with no numbers:
 
@@ -422,7 +416,6 @@ live, rather
 than to add slots back:
 
 - The **weapon** carries its own native skill, outside the six.
-- **Sigils** modify abilities you already have instead of costing a slot.
 - The **retinue** carries its own abilities (below), so party-wide utility need
   not come off your bar.
 - Class kits are authored so that no *category* is mandatory — mobility should
@@ -453,7 +446,7 @@ acceptable here, and it needs an explicit answer rather than a shrug:
 - Secondary skills cost what they cost. With no attribute penalty, a martial
   primary's arcane utility is limited by its energy pool, never by a weak rank on
   top of it.
-- The Focus accessory slot can be spent on energy, at the cost of a sigil.
+- A Focus accessory can be spent on energy.
 
 A `Reaver/Emberwright` should be a real character who lands three strikes and
 spends them on one detonation — not a warrior who cannot afford their own second
@@ -468,7 +461,7 @@ own emote and a title card the first time you assemble one.
 | Pair | Name | The character it is |
 | --- | --- | --- |
 | Verdurist / Emberwright | **Blightburner** | Grows the fuel, then lights it. Slash-and-burn zoning |
-| Emberwright / Verdurist | **Ashgardener** | Burns first and plants in the ruin. Wants the *Second Growth* sigil |
+| Emberwright / Verdurist | **Ashgardener** | Burns first and plants in the ruin |
 | Verdurist / Tidecaller | **Fenwright** | Floods, then grows reeds in it. The concealment specialist |
 | Tidecaller / Emberwright | **Steamcaller** | Lives inside steam clouds and fights where nobody can see |
 | Beastbinder / Cogwright | **Houndwright** | Machine-augmented animals. Your pack has brass in it |
@@ -486,7 +479,7 @@ own emote and a title card the first time you assemble one.
 
 **Names are recognition, not rules.** A pair name describes an emergent
 playstyle; it grants nothing by itself. Mechanical pair identity comes from the
-**primary passive reading the secondary**, and from **sigils**, so there are never
+**primary passive reading the secondary**, so there are never
 56 hardcoded special cases in the balance surface — the discipline LT Cards
 already applies to card text.
 
@@ -559,7 +552,7 @@ Five things follow:
 | **Force** | flattens — **reveals anyone concealed** | displaces units | spreads the slick | shatters → `Bare` + slow | — | scatters embers to adjacent cells |
 
 `Scorched` is the pressure valve: nothing grows on it for ~20s. It is how fire
-answers growth, and why the *Ashgardener* wants a sigil that breaks that rule.
+answers growth.
 
 Rules that fall out of the matrix:
 
@@ -630,8 +623,8 @@ louder statement than GW1 ever allowed.
 **2. Nobody is obligated, and nobody is a tax.** A mandatory healer in a
 15-minute match is a queue tax and a person who did not get to pick their
 fantasy. Distributed sustain means any five characters form a viable team. The
-healer *fantasy* survives as a **build, not a class**: pair choice and sigils
-let a Cogwright specialize into field repair or a Verdurist into healing groves,
+healer *fantasy* survives as a **build, not a class**: pair choice and skill
+choice let a Cogwright specialize into field repair or a Verdurist into healing groves,
 so someone who wants to play support can — and nobody has to.
 
 **3. Heals read the map.** This is the part that is specific to this game rather
@@ -678,26 +671,6 @@ more of: a small closed set whose *combinations* carry the expression.
 Out-of-combat regeneration is fast and free. In 15–20 minute matches, downtime as
 a resource tax is pure friction — the heal slot is meant to matter *during* a
 fight, not to make you sit down after one.
-
-## Sigils: where builds get weird
-
-Two of your four equipment slots are accessories, and the **Sigil** is the engine
-of build identity. A sigil is a small, legible rules patch to a *single ability*:
-
-- *Second Growth* — your `Growth` works on `Scorched` ground. (The Ashgardener's
-  thesis, available to anyone, senseless on most builds.)
-- *Trellised* — your vines also grow a trellis on the nearest tagged wall.
-- *Scalding* — your `Steam` volumes damage.
-- *Pack Tactics* — your retinue's abilities trigger off *your* combos.
-- *Kindling* — your beasts leave a trail of `Foliage` where they run.
-
-This is the intended long-tail content and the answer to "how do combinations
-stay interesting past month two": each sigil is data, rewrites one ability, and
-the combo matrix stays the only global system. Sigils are also **where the named
-pairs get mechanical teeth** without hardcoding 30 exceptions.
-
-Sigils are found and earned in play — match rewards and boss captures — never bought. Acquiring the
-piece that completes a build concept *is* the progression curve.
 
 ## The Retinue
 
@@ -785,7 +758,7 @@ numbers are.
 | --- | --- |
 | **Weapon** | Your attack's rhythm and shape, the abilities you can slot, and one weapon-native skill outside your six. See [Weapon families](#weapon-families) — this is the martial build's main expression surface, so its variety is not cosmetic |
 | **Armor** | Defense *profile*, not amount: trade-offs (+vs fire / −vs shock). 2 rune slots (resistances and small utility effects) + 1 insignia (situational passive). **Armor is the class silhouette** and the main visual identity surface — dyeable, per-piece |
-| **Accessory ×2** | Sigils (above) and a Focus that shapes your resource economy |
+| **Accessory ×2** | Simple and readable: a Focus that shapes your resource economy, and small defensive or utility effects |
 
 ### Weapon families
 
@@ -933,8 +906,8 @@ keep that from becoming the grind this design exists to avoid:
   cap, not farming it. GW1's lesson: max-stat armor was cheap; the expensive armor
   was the armor that *looked* better.
 - **After the cap, gear changes what you do, never how big your numbers are.** A
-  rare item carries a fixed, unusual sigil, a rune combination, or a look — never
-  a higher tier. The chase moves to options and appearance.
+  rare item carries an unusual rune combination, insignia, or look — never a
+  higher tier. The chase moves to options and appearance.
 
 ### Playing with friends at different levels
 
@@ -946,7 +919,7 @@ with more options rather than bigger numbers.
 ### The power ceiling
 
 - **The ceiling is the level cap, and the cap comes early.** Everything past it is
-  horizontal: abilities, sigils, beasts, companions, cosmetics.
+  horizontal: abilities, beasts, companions, cosmetics.
 - **Ranked play at the cap normalizes** gear and access to the full catalog (see
   [Matchmaking](#matchmaking)), so the competitive game never becomes a grind gate.
 - **Abilities are found, not purchased.** You capture a Verdurist elite by
@@ -1012,14 +985,14 @@ authoritative state, replicated as deltas. Everything falls out of it:
 | Hubs | Higher player count, **no terrain simulation, no combat** — a separate, much cheaper server path | Low, if kept genuinely combat-free |
 | Vision / concealment | Server-side visibility culling; hidden enemies are not sent to the client | Non-negotiable: ambushes are a core story, and client-side fog is a wallhack |
 | Climbing | Traversal volumes spawned from `Trellis` cells, with authored wall tagging | **High.** Dynamic verticality is where animation, pathing and level design all get expensive at once |
-| Content pipeline | Abilities, sigils and the matrix as data with an editor and a headless test suite | The whole design depends on non-engineers shipping build-space content |
+| Content pipeline | Abilities and the matrix as data with an editor and a headless test suite | The whole design depends on non-engineers shipping build-space content |
 | Engine | Unity 6 matches existing team knowledge; a networked action game still needs a real netcode stack on top | Unreal is stronger for traversal/animation; team familiarity is the honest tiebreaker |
 
 ### Reuse from LT Cards
 
 | From this repo | To Thornline |
 | --- | --- |
-| `EffectDef` grammar (Condition/Trigger/Target/Effect) as *data, not code* | Ability definitions, sigil rules, the combo matrix — and the reason content ships without engineers |
+| `EffectDef` grammar (Condition/Trigger/Target/Effect) as *data, not code* | Ability definitions, primary passives, the combo matrix — and the reason content ships without engineers |
 | Headless sim with no engine references | Headless combat sim for build sweeps and squad AI |
 | `CoreTests/` standalone runner | The combo matrix is exactly the system that needs a few hundred cheap assertions |
 | `HeuristicAgent` (simulate-and-score over cloned states) + `AgentPersonality` | Retinue AI, and zone enemy AI. Stance-based squad behavior is an easier target than a card opponent |
@@ -1066,11 +1039,12 @@ combination space. *Tripwire:* if a new package grants abilities that could not 
 assembled by pairing, it is an elite specialization wearing a different name.
 
 **3. Expression stays in named verbs.** You should be able to describe your build
-in one sentence, naming things that happen. *How it gets crossed:* sigils drift
-from "your vines also grow a trellis" toward "+6% growth duration", because
-numbers are trivially easy to author and to balance. A progression system then
-wants a trait grid for depth. *Tripwire:* if a sigil's text contains a percentage
-and no verb, reject it.
+in one sentence, naming things that happen. *How it gets crossed:* skills and
+passives drift from "your vines grow a climbable trellis" toward "+6% growth
+duration", because numbers are trivially easy to author and to balance. A
+progression system then wants a trait grid for depth. *Tripwire:* if a skill's
+or passive's text is a percentage with no verb, reject it. In-match upgrades are
+the one sanctioned exception: temporary, per-skill, reset every match.
 
 **4. Telegraph the terrain system loudly.** GW2's combo fields are genuinely deep
 and cross-player, and they mostly went unused because they are a translucent circle
@@ -1093,7 +1067,7 @@ more than the rotation does, and where a fight still rewards you for moving well
    but adds the costs of a service: matchmaking, ranking, anti-cheat, live balance
    and a population to keep. One or two maps with rotating modifiers is the
    affordable launch.
-2. **Content volume is the whole design.** Hundreds of abilities and sigils are
+2. **Content volume is the whole design.** Hundreds of abilities are
    not polish here; they *are* the product. (In-match upgrades barely add to it:
    each skill carries an upgrade axis as a data field, not a second version.) A
    thin version of this game has no draw at all. This is the risk that should scare you most.
@@ -1109,7 +1083,7 @@ more than the rotation does, and where a fight still rewards you for moving well
 6. **Martial parity in a game about spellcraft.** The terrain system is a caster's
    playground by default, and every system in this document had to be argued back
    toward martials rather than naturally including them. That asymmetry does not
-   go away after launch: every new surface, volume and sigil will *want* to be
+   go away after launch: every new surface, volume and skill will *want* to be
    arcane, and someone has to keep insisting that `Force`, traversal and coatings
    get the same attention. This is a standing organizational risk, not a design
    task that finishes.
@@ -1145,7 +1119,6 @@ than launch's 5v5 so a few testers plus phantoms can fill it.
 - **One companion each, with 3 trigger-conditioned ability slots**, usable on
   `Hold` to guard a point.
 - **Three weapon families** — heavy arms, dagger and bow.
-- ~8 sigils, deliberately including two that are near-useless on most builds.
 - **The map:** two capture sites that spawn together on opposite sides, one
   neutral boss, a Keeper to win on, fog of war, and two routes only some builds
   open (a freezable river and a burnable thicket — **no `Trellis`; verticality is
@@ -1217,6 +1190,15 @@ whole team; the game levels, with gear that climbs to an early cap. What remains
    absorb the bar, not by retention targets.
 10. **How much should objectives snowball?** Too little and early play doesn't
     matter; too much and a lost opening ends the match at minute five.
+
+## Parked ideas
+
+Designed once, deliberately left out for now. Not options on the table — things
+to come back to when the base game plays well.
+
+- **Sigils** — accessories that rewrite one skill's rules (*your vines also grow a
+  trellis*; *your steam clouds scald*). A large design space of its own, and
+  nothing else in the design depends on it.
 
 ## Appendix: ten builds
 
