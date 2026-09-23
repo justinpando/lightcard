@@ -65,7 +65,9 @@ no last-hitting. Your loadout — six skills, a weapon, a companion — is the w
 build, locked when the match starts and **live from the first second — elite
 included**. The elite is often the lynchpin a build is designed around, not a
 flourish at the end of it, so nothing on your bar is ever switched off to
-manufacture a turning point. Turning points come from the map. What changes over
+manufacture a turning point. Turning points come from the map, and your skills
+grow stronger as the match goes on — see
+[Skills level up during the match](#skills-level-up-during-the-match). What changes over
 the match is the map, and the match is the story of who changed it.
 
 There are two precedents. *Heroes of the Storm* removed items and gold, shared
@@ -103,6 +105,37 @@ system earns its cost:
 - **The win condition is the enemy's Keeper** — a named NPC in their base,
   guarded by NPC wardens. Held sites weaken the guard. Nobody wins on kills.
 
+### Skills level up during the match
+
+Your bar is fixed at lock-in, but it grows over the match. The team shares one
+**match level**, earned from objectives, bosses and takedowns — never from
+farming, and never split by who landed the last hit. Each match level gives every
+player one **upgrade** to spend on one of their six skills. Match level resets
+every match; it has nothing to do with your character level, which is persistent
+and decides who you're matched against.
+
+- **Every skill has one upgrade, and it is a verb, not a number.** Bramble Wall's
+  upgrade makes the wall climbable from your side. Kindle's makes the fire spread
+  the instant it lands. Overbear's carries you through with the target. Tend's
+  heals your whole retinue, not just your beast. "+20% damage" is not an upgrade —
+  the same rule as sigils: a verb, or nothing.
+- **You can't upgrade everything.** Around four upgrades a match, for six skills.
+  Which skills you upgrade, and in what order, is the in-match decision: it's how
+  a build adapts to what the other team brought and what the map has become.
+- **The elite has an upgrade too**, often the one worth waiting for. The elite
+  still works from the first second either way.
+- **Persistent progression can widen it.** Over time, some skills unlock a second
+  upgrade to choose between, so a veteran's decision at match level 3 is which
+  upgrade as well as which skill. That is horizontal progression — more options,
+  not bigger numbers — and ranked play at the cap grants all of them anyway.
+
+Why this fits where attribute points didn't: it is the one form of "putting points
+into things" that survives the reasons attributes were cut. It is scoped to a
+single skill, so it cannot reward stacking a group of skills; it happens in the
+match, so it doesn't re-tax the build you made before it; and it is a verb, so it
+never becomes a spreadsheet. It gives matches Dota's weak-to-strong arc with no
+gold, no shop and no last hits.
+
 ### Companions are how a team splits
 
 A companion on `Hold` guards a point while its player is elsewhere. That turns the
@@ -121,6 +154,9 @@ take the next one. Three controls:
 - **The Keeper's guard regenerates**, so an early lead has to be converted, not
   banked.
 - **Objectives spawn biased toward the side holding fewer sites.**
+- **The trailing team earns match levels faster** from the same objectives. A
+  shared team level makes early leads compound; catch-up experience keeps a lost
+  opening costing tempo rather than the match.
 
 ### Shape
 
@@ -924,8 +960,8 @@ Four answers:
   and armor silhouette constrain the space hard — a staff Verdurist is not doing
   melee burst.
 - **Seen skills are logged.** Any ability used on or near you is added to a
-  per-opponent panel for the rest of the match. Scouting is a mechanic, and a
-  scout drone can buy information.
+  per-opponent panel for the rest of the match, marked once it has been upgraded.
+  Scouting is a mechanic, and a scout drone can buy information.
 - **Terrain is honest.** The most decisive actions — the burning field, the
   bramble wall, the flooded lowland — are large, visible and lasting. The
   unreadable part of a build is never the part that decides the map.
@@ -1044,8 +1080,9 @@ more than the rotation does, and where a fight still rewards you for moving well
    and a population to keep. One or two maps with rotating modifiers is the
    affordable launch.
 2. **Content volume is the whole design.** Hundreds of abilities and sigils are
-   not polish here; they *are* the product. A thin version of this game has no
-   draw at all. This is the risk that should scare you most.
+   not polish here; they *are* the product — and every ability also carries an
+   in-match upgrade, which roughly doubles the authoring per skill. A thin version
+   of this game has no draw at all. This is the risk that should scare you most.
 3. **Dynamic verticality.** Player-created climbable surfaces invalidate most
    pathing and level-design assumptions. Most likely to be cut — so validate it
    early, alone, where its cost is visible.
@@ -1089,6 +1126,8 @@ than launch's 5v5 so a few testers plus phantoms can fill it.
   economy ships first.**
 - **All five self-heals**, since the heal slot is both the most-pressured slot and
   the cheapest source of combination identity.
+- **Match level and one upgrade per skill**, since the upgrade order is the
+  match's main in-play decision.
 - **One companion each, with 3 trigger-conditioned ability slots**, usable on
   `Hold` to guard a point.
 - **Three weapon families** — heavy arms, dagger and bow.
@@ -1111,6 +1150,8 @@ than launch's 5v5 so a few testers plus phantoms can fill it.
   the primary metric.
 - If no one ever leaves a companion to hold a point, splitting is not real.
 - If players never rebuild between matches, the draw is not there.
+- **If everyone upgrades their skills in the same order every match**, the
+  upgrades are numbers in disguise.
 - **If Reaver players describe the good moments as things that happened *to* the
   map rather than things they did**, `Force` is not carrying enough weight.
 - If two people running the same pair end up with near-identical bars, the build
