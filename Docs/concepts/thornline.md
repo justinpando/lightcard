@@ -106,10 +106,12 @@ Four stories, and what the map has to provide for each:
 With no gold, rewards are expressed as map changes — which is where the terrain
 system earns its cost:
 
-- **Sites** — a Grove, a Well, a Forge — are captured by putting the right surface
-  around them, not by standing on them. Holding one reshapes a region for your
-  team: the Grove grows cover across the east woods, the Well floods the
-  lowlands, the Forge lights the bridges.
+- **Sites** — a Grove, a Well, a Forge — are captured **fastest by putting the
+  right surface around them, and slowly by holding their ring**, so the right
+  builds are an advantage and no team composition is locked out. Holding one
+  reshapes a region for your team, and **terrain a site creates belongs to its
+  holder**: cover the Grove grows conceals only the holding team; water the Well
+  floods slows only the holder's enemies.
 - **Neutral bosses** grant something you can see: a temporary extra companion (a
   captured beast or construct that fights for you until it dies), a map event, or
   vision.
@@ -140,6 +142,8 @@ if a fight's reach covers half the map, there is nowhere to split to and no room
 to hide. With ability ranges of 15–20 m and a run speed around 6 m/s, that puts a
 5v5 map at **about 350 m on a side**. Greybox it and walk it before trusting the
 number.
+
+The first map is [Hollowmere](#first-map-hollowmere).
 
 ### Skills level up during the match
 
@@ -200,6 +204,96 @@ split still needs people.
   loadout decision comes around several times an evening.
 - **The lobby shows the other team's pairs and weapons** before lock-in. You
   can't see their bars, but you can build against their shape.
+
+## First map: Hollowmere
+
+An open map, 350 m square, rotationally symmetric, with the bases in the southwest
+and northeast corners. Interactive version: [hollowmere.html](hollowmere.html) —
+toggle your team's classes to see which routes open.
+
+### Layout
+
+- **The Mere** — a lake in the centre, ringed by marsh shallows. The **Heron
+  King** sits on an island in the middle. Two stone **causeways** run from the
+  island to the Grove's and the Well's gates: the only way onto the island for a
+  team that can't cross water.
+- **The Grove** (northwest) — a wooded plateau ringed by cliffs, with gates south,
+  east, and toward its causeway. Captured fast by growing, slowly by holding;
+  burning it leaves it neutral.
+- **The Well** (southeast) — stone flats around a dry cistern, with low walls and
+  gates west, north, and toward its causeway. Captured fast by flooding, slowly by
+  holding.
+- **The Bramblecut** — a thorn thicket between each base and the Mere. Burned, it
+  opens a direct route from that base to the near causeway.
+- **Four beast dens** off the main paths, two on each side.
+- **Keepers**, each with three wardens.
+
+### Routes are the build question
+
+| From your base to… | Default | Bramblecut burned *(Emberwright)* | Across the Mere *(Tidecaller freezes, Verdurist grows reeds, Cogwright ziplines)* |
+| --- | --- | --- | --- |
+| The Heron King | ~48 s | ~38 s | ~24 s |
+| The enemy Keeper | ~73 s | ~62 s | ~52 s |
+| The Grove or the Well | ~38 s | — | — |
+
+Reaching the boss in half the time is the case for bringing someone who can cross
+water. It is counterable because the route is terrain: an Emberwright melts the
+ice under you, a Reaver shatters it, fire burns the reeds. And the lobby shows
+both teams which routes the other can open.
+
+### Objectives and timers
+
+- **1:00 — dens wake.** Each gives a captured beast, a temporary extra companion.
+  A den returns 1:30 after it's taken — twice as fast on the side of the team
+  holding fewer sites.
+- **2:30 — the Grove and the Well wake together**, about 200 m apart on opposite
+  corners. Both reset to neutral every 3:00.
+  - *Grove held:* cover grows along both of its approaches and around its
+    causeway, and only the holder can hide in it.
+  - *Well held:* the lowlands flood knee-deep, slowing only the holder's enemies.
+  - *Either held:* one warden leaves the enemy Keeper's guard. The third warden
+    always stands.
+- **6:00 — the Heron King wakes**, and returns 4:00 after it falls. The team that
+  brings it down captures its skill, and **the Mere drains for 90 s**: the centre
+  becomes open ground for both teams.
+
+### How a match is won here
+
+1. **Hold sites** to strip wardens from the enemy Keeper.
+2. **Take the Heron King** to drain the Mere.
+3. **Push the Keeper** through the drained centre before it refills.
+
+The drain opens the centre to both teams, so the side that lost the boss fight
+gets a counterattack route too.
+
+### Where the four stories happen
+
+| The story | On Hollowmere |
+| --- | --- |
+| *"We went here and did this"* | Dens, sites and the boss pull in different directions from the first minute |
+| *"We split up, then came together"* | The Grove and the Well wake at once, 200 m apart; a companion on `Hold` keeps one while the team takes the other |
+| *"We ambushed them"* | The causeways are chokepoints lined with reeds; a burned Bramblecut is a route the enemy may not have seen open; the Grove's cover hides only its holder |
+| *"We beat the boss first"* | The island, and the race to cross the Mere |
+
+### Modifiers on Hollowmere
+
+- **Drought** — the Mere shrinks to a pond and the shallows dry to open ground.
+  The island is a short wade from anywhere; the Well needs twice the water.
+- **Verdant Bloom** — cover everywhere; every approach is an ambush, and the Grove
+  captures fast.
+- **Tempest** — rain pools across the map; the Well floods easily, shock chains
+  travel far, and fire struggles to spread.
+- **Ashfall** — nothing grows for the first two minutes, so the first Grove can
+  only be taken the slow way.
+
+### What to check in greybox
+
+- **Base to base is ~73 s the long way**, longer than the ~60 s target. Walk it;
+  if it drags, tighten the paths around the Grove and the Well before shrinking
+  the Mere.
+- **Whether 24 s to the boss is too decisive.** If a team that can cross water
+  wins every boss race, the fixes are longer boss fights, a shorter default
+  route, or ice that melts faster.
 
 ## Matchmaking
 
@@ -883,10 +977,10 @@ than launch's 5v5 so a few testers plus phantoms can fill it.
 - **One companion each**, with 3 trigger-conditioned ability slots, usable on
   `Hold` to guard a point.
 - **Three weapon families** — heavy arms, dagger and bow.
-- **The map:** two capture sites that spawn together on opposite sides, one
-  neutral boss, a Keeper to win on, fog of war, and two routes only some builds
-  open (a freezable river and a burnable thicket — **no `Trellis`; verticality is
-  slice 2**).
+- **The map:** a 3v3 cut of [Hollowmere](#first-map-hollowmere), about 270 m on
+  a side — the Grove and the Well, the Heron King, a Keeper each, fog of war, and
+  both gated routes (the Mere and the Bramblecut). **No `Trellis`; verticality is
+  slice 2.**
 - Terrain grid with 5 surfaces — `Foliage`, `Burning`, `Scorched`, `Water`,
   `Ice` — fire spread on.
 - A lobby that shows opposing pairs and weapons; a small hub to inspect builds.
